@@ -1,0 +1,39 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* Ensure the body takes up the full height of the viewport */
+    overflow: hidden; /* Prevent scrolling caused by overflow */
+}
+body {
+    margin: unset;
+    display: unset;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+a,
+span,
+strong,
+b,
+i {
+    display: inline-block;
+    margin-block-start: unset;
+    margin-block-end: unset;
+    margin-inline-start: unset;
+    margin-inline-end: unset;
+}
+img {
+    overflow: unset;
+    overflow-clip-margin: unset;
+}
+a {
+    color: #000000;
+    text-decoration: none;
+}
+* {
+    box-sizing: border-box;
+}
