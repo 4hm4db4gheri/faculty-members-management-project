@@ -259,7 +259,7 @@
 .information>.search {
     display: grid;
     /* Use grid layout for rows */
-    grid-template-columns: 1fr 7fr;
+    grid-template-columns: 1fr 9fr;
     gap: 30px;
     /* Add space between rows */
 
@@ -288,25 +288,108 @@
     width: 68px;
     height: 70px;
     background-color: white;
-    border-radius: 25px;
-    /* Optional: Add rounded corners */
+    border: none; /* Remove default border */
+    border-radius: 25px; /* Rounded corners */
     display: flex;
     justify-content: center;
     align-items: center;
     color: black;
     font-size: 1.5rem;
+    cursor: pointer; /* Pointer cursor for better UX */
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.information>.search>.advanced-search:hover {
+    background-color: #f0f0f0; /* Light gray background on hover */
+}
+
+.information>.search>.advanced-search:active, .information>.search>.advanced-search.selected {
+    background-color: #dcdcdc; /* Darker gray background for active/selected state */
 }
 
 .information>.search>.normal-search {
-    height: 70px;
-    background-color: white;
-    border-radius: 25px;
-    /* Optional: Add rounded corners */
-    display: flex;
-    justify-content: center;
+    // display: flex;
+    /* Use flexbox for alignment */
+    display: grid;
+    grid-template-columns: 9fr 1fr;
     align-items: center;
+    /* Center items vertically */
+    background-color: white;
+    /* Background color for the container */
+    border-radius: 25px;
+    /* Rounded corners for the container */
+    padding-right: 10px;
+    /* Add padding inside the container */
+    // box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Add a subtle shadow */
+    direction: rtl;
+}
+
+.information>.search>.normal-search input {
+    height: 100%;
+    /* Make the input fill its container height */
+    width: 100%;
+    /* Make the input fill its container width */
+    background-color: transparent;
+    /* Transparent background */
+    border: none;
+    /* Remove the border */
+    border-radius: 25px;
+    /* Add rounded corners */
+    padding-right: 20px;
+    /* Add padding for the placeholder */
+    font-size: 1.5rem;
+    /* Adjust font size */
     color: black;
-    font-size: 3rem;
+    /* Text color */
+    outline: none;
+    /* Remove focus outline */
+    box-sizing: border-box;
+    /* Include padding in width/height */
+}
+
+.information>.search>.normal-search input::placeholder {
+    color: #aaa;
+    /* Placeholder text color */
+    font-size: 1.5rem;
+    /* Adjust placeholder font size */
+    padding-right: 20px;
+    /* Add padding to the placeholder */
+}
+
+.information>.search>.normal-search i {
+    font-size: 1.5rem;
+    /* Adjust the size of the icon */
+    color: black;
+    /* Set the color of the icon */
+    display: flex;
+    /* Ensure the icon is displayed */
+    align-items: center;
+    /* Center the icon vertically */
+    justify-content: center;
+    /* Center the icon horizontally */
+}
+
+.search-button {
+    width: 100%;
+    height: 100%;
+    background-color: transparent; /* Transparent background */
+    border: none; /* Remove default border */
+    cursor: pointer; /* Change cursor to pointer */
+    padding: 5px; /* Add some padding */
+    border-radius: 25px; /* Optional: Make it circular */
+    display: flex; /* Center the icon */
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.search-button:hover {
+    background-color: #f0f0f0; /* Light gray background on hover */
+}
+
+.search-button:active, .search-button.selected {
+    background-color: #dcdcdc; /* Darker gray background for active/selected state */
 }
 
 .information>.charts>.chart-1 {
