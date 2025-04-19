@@ -1,0 +1,136 @@
+//!media query
+
+.mainScreen {
+    font-size: 10px;
+    background-color: #EBF2FA;
+    width: calc(100% - 40px);
+    /* Adjust width to account for left and right margins */
+    height: calc(100% - 40px);
+    /* Adjust height to account for top and bottom margins */
+    margin: 20px;
+    padding: 25px;
+    border-radius: 25px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    /* Use flexbox to allow children to grow */
+    flex-direction: column;
+    /* Stack children vertically */
+}
+
+.system-name {
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    display: flex;
+}
+
+.background {
+    flex-direction: row-reverse;
+    background-color: #1B4965;
+    color: white;
+    height: 100vh;
+    /* Full viewport height */
+    width: 100vw;
+    /* Full viewport width */
+    margin: 0;
+    /* Remove default margins */
+    display: flex;
+    /* Optional: To center content */
+    justify-content: flex-end;
+    /* Optional: Center horizontally */
+    align-items: center;
+    /* Optional: Center vertically */
+    position: absolute;
+    /* Position the element */
+    top: 0;
+    /* Stick to the top */
+    right: 0;
+    /* Stick to the right */
+}
+
+.dashboard-bar {
+    padding-top: 4.5vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    width: 22vw;
+    /* Fixed width for the red column */
+    height: 100vh;
+    /* Full viewport height */
+    overflow: auto;
+    /* Allow scrolling if content overflows */
+    font-size: 1.5rem;
+    /* Increase font size for all text inside the dashboard bar */
+}
+
+.dashboard-bar-item {
+    margin: 10px;
+    border-radius: 25px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    /* No background color by default */
+    height: 90px;
+    font-size: 2.2rem;
+    /* Adjust font size for individual items */
+    text-align: center;
+    /* Center-align text */
+    cursor: pointer;
+    /* Add a pointer cursor for better UX */
+    border: none;
+    /* Remove default button border */
+    color: white;
+    /* Button text color */
+    outline: none;
+    /* Remove focus outline */
+    transition: background-color 0.3s ease;
+    /* Smooth transition for background color */
+}
+
+.dashboard-bar-item:hover {
+    background-color: rgba(51, 136, 188, 0.2);
+    /* Light blue background on hover */
+}
+
+.dashboard-bar-item.selected {
+    background-color: #3388BC;
+    /* Lighter blue background when selected */
+}
+
+.line {
+    width: calc(100% - 40px);
+    /* Full width minus margins */
+    height: 2px;
+    /* Thickness of the line */
+    background-color: #8D8D8D;
+    /* Line color */
+    margin: 20px auto;
+    /* Add margins from the right and left */
+    border-radius: 2.5px;
+    /* Optional: Round the edges of the line */
+}
+
+.circle {
+    width: 150px;
+    /* Diameter of the circle */
+    height: 150px;
+    /* Diameter of the circle */
+    background-color: #8D8D8D;
+    /* Gray color for the placeholder */
+    border-radius: 50%;
+    /* Makes the div a circle */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    /* Text color inside the circle */
+    font-size: 1.2rem;
+    /* Font size for the text */
+    font-weight: bold;
+    /* Bold text */
+    margin: 20px auto;
+    /* Center the circle horizontally with margin */
+}

@@ -1,10 +1,32 @@
 import { useState } from 'react';
+import MainDashboardPanel from './Panels/MainDashboardPanel';
+import HistoryPanel from './Panels/HistoryPanel';
+import RoleManagementPanel from './Panels/RoleManagementPanel';
+import NotificationsPanel from './Panels/NotificationsPanel';
+import ImprovementChartPanel from './Panels/ImprovementChartPanel';
 
-export default function BackGround() {
+export default function DashboardComponent() {
     const [selectedItem, setSelectedItem] = useState<string>('dashboard'); // Default to the first item
 
     const handleSelect = (item: string) => {
         setSelectedItem(item);
+    };
+
+    const renderPanel = () => {
+        switch (selectedItem) {
+            case 'dashboard':
+                return <MainDashboardPanel />;
+            case 'records':
+                return <HistoryPanel />;
+            case 'progress':
+                return <ImprovementChartPanel />;
+            case 'roles':
+                return <RoleManagementPanel />;
+            case 'notifications':
+                return <NotificationsPanel />;
+            default:
+                return <MainDashboardPanel />; // Default to MainDashboard
+        }
     };
 
     return (
@@ -45,28 +67,7 @@ export default function BackGround() {
                 </button>
             </div>
             <div className="mainScreen">
-                <div className='dashboard'>
-                    <div className='a'>
-                        <div className="circle">Pic</div>
-                        <div className='row2'>اسم کاربر</div>
-                        <div className='row3'>
-                            <div className="col1">نقش</div>
-                            <button className="col2">مدت زمان</button> {/* Changed to a button */}
-                        </div>
-                        <div className='row4'></div>
-                    </div>
-                    <div className='b'>
-                        <div className="row1">
-                            <div className='col1'>جستجو پ</div>
-                            <div className='col2'>جستجو</div>
-                        </div>
-                        <div className="row2">
-                            <div className='col1'>نمودار</div>
-                            <div className='col2'>نمودار</div>
-                        </div>
-                        <div className="row3"></div>
-                    </div>
-                </div>
+                {renderPanel()} {/* Render the selected panel */}
             </div>
         </div>
     );
