@@ -1,10 +1,32 @@
 import { useState } from 'react';
+import MainDashboardPanel from './Panels/MainDashboardPanel';
+import HistoryPanel from './Panels/HistoryPanel';
+import RoleManagementPanel from './Panels/RoleManagementPanel';
+import NotificationsPanel from './Panels/NotificationsPanel';
+import ImprovementChartPanel from './Panels/ImprovementChartPanel';
 
-export default function BackGround() {
+export default function DashboardComponent() {
     const [selectedItem, setSelectedItem] = useState<string>('dashboard'); // Default to the first item
 
     const handleSelect = (item: string) => {
         setSelectedItem(item);
+    };
+
+    const renderPanel = () => {
+        switch (selectedItem) {
+            case 'dashboard':
+                return <MainDashboardPanel />;
+            case 'records':
+                return <HistoryPanel />;
+            case 'progress':
+                return <ImprovementChartPanel />;
+            case 'roles':
+                return <RoleManagementPanel />;
+            case 'notifications':
+                return <NotificationsPanel />;
+            default:
+                return <MainDashboardPanel />; // Default to MainDashboard
+        }
     };
 
     return (
@@ -45,36 +67,7 @@ export default function BackGround() {
                 </button>
             </div>
             <div className="mainScreen">
-                <div className='main-contents'>
-                    <div className='profile'>
-                        <div className="circle">Pic</div>
-                        <div className='user-name'>اسم کاربر</div>
-                        <div className='row3'>
-                            <div className="col1">نقش</div>
-                            <button className="col2">مدت زمان</button> {/* Changed to a button */}
-                        </div>
-                        <div className='row4'></div>
-                    </div>
-                    <div className='information'>
-                        <div className="search">
-                            <button className="advanced-search">جستجو پ</button> {/* Advanced search as a button */}
-                            <div className="normal-search">
-                                <input
-                                    type="text"
-                                    placeholder="جستجو"
-                                />
-                                <button className="search-button">
-                                    <i className="bi bi-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div className="charts">
-                            <div className='chart-1'>نمودار</div>
-                            <div className='chart-2'>نمودار</div>
-                        </div>
-                        <div className="timeline"></div>
-                    </div>
-                </div>
+                {renderPanel()} {/* Render the selected panel */}
             </div>
         </div>
     );
