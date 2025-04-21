@@ -1,5 +1,5 @@
 export default function HistoryPanel() {
     return (
-        <div style={{backgroundColor: 'red'}}>asdfasdf</div>
+        <div style={{backgroundColor: 'red'}}>AAAAAAAAA</div>
     );
 }

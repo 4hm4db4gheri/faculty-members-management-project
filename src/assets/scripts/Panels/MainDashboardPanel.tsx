@@ -1,27 +1,37 @@
+import '../../styles/Panels/MainDashboardPanel.scss';
+
 export default function MainDashboardPanel() {
 
     return (
-        <div className='dashboard'>
-            <div className='a'>
-                <div className="circle">Pic</div>
-                <div className='row2'>اسم کاربر</div>
-                <div className='row3'>
-                    <div className="col1">نقش</div>
-                    <button className="col2">مدت زمان</button> {/* Changed to a button */}
+        <div className='main-contents'>
+                    <div className='profile'>
+                        <div className="circle">Pic</div>
+                        <div className='user-name'>اسم کاربر</div>
+                        <div className='row3'>
+                            <div className="col1">نقش</div>
+                            <button className="col2">مدت زمان</button> {/* Changed to a button */}
+                        </div>
+                        <div className='row4'></div>
+                    </div>
+                    <div className='information'>
+                        <div className="search">
+                            <button className="advanced-search">جستجو پ</button> {/* Advanced search as a button */}
+                            <div className="normal-search">
+                                <input
+                                    type="text"
+                                    placeholder="جستجو"
+                                />
+                                <button className="search-button">
+                                    <i className="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div className="charts">
+                            <div className='chart-1'>نمودار</div>
+                            <div className='chart-2'>نمودار</div>
+                        </div>
+                        <div className="timeline"></div>
+                    </div>
                 </div>
-                <div className='row4'></div>
-            </div>
-            <div className='b'>
-                <div className="row1">
-                    <div className='col1'>جستجو پ</div>
-                    <div className='col2'>جستجو</div>
-                </div>
-                <div className="row2">
-                    <div className='col1'>نمودار</div>
-                    <div className='col2'>نمودار</div>
-                </div>
-                <div className="row3"></div>
-            </div>
-        </div>
     );
 }
