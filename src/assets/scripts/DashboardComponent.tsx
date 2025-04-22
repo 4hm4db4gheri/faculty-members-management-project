@@ -33,9 +33,9 @@ export default function DashboardComponent() {
     };
 
     return (
-        <div className="vh-100 vw-100 d-flex flex-row-reverse bg-primary position-fixed top-0 end-0">
+        <div className="vh-100 vw-100 d-flex flex-row-reverse bg-background position-fixed top-0 end-0">
             {/* Sidebar */}
-            <div className="d-flex flex-column p-3" style={{ width: '24vw' }}>
+            <div className="d-flex flex-column p-3 bg-background" style={{ width: '24vw' }}>
                 <div className="rounded-circle bg-secondary d-flex justify-content-center align-items-center mx-auto mb-3" 
                      style={{ width: '150px', height: '150px' }}>
                     Pic
@@ -45,31 +45,31 @@ export default function DashboardComponent() {
                 
                 {/* Navigation Buttons */}
                 <button
-                    className={`btn btn-outline-light mb-3 py-4 rounded-4 fs-5 ${selectedItem === 'dashboard' ? 'active' : ''}`}
+                    className={`custom-button mb-3 py-4 fs-5 ${selectedItem === 'dashboard' ? 'selected' : ''}`}
                     onClick={() => handleSelect('dashboard')}
                 >
                     داشبورد
                 </button>
                 <button
-                    className={`btn btn-outline-light mb-3 py-4 rounded-4 fs-5 ${selectedItem === 'records' ? 'active' : ''}`}
+                    className={`custom-button mb-3 py-4 fs-5 ${selectedItem === 'records' ? 'selected' : ''}`}
                     onClick={() => handleSelect('records')}
                 >
                     سوابق
                 </button>
                 <button
-                    className={`btn btn-outline-light mb-3 py-4 rounded-4 fs-5 ${selectedItem === 'progress' ? 'active' : ''}`}
+                    className={`custom-button mb-3 py-4 fs-5 ${selectedItem === 'progress' ? 'selected' : ''}`}
                     onClick={() => handleSelect('progress')}
                 >
                     نمودار پیشرفت
                 </button>
                 <button
-                    className={`btn btn-outline-light mb-3 py-4 rounded-4 fs-5 ${selectedItem === 'roles' ? 'active' : ''}`}
+                    className={`custom-button mb-3 py-4 fs-5 ${selectedItem === 'roles' ? 'selected' : ''}`}
                     onClick={() => handleSelect('roles')}
                 >
                     مدیریت نقش ها
                 </button>
                 <button
-                    className={`btn btn-outline-light mb-3 py-4 rounded-4 fs-5 ${selectedItem === 'notifications' ? 'active' : ''}`}
+                    className={`custom-button mb-3 py-4 fs-5 ${selectedItem === 'notifications' ? 'selected' : ''}`}
                     onClick={() => handleSelect('notifications')}
                 >
                     اعلان ها
@@ -77,7 +77,7 @@ export default function DashboardComponent() {
             </div>
 
             {/* Main Content */}
-            <div className="flex-grow-1 bg-light m-3 rounded-4 p-4">
+            <div className="flex-grow-1 bg-mainscreen m-3 rounded-4 p-4">
                 {renderPanel()}
             </div>
         </div>

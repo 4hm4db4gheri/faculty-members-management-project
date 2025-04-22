@@ -1,0 +1,39 @@
+@import '../../../node_modules/bootstrap/scss/_functions';
+@import '../../../node_modules/bootstrap/scss/_variables';
+
+// Define custom theme colors
+$custom-theme-colors: (
+    background: #1b4965,
+    mainscreen: #EBF2FA,
+    selected: #3388BC,
+    white: #ffffff,
+    black: #000000
+);
+
+// Merge custom colors into Bootstrap's theme colors
+$theme-colors: map-merge($theme-colors, $custom-theme-colors);
+
+// Define custom button styles
+.custom-button {
+    background-color: transparent; /* Default background */
+    color: white; /* Text color */
+    border: none; /* Remove border */
+    border-radius: 25px; /* Rounded corners */
+    padding: 0.75rem 1.5rem; /* Add padding */
+    transition: background-color 0.3s ease; /* Smooth transition for hover and selected states */
+    cursor: pointer; /* Pointer cursor for better UX */
+    outline: none; /* Remove outline */
+
+    &:hover {
+        background-color: #3388bc33; /* Hover color */
+    }
+
+    &.selected {
+        background-color: #3388BC; /* Selected color */
+        color: white; /* Ensure text remains white */
+        pointer-events: none; /* Disable hover effect when selected */
+    }
+}
+
+// Import Bootstrap
+@import '../../../node_modules/bootstrap/scss/bootstrap';
