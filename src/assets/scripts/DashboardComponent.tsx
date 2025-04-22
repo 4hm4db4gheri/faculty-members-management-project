@@ -5,6 +5,9 @@ import RoleManagementPanel from './Panels/RoleManagementPanel';
 import NotificationsPanel from './Panels/NotificationsPanel';
 import ImprovementChartPanel from './Panels/ImprovementChartPanel';
 
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 export default function DashboardComponent() {
     const [selectedItem, setSelectedItem] = useState<string>('dashboard'); // Default to the first item
 
@@ -30,44 +33,52 @@ export default function DashboardComponent() {
     };
 
     return (
-        <div className="background">
-            <div className="dashboard-bar">
-                <div className="circle">Pic</div> {/* Circle placeholder */}
-                <div className="system-name">اسم سامانه</div>
-                <div className="line"></div> {/* Line separator */}
+        <div className="vh-100 vw-100 d-flex flex-row-reverse bg-primary position-fixed top-0 end-0">
+            {/* Sidebar */}
+            <div className="d-flex flex-column p-3" style={{ width: '24vw' }}>
+                <div className="rounded-circle bg-secondary d-flex justify-content-center align-items-center mx-auto mb-3" 
+                     style={{ width: '150px', height: '150px' }}>
+                    Pic
+                </div>
+                <h2 className="text-center text-white mb-4">اسم سامانه</h2>
+                <hr className="text-white" />
+                
+                {/* Navigation Buttons */}
                 <button
-                    className={`dashboard-bar-item ${selectedItem === 'dashboard' ? 'selected' : ''}`}
+                    className={`btn btn-outline-light mb-3 py-4 rounded-4 fs-5 ${selectedItem === 'dashboard' ? 'active' : ''}`}
                     onClick={() => handleSelect('dashboard')}
                 >
                     داشبورد
                 </button>
                 <button
-                    className={`dashboard-bar-item ${selectedItem === 'records' ? 'selected' : ''}`}
+                    className={`btn btn-outline-light mb-3 py-4 rounded-4 fs-5 ${selectedItem === 'records' ? 'active' : ''}`}
                     onClick={() => handleSelect('records')}
                 >
                     سوابق
                 </button>
                 <button
-                    className={`dashboard-bar-item ${selectedItem === 'progress' ? 'selected' : ''}`}
+                    className={`btn btn-outline-light mb-3 py-4 rounded-4 fs-5 ${selectedItem === 'progress' ? 'active' : ''}`}
                     onClick={() => handleSelect('progress')}
                 >
                     نمودار پیشرفت
                 </button>
                 <button
-                    className={`dashboard-bar-item ${selectedItem === 'roles' ? 'selected' : ''}`}
+                    className={`btn btn-outline-light mb-3 py-4 rounded-4 fs-5 ${selectedItem === 'roles' ? 'active' : ''}`}
                     onClick={() => handleSelect('roles')}
                 >
                     مدیریت نقش ها
                 </button>
                 <button
-                    className={`dashboard-bar-item ${selectedItem === 'notifications' ? 'selected' : ''}`}
+                    className={`btn btn-outline-light mb-3 py-4 rounded-4 fs-5 ${selectedItem === 'notifications' ? 'active' : ''}`}
                     onClick={() => handleSelect('notifications')}
                 >
                     اعلان ها
                 </button>
             </div>
-            <div className="mainScreen">
-                {renderPanel()} {/* Render the selected panel */}
+
+            {/* Main Content */}
+            <div className="flex-grow-1 bg-light m-3 rounded-4 p-4">
+                {renderPanel()}
             </div>
         </div>
     );
