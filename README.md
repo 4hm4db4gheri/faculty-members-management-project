@@ -1,3 +1,12 @@
+## Branch naming convention 
+# [Name]/[Section]/[Work]
+
+Section: Development / Feature / Bug / ....
+example: Ahmad/Development/Add-tailwind
+
+
+
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
