@@ -1,4 +1,3 @@
-import "../../styles/Panels/MainDashboardPanel.scss";
 
 export default function MainDashboardPanel() {
   return (
