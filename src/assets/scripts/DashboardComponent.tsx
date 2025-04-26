@@ -31,6 +31,9 @@ export default function DashboardComponent() {
 
   return (
     <div className="fixed top-0 right-0 m-0 flex h-screen w-screen flex-row-reverse items-center justify-end bg-[#1B4965] text-white">
+      <div className="m-5 mr-0 flex h-[calc(100%-40px)] w-[calc(100%-40px)] flex-col rounded-[25px] bg-[#EBF2FA] p-5 text-base shadow-lg">
+        {renderPanel()}
+      </div>{" "}
       <div className="flex h-screen w-[24vw] flex-col items-stretch justify-start overflow-auto px-[0.5vw] pt-[2vh] text-2xl">
         <div className="m-5 mx-auto flex h-[150px] w-[150px] items-center justify-center rounded-full bg-[#8D8D8D] text-lg font-bold text-white">
           Pic
@@ -71,9 +74,6 @@ export default function DashboardComponent() {
         >
           اعلان ها
         </button>
-      </div>
-      <div className="m-5 mr-0 flex h-[calc(100%-40px)] w-[calc(100%-40px)] flex-col rounded-[25px] bg-[#EBF2FA] p-5 text-base shadow-lg">
-        {renderPanel()}
       </div>
     </div>
   );
