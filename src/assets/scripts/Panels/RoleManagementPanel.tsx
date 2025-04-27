@@ -1,11 +1,13 @@
 import { useState } from "react";
 import Dropdown from "./../Elements/Dropdown";
 import MyInput from "./../Elements/MyInput";
+import MyPagination from "./../Elements/Pagination";
 
 export default function RoleManagementPanel() {
   const roleOptions = ["ادمین", "کاربر", "مدیر", "هیچکدام"];
   const [searchText, setSearchText] = useState("");
   const [lastnameSearchText, setLastnameSearchText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const handleRoleSelect = (selected: string) => {
     // Handle role selection
@@ -75,7 +77,11 @@ export default function RoleManagementPanel() {
         <div className="h-18 rounded-[25px] bg-white">asdfasdf</div>
         <div className="h-18 rounded-[25px] bg-white">asdfasdf</div>
         <div className="h-18 rounded-[25px] bg-white">asdfasdf</div>
-        <div className="h-18 rounded-[25px] bg-white">asdfasdf</div>
+        <MyPagination
+          totalPages={5}
+          currentPage={currentPage}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
       </div>
     </>
   );
