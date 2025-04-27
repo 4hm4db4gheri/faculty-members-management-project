@@ -1,7 +1,11 @@
+import { useState } from "react";
 import Dropdown from "./../Elements/Dropdown";
+import MyInput from "./../Elements/MyInput";
 
 export default function RoleManagementPanel() {
-  const roleOptions = ["ادمین", "کاربر", "مدیر"];
+  const roleOptions = ["ادمین", "کاربر", "مدیر", "هیچکدام"];
+  const [searchText, setSearchText] = useState("");
+  const [lastnameSearchText, setLastnameSearchText] = useState("");
 
   const handleRoleSelect = (selected: string) => {
     // Handle role selection
@@ -12,14 +16,26 @@ export default function RoleManagementPanel() {
     <>
       <div className="grid h-2/15 grid-cols-3">
         <div className="content-center px-20 text-center">
+          <MyInput
+            placeholder="نام"
+            value={searchText}
+            onChange={setSearchText}
+          />
+        </div>
+        <div className="content-center px-20 text-center">
+          <MyInput
+            placeholder="نام خانوادگی"
+            value={lastnameSearchText}
+            onChange={setLastnameSearchText}
+          />
+        </div>
+        <div className="content-center px-20 text-center">
           <Dropdown
             options={roleOptions}
-            defaultOption="ادمین"
+            defaultOption="هیچکدام"
             onSelect={handleRoleSelect}
           />
         </div>
-        <div className="content-center bg-yellow-500 text-center">asdf</div>
-        <div className="content-center bg-green-500 text-center">asdf</div>
       </div>
       <div className="mb-2 grid h-1/15 grid-cols-2">
         <div className="content-center pr-30 text-right text-xl text-black">
