@@ -1,7 +1,26 @@
+import Dropdown from "./../Elements/Dropdown";
+
 export default function RoleManagementPanel() {
+  const roleOptions = ["ادمین", "کاربر", "مدیر"];
+
+  const handleRoleSelect = (selected: string) => {
+    // Handle role selection
+    console.log("Selected role:", selected);
+  };
+
   return (
     <>
-      <div className="h-2/15 bg-black">as</div>
+      <div className="grid h-2/15 grid-cols-3">
+        <div className="content-center px-20 text-center">
+          <Dropdown
+            options={roleOptions}
+            defaultOption="ادمین"
+            onSelect={handleRoleSelect}
+          />
+        </div>
+        <div className="content-center bg-yellow-500 text-center">asdf</div>
+        <div className="content-center bg-green-500 text-center">asdf</div>
+      </div>
       <div className="mb-2 grid h-1/15 grid-cols-2">
         <div className="content-center pr-30 text-right text-xl text-black">
           نام
