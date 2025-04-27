@@ -1,7 +1,8 @@
 import { useState } from "react";
-import Dropdown from "./../Elements/Dropdown";
+import MyDropdown from "../Elements/MyDropdown";
 import MyInput from "./../Elements/MyInput";
-import MyPagination from "./../Elements/Pagination";
+import MyPagination from "../Elements/MyPagination";
+import MyRoleManagerContainer from "../Elements/MyRoleManagerContainer";
 
 export default function RoleManagementPanel() {
   const roleOptions = ["ادمین", "کاربر", "مدیر", "هیچکدام"];
@@ -32,7 +33,7 @@ export default function RoleManagementPanel() {
           />
         </div>
         <div className="content-center px-20 text-center">
-          <Dropdown
+          <MyDropdown
             options={roleOptions}
             defaultOption="هیچکدام"
             onSelect={handleRoleSelect}
@@ -72,7 +73,7 @@ export default function RoleManagementPanel() {
             <div className="rounded-[25px] bg-emerald-300"></div>
           </div>
         </div>
-        <div className="h-18 rounded-[25px] bg-white"></div>
+        <MyRoleManagerContainer fullName="هوراا" />
         <div className="h-18 rounded-[25px] bg-white">asdfasdf</div>
         <div className="h-18 rounded-[25px] bg-white">asdfasdf</div>
         <div className="h-18 rounded-[25px] bg-white">asdfasdf</div>
