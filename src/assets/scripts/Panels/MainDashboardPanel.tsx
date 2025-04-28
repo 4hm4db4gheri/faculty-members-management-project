@@ -3,14 +3,14 @@ export default function MainDashboardPanel() {
     <div className="box-border grid h-full grid-cols-3 gap-[30px] rounded-[25px]">
       <div className="col-span-2 grid h-full grid-rows-[0.4fr_2fr_2fr] gap-[40px]">
         <div className="grid grid-cols-10 rounded-[25px]">
-          <div className="rtl col-span-9 ml-4 grid grid-cols-10 items-center rounded-[25px] bg-white pr-[10px]">
+          <div className="col-span-9 ml-4 grid grid-cols-10 items-center rounded-[25px] bg-white pr-[10px]">
             <input
               type="text"
               className="col-span-9 box-border h-full w-full rounded-[25px] border-none bg-transparent pr-5 text-xl text-black outline-none placeholder:pr-5 placeholder:text-xl placeholder:text-[#aaa]"
               placeholder="جستجو"
             />
-            <button className="col-span-1 flex h-full w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-transparent p-[5px] transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]">
-              <i className="bi bi-search text-xl text-black"></i>
+            <button className="col-span-1 flex h-full w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-transparent transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]">
+              <img src="./src/assets/images/icons8-search.svg" alt="" />
             </button>
           </div>
           <button className="col-span-1 flex cursor-pointer items-center justify-center rounded-[25px] border-none bg-white text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]">
