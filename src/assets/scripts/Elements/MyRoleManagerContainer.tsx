@@ -6,14 +6,14 @@ export default function MyRoleManagerContainer({
   fullName = "",
 }: MyRoleManagerContainerProps) {
   return (
-    <div className="grid h-18 grid-cols-2 rounded-[25px] bg-white">
-      <div className="content-center rounded-[25px] pr-20 text-right text-2xl text-black">
+    <div className="grid h-18 grid-cols-4 rounded-[25px] bg-white">
+      <div className="col-span-2 content-center rounded-[25px] pr-20 text-right text-2xl text-black">
         {fullName}
       </div>
-      <div className="grid grid-cols-2 rounded-[25px]">
-        <div className="relative content-center rounded-[25px] pr-25 text-right">
+      <div className="col-span-1 rounded-[25px] text-center content-center">
+        <div className="relative rounded-[25px]">
           <select
-            className="w-2/3 appearance-none rounded-[25px] border-none bg-transparent pr-[25px] text-right text-xl text-black transition-all outline-none hover:border-gray-300 focus:border-blue-500"
+            className="w-2/3 appearance-none rounded-[25px] border-none bg-transparent pr-[25px] text-xl text-black transition-all outline-none hover:border-gray-300 focus:border-blue-500"
             style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
               backgroundRepeat: "no-repeat",
@@ -27,8 +27,8 @@ export default function MyRoleManagerContainer({
             <option value="role3">مدیر</option>
           </select>
         </div>
-        <div className="rounded-[25px] bg-emerald-300"></div>
       </div>
+      <div className="col-span-1 rounded-[25px]"></div>
     </div>
   );
 }

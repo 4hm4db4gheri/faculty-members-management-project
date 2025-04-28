@@ -42,7 +42,7 @@ export default function HistoryPanel() {
       </div>
       <div className="row-span-6 grid gap-5">
         <div className="grid h-18 grid-cols-4 rounded-[25px] bg-white">
-          <div className="col-span-2 content-center pr-20 text-start text-black">
+          <div className=" col-span-2 content-center pr-20 text-start text-black">
             sadf
           </div>
           <div className="col-span-1 content-center text-center text-black">
@@ -63,7 +63,6 @@ export default function HistoryPanel() {
             fad
           </div>
         </div>
-        <div className="h-18 rounded-[25px] bg-white">asdfasdf</div>
         <div className="h-18 rounded-[25px] bg-white">asdfasdf</div>
         <div className="h-18 rounded-[25px] bg-white">asdfasdf</div>
         <div className="h-18 rounded-[25px] bg-white">asdfasdf</div>
