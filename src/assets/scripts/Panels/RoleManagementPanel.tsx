@@ -101,19 +101,29 @@ export default function RoleManagementPanel() {
 
   // Filter users based on search criteria
   const filteredUsers = useMemo(() => {
-    return users.filter((user: User) => {
-      const matchFirstName = user.firstName
-        .toLowerCase()
-        .includes(searchText.toLowerCase());
-      const matchLastName = user.lastName
-        .toLowerCase()
-        .includes(lastnameSearchText.toLowerCase());
-      const matchRole =
-        selectedRole === "هیچکدام" || user.role === selectedRole;
+    return users.filter((user) => {
+      // Filter by first name
+      const firstNameMatch = searchText 
+        ? user.firstName.toLowerCase().includes(searchText.toLowerCase())
+        : true;
 
-      return matchFirstName && matchLastName && matchRole;
+      // Filter by last name
+      const lastNameMatch = lastnameSearchText
+        ? user.lastName.toLowerCase().includes(lastnameSearchText.toLowerCase())
+        : true;
+
+      // Filter by role
+      const roleMatch = selectedRole === "هیچکدام" || user.role === selectedRole;
+
+      // Return true only if all conditions match
+      return firstNameMatch && lastNameMatch && roleMatch;
     });
   }, [searchText, lastnameSearchText, selectedRole, users]);
+
+  // Reset to first page whenever filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchText, lastnameSearchText, selectedRole]);
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
@@ -129,20 +139,14 @@ export default function RoleManagementPanel() {
           <MyInput
             placeholder="نام"
             value={searchText}
-            onChange={(value) => {
-              setSearchText(value);
-              setCurrentPage(1);
-            }}
+            onChange={(value) => setSearchText(value)}
           />
         </div>
         <div className="content-center px-20 text-center">
           <MyInput
             placeholder="نام خانوادگی"
             value={lastnameSearchText}
-            onChange={(value) => {
-              setLastnameSearchText(value);
-              setCurrentPage(1);
-            }}
+            onChange={(value) => setLastnameSearchText(value)}
           />
         </div>
         <div className="content-center px-20 text-center">
