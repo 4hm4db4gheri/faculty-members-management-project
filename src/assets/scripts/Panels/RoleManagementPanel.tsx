@@ -12,7 +12,7 @@ interface User {
   role: string;
 }
 
-// Initial mock data with proper typing
+// Initial mock data (static reference)
 const initialMockUsers: User[] = [
   { id: 1, firstName: "احمد", lastName: "باقری", role: "ادمین" },
   { id: 2, firstName: "محمد", lastName: "محمدی", role: "کاربر" },
@@ -24,6 +24,42 @@ const initialMockUsers: User[] = [
   { id: 8, firstName: "فاطمه", lastName: "فتحی", role: "مدیر" },
   { id: 9, firstName: "سارا", lastName: "سعیدی", role: "کاربر" },
   { id: 10, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 11, firstName: "رضا", lastName: "باقری", role: "ادمین" },
+  { id: 12, firstName: "محمد", lastName: "محمدی", role: "کاربر" },
+  { id: 13, firstName: "علی", lastName: "علوی", role: "مدیر" },
+  { id: 14, firstName: "رضا", lastName: "رضایی", role: "کاربر" },
+  { id: 15, firstName: "حسین", lastName: "حسینی", role: "مدیر" },
+  { id: 16, firstName: "مریم", lastName: "مرادی", role: "ادمین" },
+  { id: 17, firstName: "زهرا", lastName: "زارعی", role: "کاربر" },
+  { id: 18, firstName: "فاطمه", lastName: "فتحی", role: "مدیر" },
+  { id: 19, firstName: "سارا", lastName: "سعیدی", role: "کاربر" },
+  { id: 20, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 21, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 22, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 23, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 24, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 25, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 26, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 27, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 28, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 29, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 30, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 31, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 32, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 32, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 33, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 34, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 35, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 36, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 37, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 38, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 39, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 40, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 41, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 42, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 43, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 44, firstName: "نیما", lastName: "نادری", role: "ادمین" },
+  { id: 45, firstName: "نیما", lastName: "نادری", role: "ادمین" },
 ];
 
 const ITEMS_PER_PAGE = 6;
@@ -38,13 +74,30 @@ export default function RoleManagementPanel() {
   // Initialize users from localStorage or use initial data
   const [users, setUsers] = useState<User[]>(() => {
     const savedUsers = localStorage.getItem("mockUsers");
-    return savedUsers ? JSON.parse(savedUsers) : initialMockUsers;
+    const parsedUsers = savedUsers ? JSON.parse(savedUsers) : null;
+
+    // If saved users exist but don't match the current mock data, reset to initialMockUsers
+    if (!parsedUsers || parsedUsers.length !== initialMockUsers.length) {
+      localStorage.setItem("mockUsers", JSON.stringify(initialMockUsers));
+      return initialMockUsers;
+    }
+
+    return parsedUsers;
   });
 
   // Save to localStorage whenever users change
   useEffect(() => {
     localStorage.setItem("mockUsers", JSON.stringify(users));
   }, [users]);
+
+  // Simulate a database update (or API call in the future)
+  const updateUserRole = (userId: number, newRole: string) => {
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.id === userId ? { ...user, role: newRole } : user
+      )
+    );
+  };
 
   // Filter users based on search criteria
   const filteredUsers = useMemo(() => {
@@ -68,20 +121,6 @@ export default function RoleManagementPanel() {
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
-
-  const handleRoleSelect = (selected: string) => {
-    setSelectedRole(selected);
-    setCurrentPage(1); // Reset to first page when filter changes
-  };
-
-  const handleRoleChange = (userId: number, newRole: string) => {
-    setUsers((prevUsers) => {
-      const updatedUsers = prevUsers.map((user) =>
-        user.id === userId ? { ...user, role: newRole } : user
-      );
-      return updatedUsers;
-    });
-  };
 
   return (
     <>
@@ -110,7 +149,7 @@ export default function RoleManagementPanel() {
           <MyDropdown
             options={roleOptions}
             defaultOption="هیچکدام"
-            onSelect={handleRoleSelect}
+            onSelect={setSelectedRole}
           />
         </div>
       </div>
@@ -129,7 +168,7 @@ export default function RoleManagementPanel() {
             userId={user.id}
             fullName={`${user.firstName} ${user.lastName}`}
             role={user.role}
-            onRoleChange={handleRoleChange}
+            onRoleChange={updateUserRole}
           />
         ))}
         {currentUsers.length === 0 && (
