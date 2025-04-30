@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 interface PaginationProps {
   totalPages: number;
   currentPage: number;
@@ -11,36 +9,73 @@ export default function Pagination({
   currentPage = 1,
   onPageChange,
 }: PaginationProps) {
-  const [activePage, setActivePage] = useState(currentPage);
+  const VISIBLE_PAGES = 5;
+  const MIDDLE_INDEX = Math.floor(VISIBLE_PAGES / 2);
 
-  const handlePageChange = (page: number) => {
-    setActivePage(page);
-    onPageChange(page);
+  const calculateVisibleRange = () => {
+    let start, end;
+
+    // Handle start of pages
+    if (currentPage <= MIDDLE_INDEX + 1) {
+      start = 1;
+      end = Math.min(VISIBLE_PAGES, totalPages);
+    }
+    // Handle end of pages
+    else if (currentPage >= totalPages - MIDDLE_INDEX) {
+      end = totalPages;
+      start = Math.max(1, totalPages - VISIBLE_PAGES + 1);
+    }
+    // Handle middle cases
+    else {
+      start = currentPage - MIDDLE_INDEX;
+      end = currentPage + MIDDLE_INDEX;
+    }
+
+    return Array.from(
+      { length: Math.min(VISIBLE_PAGES, end - start + 1) },
+      (_, i) => start + i,
+    );
   };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) {
+      onPageChange(currentPage + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentPage > 1) {
+      onPageChange(currentPage - 1);
+    }
+  };
+
+  const visiblePages = calculateVisibleRange();
+  const buttonBaseStyle =
+    "h-10 w-10 flex items-center justify-center rounded-[25px] text-sm font-semibold transition-colors duration-300";
+  const activeStyle = "bg-[#3388BC] text-white";
+  const inactiveStyle = "bg-white text-gray-900 hover:bg-gray-50";
+  const navButtonStyle =
+    "px-4 py-2 rounded-[25px] bg-white text-gray-900 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity duration-300";
 
   return (
     <nav className="mt-4 flex justify-center" dir="rtl">
       <ul className="inline-flex gap-2">
-        {/* Previous Button */}
         <li>
           <button
-            onClick={() => handlePageChange(Math.max(1, activePage - 1))}
-            disabled={activePage === 1}
-            className="rounded-[25px] bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={handlePrevious}
+            disabled={currentPage === 1}
+            className={navButtonStyle}
           >
             قبلی
           </button>
         </li>
 
-        {/* Page Numbers */}
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+        {visiblePages.map((page) => (
           <li key={page}>
             <button
-              onClick={() => handlePageChange(page)}
-              className={`rounded-[25px] px-4 py-2 text-sm font-semibold shadow-xs ring-1 ring-inset ${
-                activePage === page
-                  ? "bg-[#3388BC] text-white ring-[#3388BC]"
-                  : "bg-white text-gray-900 ring-gray-300 hover:bg-gray-50"
+              onClick={() => onPageChange(page)}
+              className={`${buttonBaseStyle} ${
+                currentPage === page ? activeStyle : inactiveStyle
               }`}
             >
               {page}
@@ -48,14 +83,11 @@ export default function Pagination({
           </li>
         ))}
 
-        {/* Next Button */}
         <li>
           <button
-            onClick={() =>
-              handlePageChange(Math.min(totalPages, activePage + 1))
-            }
-            disabled={activePage === totalPages}
-            className="rounded-[25px] bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={handleNext}
+            disabled={currentPage === totalPages}
+            className={navButtonStyle}
           >
             بعدی
           </button>
