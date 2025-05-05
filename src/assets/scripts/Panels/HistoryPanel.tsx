@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import MyPagination from "../Elements/MyPagination";
 import MyInput from "../Elements/MyInput";
 import MyPopup from "../Elements/MyPopup";
@@ -390,6 +390,11 @@ export default function HistoryPanel() {
     setSearchText(value);
     setCurrentPage(1); // Reset to first page whenever search text changes
   };
+
+  // Add useEffect to reset page when search results change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredTeachers.length]); // Reset page when number of results changes
 
   return (
     <div className="grid h-full grid-rows-[auto_auto_1fr] overflow-hidden">
