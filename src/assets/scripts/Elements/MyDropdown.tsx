@@ -3,7 +3,8 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { useState } from "react";
 
 interface DropdownProps {
-  options: string[];
+  // Change this line to accept readonly arrays
+  options: readonly string[];
   defaultOption?: string;
   onSelect?: (selected: string) => void;
 }
