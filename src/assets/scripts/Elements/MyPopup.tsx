@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface PopupProps {
   isOpen: boolean;
@@ -14,6 +14,11 @@ export default function MyPopup({
   onUpload,
 }: PopupProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  // Reset selectedFile when popup is closed or opened
+  useEffect(() => {
+    setSelectedFile(null);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -43,7 +48,7 @@ export default function MyPopup({
   const handleSubmit = () => {
     if (selectedFile) {
       onUpload(selectedFile);
-      console.log("File was uploaded:", selectedFile.name);
+      setSelectedFile(null); // Reset after upload
       onClose();
     } else {
       alert("لطفا ابتدا فایل را انتخاب کنید");
