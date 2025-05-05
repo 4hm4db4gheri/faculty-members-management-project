@@ -12,114 +12,115 @@ interface Teacher {
 }
 
 const initialMockTeachers: Teacher[] = [
+  // First 20 teachers with firstName "جواد"
   {
     id: 1,
-    firstName: "محمد",
+    firstName: "جواد",
     lastName: "محمدی",
     faculty: "کامپیوتر",
     rank: "استاد",
   },
   {
     id: 2,
-    firstName: "علی",
+    firstName: "جواد",
     lastName: "علوی",
     faculty: "مکانیک",
     rank: "دانشیار",
   },
   {
     id: 3,
-    firstName: "رضا",
+    firstName: "جواد",
     lastName: "رضایی",
     faculty: "برق",
     rank: "استادیار",
   },
   {
     id: 4,
-    firstName: "حسن",
+    firstName: "جواد",
     lastName: "حسینی",
     faculty: "کامپیوتر",
     rank: "استاد",
   },
   {
     id: 5,
-    firstName: "مریم",
+    firstName: "جواد",
     lastName: "مرادی",
     faculty: "عمران",
     rank: "دانشیار",
   },
   {
     id: 6,
-    firstName: "زهرا",
+    firstName: "جواد",
     lastName: "زارعی",
     faculty: "کامپیوتر",
     rank: "استاد",
   },
   {
     id: 7,
-    firstName: "امیر",
+    firstName: "جواد",
     lastName: "امیری",
     faculty: "برق",
     rank: "استادیار",
   },
   {
     id: 8,
-    firstName: "فاطمه",
+    firstName: "جواد",
     lastName: "فتحی",
     faculty: "مکانیک",
     rank: "دانشیار",
   },
   {
     id: 9,
-    firstName: "سعید",
+    firstName: "جواد",
     lastName: "سعیدی",
     faculty: "عمران",
     rank: "استاد",
   },
   {
     id: 10,
-    firstName: "نرگس",
+    firstName: "جواد",
     lastName: "نادری",
     faculty: "کامپیوتر",
     rank: "دانشیار",
   },
   {
     id: 11,
-    firstName: "کاظم",
+    firstName: "جواد",
     lastName: "کاظمی",
     faculty: "برق",
     rank: "استاد",
   },
   {
     id: 12,
-    firstName: "لیلا",
+    firstName: "جواد",
     lastName: "لطفی",
     faculty: "مکانیک",
     rank: "استادیار",
   },
   {
     id: 13,
-    firstName: "حمید",
+    firstName: "جواد",
     lastName: "حمیدی",
     faculty: "کامپیوتر",
     rank: "دانشیار",
   },
   {
     id: 14,
-    firstName: "بهاره",
+    firstName: "جواد",
     lastName: "بهرامی",
     faculty: "عمران",
     rank: "استاد",
   },
   {
     id: 15,
-    firstName: "مجید",
+    firstName: "جواد",
     lastName: "مجیدی",
     faculty: "برق",
     rank: "استادیار",
   },
   {
     id: 16,
-    firstName: "سارا",
+    firstName: "جواد",
     lastName: "سلیمی",
     faculty: "کامپیوتر",
     rank: "دانشیار",
@@ -133,25 +134,26 @@ const initialMockTeachers: Teacher[] = [
   },
   {
     id: 18,
-    firstName: "نیما",
+    firstName: "جواد",
     lastName: "نیکخواه",
     faculty: "عمران",
     rank: "استادیار",
   },
   {
     id: 19,
-    firstName: "الهه",
+    firstName: "جواد",
     lastName: "الهی",
     faculty: "برق",
     rank: "دانشیار",
   },
   {
     id: 20,
-    firstName: "رامین",
+    firstName: "جواد",
     lastName: "رحمانی",
     faculty: "کامپیوتر",
     rank: "استاد",
   },
+  // ... rest of the teachers remain unchanged
   {
     id: 21,
     firstName: "کاظم",
@@ -384,6 +386,11 @@ export default function HistoryPanel() {
     currentPage * ITEMS_PER_PAGE,
   );
 
+  const handleSearch = (value: string) => {
+    setSearchText(value);
+    setCurrentPage(1); // Reset to first page whenever search text changes
+  };
+
   return (
     <div className="grid h-full grid-rows-[auto_auto_1fr] overflow-hidden">
       {/* Search Section */}
@@ -394,7 +401,7 @@ export default function HistoryPanel() {
             <MyInput
               placeholder="جستجو..."
               value={searchText}
-              onChange={setSearchText}
+              onChange={handleSearch}
             />
           </div>
 
