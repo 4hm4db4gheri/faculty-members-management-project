@@ -4,20 +4,44 @@ import HistoryPanel from "./Panels/HistoryPanel";
 import RoleManagementPanel from "./Panels/RoleManagementPanel";
 import NotificationsPanel from "./Panels/NotificationsPanel";
 import ImprovementChartPanel from "./Panels/ImprovementChartPanel";
+import UserInfo from "./Panels/UserInfo";
+
+interface Teacher {
+  id: number;
+  firstName: string;
+  lastName: string;
+  faculty: string;
+  rank: string;
+}
 
 export default function DashboardComponent() {
   const [selectedItem, setSelectedItem] = useState<string>("dashboard"); // Default to the first item
+  const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
 
   const handleSelect = (item: string) => {
     setSelectedItem(item);
+    setSelectedTeacher(null); // Reset selected teacher when changing panels
+  };
+
+  const handleTeacherSelect = (teacher: Teacher) => {
+    setSelectedTeacher(teacher);
   };
 
   const renderPanel = () => {
+    if (selectedTeacher && selectedItem === "records") {
+      return (
+        <UserInfo
+          teacher={selectedTeacher}
+          onBack={() => setSelectedTeacher(null)}
+        />
+      );
+    }
+
     switch (selectedItem) {
       case "dashboard":
         return <MainDashboardPanel />;
       case "records":
-        return <HistoryPanel />;
+        return <HistoryPanel onTeacherSelect={handleTeacherSelect} />;
       case "progress":
         return <ImprovementChartPanel />;
       case "roles":

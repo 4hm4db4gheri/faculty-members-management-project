@@ -11,6 +11,10 @@ interface Teacher {
   rank: string;
 }
 
+interface HistoryPanelProps {
+  onTeacherSelect: (teacher: Teacher) => void;
+}
+
 const initialMockTeachers: Teacher[] = [
   // First 20 teachers with firstName "جواد"
   {
@@ -296,7 +300,7 @@ const initialMockTeachers: Teacher[] = [
   },
 ];
 
-export default function HistoryPanel() {
+export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchText, setSearchText] = useState("");
   const [isPdfPopupOpen, setIsPdfPopupOpen] = useState(false);
@@ -305,6 +309,10 @@ export default function HistoryPanel() {
   const handleFileUpload = (file: File) => {
     // Here you would handle the file upload to backend
     console.log(`File was uploaded: ${file.name}`);
+  };
+
+  const handleTeacherClick = (teacher: Teacher) => {
+    onTeacherSelect(teacher);
   };
 
   // Filter teachers based on search criteria
@@ -448,9 +456,10 @@ export default function HistoryPanel() {
         <div className="flex-1 overflow-y-auto">
           <div className="grid gap-5 pb-4">
             {currentTeachers.map((teacher) => (
-              <div
+              <button
                 key={teacher.id}
-                className="grid h-18 grid-cols-4 rounded-[25px] bg-white"
+                onClick={() => handleTeacherClick(teacher)}
+                className="grid h-18 grid-cols-4 rounded-[25px] bg-white text-left transition-colors hover:bg-gray-50"
               >
                 <div className="col-span-2 content-center pr-20 text-start text-black">
                   {`${teacher.firstName} ${teacher.lastName}`}
@@ -461,7 +470,7 @@ export default function HistoryPanel() {
                 <div className="col-span-1 content-center text-center text-black">
                   {teacher.rank}
                 </div>
-              </div>
+              </button>
             ))}
 
             {currentTeachers.length === 0 && (
