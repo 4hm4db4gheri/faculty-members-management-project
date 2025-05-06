@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import MyPagination from "../Elements/MyPagination";
 import MyInput from "../Elements/MyInput";
 import MyPopup from "../Elements/MyPopup";
+import MyTeacherContainer from "../Elements/MyTeacherContainer";
 
 interface Teacher {
   id: number;
@@ -9,6 +10,10 @@ interface Teacher {
   lastName: string;
   faculty: string;
   rank: string;
+}
+
+interface HistoryPanelProps {
+  onTeacherSelect: (teacher: Teacher) => void;
 }
 
 const initialMockTeachers: Teacher[] = [
@@ -296,7 +301,7 @@ const initialMockTeachers: Teacher[] = [
   },
 ];
 
-export default function HistoryPanel() {
+export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchText, setSearchText] = useState("");
   const [isPdfPopupOpen, setIsPdfPopupOpen] = useState(false);
@@ -448,20 +453,11 @@ export default function HistoryPanel() {
         <div className="flex-1 overflow-y-auto">
           <div className="grid gap-5 pb-4">
             {currentTeachers.map((teacher) => (
-              <div
+              <MyTeacherContainer
                 key={teacher.id}
-                className="grid h-18 grid-cols-4 rounded-[25px] bg-white"
-              >
-                <div className="col-span-2 content-center pr-20 text-start text-black">
-                  {`${teacher.firstName} ${teacher.lastName}`}
-                </div>
-                <div className="col-span-1 content-center text-center text-black">
-                  {teacher.faculty}
-                </div>
-                <div className="col-span-1 content-center text-center text-black">
-                  {teacher.rank}
-                </div>
-              </div>
+                teacher={teacher}
+                onClick={onTeacherSelect}
+              />
             ))}
 
             {currentTeachers.length === 0 && (
