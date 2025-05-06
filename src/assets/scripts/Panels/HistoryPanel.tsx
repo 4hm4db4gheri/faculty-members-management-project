@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import MyPagination from "../Elements/MyPagination";
 import MyInput from "../Elements/MyInput";
 import MyPopup from "../Elements/MyPopup";
+import MyTeacherContainer from "../Elements/MyTeacherContainer";
 
 interface Teacher {
   id: number;
@@ -311,10 +312,6 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
     console.log(`File was uploaded: ${file.name}`);
   };
 
-  const handleTeacherClick = (teacher: Teacher) => {
-    onTeacherSelect(teacher);
-  };
-
   // Filter teachers based on search criteria
   const filteredTeachers = useMemo(() => {
     if (!searchText) return initialMockTeachers;
@@ -456,21 +453,11 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
         <div className="flex-1 overflow-y-auto">
           <div className="grid gap-5 pb-4">
             {currentTeachers.map((teacher) => (
-              <button
+              <MyTeacherContainer
                 key={teacher.id}
-                onClick={() => handleTeacherClick(teacher)}
-                className="grid h-18 grid-cols-4 rounded-[25px] bg-white text-left transition-colors hover:bg-gray-50"
-              >
-                <div className="col-span-2 content-center pr-20 text-start text-black">
-                  {`${teacher.firstName} ${teacher.lastName}`}
-                </div>
-                <div className="col-span-1 content-center text-center text-black">
-                  {teacher.faculty}
-                </div>
-                <div className="col-span-1 content-center text-center text-black">
-                  {teacher.rank}
-                </div>
-              </button>
+                teacher={teacher}
+                onClick={onTeacherSelect}
+              />
             ))}
 
             {currentTeachers.length === 0 && (
