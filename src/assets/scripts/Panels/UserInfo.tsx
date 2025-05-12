@@ -1,5 +1,5 @@
 import { useState } from "react";
-// import DashboardComponent from "../DashboardComponent";
+ import DashboardComponent from "../DashboardComponent";
 
 export default function UserInfo() {
   const tabs = [
@@ -82,4 +82,5 @@ export default function UserInfo() {
       </div>
     </div>
   );
+  
 }

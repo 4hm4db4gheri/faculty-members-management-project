@@ -10,11 +10,14 @@ import MainDashboardPanel from './Panels/MainDashboardPanel'
 import ImprovementChartPanel from './Panels/ImprovementChartPanel'
 import { TabPanel } from '@headlessui/react'
 import ProgressChart from './Panels/ProgressChart'
+import NotificationManagementPanel from './Panels/notificationManagementPanel'
+import NotificationsPanel from './Panels/NotificationsPanel'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <RTLProvider>
-      < ProgressChart/>
+    
+      <DashboardComponent/>
     </RTLProvider>
   </StrictMode>,
 )
