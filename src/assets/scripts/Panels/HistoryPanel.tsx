@@ -3,6 +3,7 @@ import MyPagination from "../Elements/MyPagination";
 import MyInput from "../Elements/MyInput";
 import MyPopup from "../Elements/MyPopup";
 import MyTeacherContainer from "../Elements/MyTeacherContainer";
+import AdvancedSearch from "../Elements/AdvancedSearch";
 
 interface Teacher {
   id: number;
@@ -306,6 +307,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
   const [searchText, setSearchText] = useState("");
   const [isPdfPopupOpen, setIsPdfPopupOpen] = useState(false);
   const [isExcelPopupOpen, setIsExcelPopupOpen] = useState(false);
+  const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
 
   const handleFileUpload = (file: File) => {
     // Here you would handle the file upload to backend
@@ -415,10 +417,14 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
             />
           </div>
 
-          {/* Keep existing buttons */}
-          <button className="col-span-1 flex w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]">
+          {/* Update the advanced search button */}
+          <button 
+            onClick={() => setIsAdvancedSearchOpen(true)}
+            className="col-span-1 flex w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]"
+          >
             جستجو پ
           </button>
+
           <button
             onClick={() => setIsPdfPopupOpen(true)}
             className="col-span-1 my-2 mr-20 flex w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]"
@@ -492,6 +498,12 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
         onClose={() => setIsExcelPopupOpen(false)}
         type="excel"
         onUpload={handleFileUpload}
+      />
+
+      {/* Add AdvancedSearch component */}
+      <AdvancedSearch
+        isOpen={isAdvancedSearchOpen}
+        onClose={() => setIsAdvancedSearchOpen(false)}
       />
     </div>
   );
