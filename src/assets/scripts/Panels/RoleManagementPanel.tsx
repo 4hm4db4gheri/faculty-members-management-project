@@ -34,7 +34,7 @@ export default function RoleManagementPanel() {
     const fetchUsers = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('https://faculty.liara.run/api/panel/v1/user/GetList', {
+        const response = await fetch('https://faculty.liara.run/api/panel/v2/user/GetList', {
           headers: {
             'accept': 'text/plain'
           }
