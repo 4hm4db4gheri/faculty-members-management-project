@@ -1,35 +1,30 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ApiService } from "../Services/ApiService";
+import { AuthService } from "../Services/AuthService";
+import { LoginResponse } from "../types/auth.types";
 
-const SignUpPage: React.FC = () => {
+const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleLogin = async () => {
-    setErrorMessage(""); // پاک کردن ارور قبلی
+    setErrorMessage("");
     try {
-      const response = await fetch(
-        "https://faculty.liara.run/api/panel/v1/user/log-in",
-        {
-          method: "POST",
-          headers: {
-            accept: "text/plain",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userName, password }),
-        },
+      const response = await ApiService.post<LoginResponse>(
+        "/panel/v1/user/log-in",
+        { userName, password },
       );
 
-      const data = await response.json();
-
-      if (data.error) {
-        setErrorMessage(data.message[0]);
+      if (response.error) {
+        setErrorMessage(response.message[0]);
       } else {
+        AuthService.setAuthData(response);
         navigate("/dashboard");
       }
-    } catch (error) {
+    } catch {
       setErrorMessage("ارتباط با سرور برقرار نشد");
     }
   };
@@ -85,4 +80,4 @@ const SignUpPage: React.FC = () => {
   );
 };
 
-export default SignUpPage;
+export default LoginPage;
