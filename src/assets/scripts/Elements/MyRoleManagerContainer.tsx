@@ -1,8 +1,8 @@
 interface MyRoleManagerContainerProps {
   fullName: string;
   role: string;
-  userId: number;
-  onRoleChange: (userId: number, newRole: string) => void;
+  userId: string;
+  onRoleChange: (userId: string, newRole: string) => void;
 }
 
 export default function MyRoleManagerContainer({
@@ -11,7 +11,7 @@ export default function MyRoleManagerContainer({
   userId,
   onRoleChange,
 }: MyRoleManagerContainerProps) {
-  const roleOptions = ["ادمین", "کاربر", "مدیر", "هیچکدام"];
+  const roleOptions = ["ادمین کل", "ادمین", "هیچکدام"];
 
   return (
     <div className="grid h-18 grid-cols-4 rounded-[25px] bg-white">
