@@ -1,5 +1,5 @@
 import { useState } from "react";
-//  import DashboardComponent from "../DashboardComponent";
+import Timeline from "./../../components/TimeLineComponent";
 
 export default function UserInfo() {
   const tabs = [
@@ -19,13 +19,7 @@ export default function UserInfo() {
       case "اطلاعات کاربر":
         return (
           <div className="space-y-4">
-            <div className="mr-50 flex flex-col">
-              <h1 className="text-2xl font-bold text-black">استاد تمام</h1>
-              <h2 className="pt-4 text-3xl font-bold text-black">احمد باقری</h2>
-              <p className="pt-4 text-gray-600">
-                دانشکده مهندسی کامپیوتر / نرم افزار و سیستم های اطلاعاتی
-              </p>
-            </div>
+            <div className="mr-50 flex flex-col"></div>
             <div className="mt-4 border-t pt-4">
               <h3 className="text-xl font-bold">اطلاعات تکمیلی</h3>
               <p>اطلاعات تکمیلی استاد در این بخش نمایش داده می‌شود.</p>
@@ -45,6 +39,12 @@ export default function UserInfo() {
             </ul>
           </div>
         );
+      case "تایم لاین":
+        return (
+          <div className="min-h-screen">
+            <Timeline />
+          </div>
+        );
       default:
         return (
           <div className="space-y-4">
@@ -56,17 +56,14 @@ export default function UserInfo() {
   };
 
   return (
-    <div className="mt-0 flex min-h-screen flex-col">
+    <div className="flex h-screen flex-col overflow-hidden">
       {/* Profile photo section */}
-      <div className="flex items-start px-2 h-[220px] ">
-        <div className="relative z-20 h-[260px] w-[170px] rounded-2xl bg-gray-200 mt-4">
-          {/* Profile image placeholder */}
-        </div>
+      <div className="flex h-[220px] items-start px-2">
+        <div className="relative z-20 mt-4 h-[260px] w-[170px] rounded-2xl bg-gray-200" />
       </div>
 
       {/* Content wrapper with tabs and white container */}
-      <div className="relative -mt-36 flex-1 ">
-        {/* Tabs on top of white container */}
+      <div className="relative -mt-36 flex-1">
         <div className="relative z-10 flex items-center gap-2.5 pr-50">
           {tabs.map((tab) => (
             <button
@@ -83,14 +80,17 @@ export default function UserInfo() {
           ))}
         </div>
 
-        {/* White container below tabs */}
-        {/* <div className="relative z-0  min-h-[calc(100vh-80px)] rounded-2xl bg-white p-8"> */}
-          <div className="relative z-0 -mt-4 flex-1 rounded-2xl h-[515px] w-[1100px] bg-white p-10">
+        <div className="relative z-0 -mt-4 h-[650px] w-[1100px] flex-1 rounded-2xl bg-white p-10">
+          <div className="mr-40">
+            <h1 className="text-2xl font-bold text-black">استاد تمام</h1>
+            <h2 className="pt-4 text-3xl font-bold text-black">احمد باقری</h2>
+            <p className="pt-4 text-gray-600">
+              دانشکده مهندسی کامپیوتر / نرم افزار و سیستم های اطلاعاتی
+            </p>
+          </div>
           {renderTabContent()}
         </div>
       </div>
     </div>
   );
-
- 
 }
