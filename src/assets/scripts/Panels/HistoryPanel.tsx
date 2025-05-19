@@ -436,13 +436,13 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
 
       {/* Table Headers */}
       <div className="mb-4 grid grid-cols-4">
-        <div className="col-span-2 content-end pr-20 pb-4 text-start text-black">
+        <div className="col-span-2 content-end pr-20 pb-4 text-start text-gray-600 text-xl">
           نام استاد
         </div>
-        <div className="col-span-1 content-end pb-4 text-center text-black">
+        <div className="col-span-1 content-end pb-4 text-center text-gray-600 text-xl">
           دانشکده
         </div>
-        <div className="col-span-1 content-end pb-4 text-center text-black">
+        <div className="col-span-1 content-end pb-4 text-center text-gray-600 text-xl">
           رتبه علمی
         </div>
       </div>

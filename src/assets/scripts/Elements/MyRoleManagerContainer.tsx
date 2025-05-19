@@ -15,10 +15,10 @@ export default function MyRoleManagerContainer({
 
   return (
     <div className="grid h-18 grid-cols-4 rounded-[25px] bg-white">
-      <div className="col-span-2 content-center rounded-[25px] pr-20 text-right text-2xl text-black">
+      <div className="col-span-2 content-center rounded-[25px] pr-20 text-right text-xl text-black">
         {fullName}
       </div>
-      <div className="col-span-1 rounded-[25px] text-center content-center">
+      <div className="col-span-1 content-center rounded-[25px] text-center">
         <div className="relative rounded-[25px]">
           <select
             value={role}
