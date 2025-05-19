@@ -82,20 +82,40 @@ export default function RoleManagementPanel() {
     fetchUsers();
   }, []);
 
-  // Update user role (you'll need to implement the API call for this)
+  // Update user role
   const updateUserRole = async (userId: string, newRole: string) => {
     try {
-      // TODO: Implement API call to update user role
-      console.log(`Updating user ${userId} to role ${newRole}`);
+      const apiRole = mapDisplayToRole(newRole); // Convert display role to API role
+      const response = await fetch(
+        `https://faculty.liara.run/api/panel/v1/user/role/change?UserID=${userId}&RoleName=${apiRole}`,
+        {
+          method: 'PUT',
+          headers: {
+            'accept': 'text/plain'
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to update role');
+      }
+
+      const data = await response.json();
       
-      // Optimistically update the UI
+      if (data.error) {
+        throw new Error(data.message.join(', '));
+      }
+
+      // Update local state only after successful API call
       setUsers(prevUsers =>
         prevUsers.map(user =>
-          user.id === userId ? { ...user, roles: newRole } : user
+          user.id === userId ? { ...user, roles: apiRole } : user
         )
       );
     } catch (error) {
       console.error('Failed to update user role:', error);
+      // You might want to show an error message to the user here
+      alert('خطا در بروزرسانی نقش کاربر');
     }
   };
 
