@@ -407,7 +407,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
       <div className="mb-4">
         <div className="grid h-full grid-cols-10 gap-6 rounded-[25px] px-2 py-5">
           {/* Single Search Field */}
-          <div className="col-span-6">
+          <div className="col-span-6 font-[Vazirmatn] ">
             <MyInput
               placeholder="جستجو..."
               value={searchText}

@@ -40,7 +40,7 @@ export default function MainDashboardPanel() {
           <div className="col-span-1 flex h-full items-center justify-center rounded-[25px] bg-red-500">
             نقش
           </div>
-          <button className="col-span-3 flex h-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-[#D9D9D9] p-[10px_20px] text-center text-3xl font-bold text-black transition-colors duration-300 hover:bg-[#A6A6A6]">
+          <button className="col-span-3 flex h-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-[#D9D9D9] p-[10px_20px] text-center text-3xl text-black transition-colors duration-300 hover:bg-[#A6A6A6]">
             مدت زمان
           </button>
         </div>

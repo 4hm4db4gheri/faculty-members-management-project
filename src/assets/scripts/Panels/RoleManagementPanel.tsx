@@ -170,7 +170,7 @@ export default function RoleManagementPanel() {
   );
 
   return (
-    <div className="grid h-full grid-rows-[auto_auto_1fr] gap-4 font-sans">
+    <div className="grid h-full grid-rows-[auto_auto_1fr] gap-4">
       {/* Search Section */}
       <div className="grid h-2/15 grid-cols-3 rounded-[25px] bg-transparent px-2 py-5">
         <div className="content-center px-20 text-center">
@@ -198,7 +198,7 @@ export default function RoleManagementPanel() {
 
       {/* Headers */}
       <div className="mb-2 grid grid-cols-4">
-        <div className="col-span-2 content-center pr-18 text-start text-xl text-gray-600">
+        <div className="col-span-2 font-[Vazirmatn] content-center pr-18 text-start text-xl text-gray-600">
           نام و نام خانوادگی
         </div>
         <div className="textsize col-span-1 content-center text-center text-xl text-gray-600">
@@ -207,7 +207,7 @@ export default function RoleManagementPanel() {
       </div>
 
       {/* Content Area with Fixed Height */}
-      <div className="flex flex-col gap-5 overflow-hidden">
+      <div className="flex  font-[Vazirmatn] flex-col gap-5 overflow-hidden">
         {/* Scrollable List */}
         <div className="flex-1 overflow-y-auto">
           <div className="grid gap-5 pb-4">
