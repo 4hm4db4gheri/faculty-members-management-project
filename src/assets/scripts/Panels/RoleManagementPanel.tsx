@@ -53,7 +53,7 @@ const initialMockUsers: User[] = [
   { id: 37, firstName: "داود", lastName: "دهقانی", role: "ادمین" },
   { id: 38, firstName: "طاهره", lastName: "طاهری", role: "مدیر" },
   { id: 39, firstName: "عرفان", lastName: "عزیزی", role: "کاربر" },
-  { id: 40, firstName: "غزل", lastName: "غفاری", role: "ادمین" }
+  { id: 40, firstName: "غزل", lastName: "غفاری", role: "ادمین" },
 ];
 
 export default function RoleManagementPanel() {
@@ -86,8 +86,8 @@ export default function RoleManagementPanel() {
   const updateUserRole = (userId: number, newRole: string) => {
     setUsers((prevUsers) =>
       prevUsers.map((user) =>
-        user.id === userId ? { ...user, role: newRole } : user
-      )
+        user.id === userId ? { ...user, role: newRole } : user,
+      ),
     );
   };
 
@@ -103,8 +103,11 @@ export default function RoleManagementPanel() {
     // First priority: First name matches
     if (searchText) {
       const searchLower = searchText.toLowerCase();
-      users.forEach(user => {
-        if (user.firstName.toLowerCase().startsWith(searchLower) && !results.has(user.id)) {
+      users.forEach((user) => {
+        if (
+          user.firstName.toLowerCase().startsWith(searchLower) &&
+          !results.has(user.id)
+        ) {
           if (selectedRole === "هیچکدام" || user.role === selectedRole) {
             priorityResults.push(user);
             results.add(user.id);
@@ -116,8 +119,11 @@ export default function RoleManagementPanel() {
     // Second priority: Last name matches
     if (lastnameSearchText) {
       const searchLower = lastnameSearchText.toLowerCase();
-      users.forEach(user => {
-        if (user.lastName.toLowerCase().startsWith(searchLower) && !results.has(user.id)) {
+      users.forEach((user) => {
+        if (
+          user.lastName.toLowerCase().startsWith(searchLower) &&
+          !results.has(user.id)
+        ) {
           if (selectedRole === "هیچکدام" || user.role === selectedRole) {
             priorityResults.push(user);
             results.add(user.id);
@@ -128,14 +134,24 @@ export default function RoleManagementPanel() {
 
     // If no exact matches found, try partial matches
     if (priorityResults.length === 0) {
-      users.forEach(user => {
-        const matchesFirstName = searchText ? 
-          user.firstName.toLowerCase().includes(searchText.toLowerCase()) : true;
-        const matchesLastName = lastnameSearchText ? 
-          user.lastName.toLowerCase().includes(lastnameSearchText.toLowerCase()) : true;
-        const matchesRole = selectedRole === "هیچکدام" || user.role === selectedRole;
+      users.forEach((user) => {
+        const matchesFirstName = searchText
+          ? user.firstName.toLowerCase().includes(searchText.toLowerCase())
+          : true;
+        const matchesLastName = lastnameSearchText
+          ? user.lastName
+              .toLowerCase()
+              .includes(lastnameSearchText.toLowerCase())
+          : true;
+        const matchesRole =
+          selectedRole === "هیچکدام" || user.role === selectedRole;
 
-        if (matchesFirstName && matchesLastName && matchesRole && !results.has(user.id)) {
+        if (
+          matchesFirstName &&
+          matchesLastName &&
+          matchesRole &&
+          !results.has(user.id)
+        ) {
           priorityResults.push(user);
           results.add(user.id);
         }
@@ -150,7 +166,7 @@ export default function RoleManagementPanel() {
   const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
   const currentUsers = filteredUsers.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    currentPage * ITEMS_PER_PAGE,
   );
 
   return (
@@ -159,6 +175,7 @@ export default function RoleManagementPanel() {
       <div className="grid h-2/15 grid-cols-3 rounded-[25px] bg-transparent px-2 py-5">
         <div className="content-center px-20 text-center">
           <MyInput
+            data-testid="first-name-input"
             placeholder="نام"
             value={searchText}
             onChange={(value) => setSearchText(value)}
@@ -166,6 +183,7 @@ export default function RoleManagementPanel() {
         </div>
         <div className="content-center px-20 text-center">
           <MyInput
+            data-testid="last-name-input"
             placeholder="نام خانوادگی"
             value={lastnameSearchText}
             onChange={(value) => setLastnameSearchText(value)}
@@ -195,17 +213,22 @@ export default function RoleManagementPanel() {
         {/* Scrollable List */}
         <div className="flex-1 overflow-y-auto">
           <div className="grid gap-5 pb-4">
-            {currentUsers.map((user) => (
-              <MyRoleManagerContainer
-                key={user.id}
-                userId={user.id}
-                fullName={`${user.firstName} ${user.lastName}`}
-                role={user.role}
-                onRoleChange={updateUserRole}
-              />
-            ))}
+            {filteredUsers
+              .slice((currentPage - 1) * 10, currentPage * 10)
+              .map((user) => (
+                <MyRoleManagerContainer
+                  key={user.id}
+                  fullName={`${user.firstName} ${user.lastName}`}
+                  role={user.role}
+                  userId={user.id}
+                  onRoleChange={updateUserRole} // ✅ اینو اضافه کن
+                />
+              ))}
+
             {currentUsers.length === 0 && (
-              <div className="text-center text-gray-500">هیچ نتیجه‌ای یافت نشد</div>
+              <div className="text-center text-gray-500">
+                هیچ نتیجه‌ای یافت نشد
+              </div>
             )}
           </div>
         </div>
