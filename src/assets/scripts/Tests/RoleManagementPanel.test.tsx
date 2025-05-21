@@ -47,7 +47,6 @@ describe('RoleManagementPanel Tests', () => {
       expect(screen.getByTestId('first-name-input')).toBeInTheDocument();
     });
 
-    // Search for احمد باقری
     fireEvent.change(screen.getByTestId('first-name-input'), {
       target: { value: 'احمد' },
     });
@@ -62,7 +61,6 @@ describe('RoleManagementPanel Tests', () => {
     const roleSelect = screen.getByTestId('role-dropdown-احمد-باقری');
     fireEvent.change(roleSelect, { target: { value: 'ادمین' } });
 
-    // Simulate refresh
     rerender(
       <BrowserRouter>
         <RoleManagementPanel />
