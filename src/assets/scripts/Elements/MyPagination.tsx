@@ -65,6 +65,7 @@ export default function Pagination({
             onClick={handlePrevious}
             disabled={currentPage === 1}
             className={navButtonStyle}
+            data-testid="prev-button"
           >
             قبلی
           </button>
@@ -77,6 +78,7 @@ export default function Pagination({
               className={`${buttonBaseStyle} ${
                 currentPage === page ? activeStyle : inactiveStyle
               }`}
+              data-testid={`page-${page}`}
             >
               {page}
             </button>
@@ -88,6 +90,7 @@ export default function Pagination({
             onClick={handleNext}
             disabled={currentPage === totalPages}
             className={navButtonStyle}
+            data-testid="next-button"
           >
             بعدی
           </button>
