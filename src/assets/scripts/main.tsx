@@ -5,7 +5,7 @@ import "../styles/main.css";
 import DashboardComponent from "./DashboardComponent";
 import SignUpPage from "./Panels/SignUpPage";
 import { RTLProvider } from "./RTLProvider";
-import NotificationPanel2 from "./Panels/NotificationPanel2";
+import NotificationDetail from "./Panels/NotificationDetail";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -14,7 +14,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <Routes>
           <Route path="/" element={<SignUpPage />} />
           <Route path="/dashboard" element={<DashboardComponent />} />
-          <Route path="/notification-panel2" element={<NotificationPanel2 />} />
+          <Route path="/notification/detail" element={<NotificationDetail />} />
         </Routes>
       </BrowserRouter>
     </RTLProvider>
