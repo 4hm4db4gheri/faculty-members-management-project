@@ -3,15 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { ApiService } from "../Services/ApiService";
 import { AuthService } from "../Services/AuthService";
 import { LoginResponse } from "../types/auth.types";
+import LoadingSpinner from "../Elements/LoadingSpinner";
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
     setErrorMessage("");
+    setIsLoading(true);
     try {
       const response = await ApiService.post<LoginResponse>(
         "/panel/v1/user/log-in",
@@ -26,6 +29,8 @@ const LoginPage: React.FC = () => {
       }
     } catch {
       setErrorMessage("ارتباط با سرور برقرار نشد");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -43,29 +48,38 @@ const LoginPage: React.FC = () => {
             سامانه کنترل وضعیت هیات علمی
           </p>
           <div className="space-y-6">
-            <input
-              type="text"
-              placeholder="نام کاربری"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-              className="focus:ring-primary-400 w-full rounded-[15px] border border-gray-300 bg-white px-4 py-2 focus:outline-none"
-            />
-            <input
-              type="password"
-              placeholder="رمز عبور"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="focus:ring-primary-400 w-full rounded-[15px] border border-gray-300 bg-white px-4 py-2 focus:outline-none"
-            />
-            {errorMessage && (
-              <p className="text-sm text-red-500">{errorMessage}</p>
+            {isLoading ? (
+              <LoadingSpinner size="md" text="در حال ورود..." />
+            ) : (
+              <>
+                <input
+                  type="text"
+                  placeholder="نام کاربری"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  className="focus:ring-primary-400 w-full rounded-[15px] border border-gray-300 bg-white px-4 py-2 focus:outline-none"
+                  disabled={isLoading}
+                />
+                <input
+                  type="password"
+                  placeholder="رمز عبور"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="focus:ring-primary-400 w-full rounded-[15px] border border-gray-300 bg-white px-4 py-2 focus:outline-none"
+                  disabled={isLoading}
+                />
+                {errorMessage && (
+                  <p className="text-sm text-red-500">{errorMessage}</p>
+                )}
+                <button
+                  onClick={handleLogin}
+                  disabled={isLoading}
+                  className="mt-10 w-60 rounded-3xl bg-[#1B4965] py-2 font-bold text-white transition duration-300 hover:bg-[#358cc1] disabled:opacity-50"
+                >
+                  ورود
+                </button>
+              </>
             )}
-            <button
-              onClick={handleLogin}
-              className="mt-10 w-60 rounded-3xl bg-[#1B4965] py-2 font-bold text-white transition duration-300 hover:bg-[#358cc1]"
-            >
-              ورود
-            </button>
           </div>
         </div>
       </div>
