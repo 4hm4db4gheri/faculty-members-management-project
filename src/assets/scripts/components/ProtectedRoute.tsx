@@ -3,22 +3,14 @@ import { AuthService } from "../Services/AuthService";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requireFullAccess?: boolean;
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
-  children,
-  requireFullAccess = false,
-}) => {
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const isAuthenticated = AuthService.isAuthenticated();
-  const hasFullAccess = AuthService.hasFullAccess();
 
   if (!isAuthenticated) {
+    // Redirect to login if not authenticated
     return <Navigate to="/" replace />;
-  }
-
-  if (requireFullAccess && !hasFullAccess) {
-    return <Navigate to="/dashboard" replace />;
   }
 
   return <>{children}</>;
