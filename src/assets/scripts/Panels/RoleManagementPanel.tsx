@@ -3,6 +3,7 @@ import MyDropdown from "../Elements/MyDropdown";
 import MyInput from "./../Elements/MyInput";
 import MyPagination from "../Elements/MyPagination";
 import MyRoleManagerContainer from "../Elements/MyRoleManagerContainer";
+import LoadingSpinner from "../Elements/LoadingSpinner";
 
 // Update interface to match API response
 interface User {
@@ -140,11 +141,17 @@ export default function RoleManagementPanel() {
   );
 
   if (isLoading) {
-    return <div className="text-center">در حال بارگذاری...</div>;
+    return <LoadingSpinner size="lg" />;
   }
 
   if (error) {
-    return <div className="text-center text-red-500">خطا: {error}</div>;
+    return (
+      <div className="flex min-h-[200px] flex-col items-center justify-center">
+        <p className="text-lg font-semibold text-red-500">
+          خطا: {error}
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -190,7 +197,8 @@ export default function RoleManagementPanel() {
           <div className="grid gap-5 pb-4">
             {currentUsers.map((user) => (
               <MyRoleManagerContainer
-                key={user.id}
+
+              key={user.id}
                 userId={user.id}
                 fullName={`${user.firstName} ${user.lastName}`}
                 role={mapRoleToDisplay(user.roles)}
