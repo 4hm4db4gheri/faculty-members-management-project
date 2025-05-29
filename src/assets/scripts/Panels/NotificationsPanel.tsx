@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 interface Notification {
   id: number;
@@ -8,9 +7,13 @@ interface Notification {
   tag: string;
 }
 
-export default function NotificationList() {
-  const navigate = useNavigate();
+interface NotificationsPanelProps {
+  onNotificationSelect: (notification: Notification) => void;
+}
 
+export default function NotificationsPanel({
+  onNotificationSelect,
+}: NotificationsPanelProps) {
   const [subject, setSubject] = useState("");
   const [importance, setImportance] = useState("");
   const [time, setTime] = useState("");
@@ -41,9 +44,6 @@ export default function NotificationList() {
       tag: "green",
     },
   ];
-  const handleNotificationClick = () => {
-    navigate("/notification-panel2");
-  };
   return (
     <div>
       {/* Filters */}
@@ -97,7 +97,7 @@ export default function NotificationList() {
           <div
             key={notification.id}
             className="flex cursor-pointer items-center gap-5 rounded-2xl bg-white p-4 transition-colors hover:bg-gray-50"
-            onClick={handleNotificationClick}
+            onClick={() => onNotificationSelect(notification)}
           >
             <div className="flex items-center gap-4">
               <span
