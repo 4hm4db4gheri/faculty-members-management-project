@@ -43,6 +43,22 @@ export default function NotificationPanel() {
     }));
   };
 
+  const labelClasses = `
+    absolute
+    -top-1.5
+    right-4
+    px-1
+    text-sm
+    text-gray-500
+    transition-colors
+    group-hover:text-gray-700
+  `
+    .trim()
+    .replace(/\s+/g, " ");
+
+  const dropdownContainerClasses = "relative w-full";
+  const dropdownClasses = "w-full pt-2";
+
   // Component JSX
   return (
     <form
@@ -50,38 +66,44 @@ export default function NotificationPanel() {
       className="relative min-h-screen space-y-7 p-4 text-right text-gray-900"
     >
       {/* Subject dropdown */}
-      <div className="flex flex-col space-y-2">
+      <div className={dropdownContainerClasses}>
         <MyDropdown
           options={subjectOptions}
           defaultOption="موضوع"
           onSelect={(value) =>
             setFormData((prev) => ({ ...prev, subject: value }))
           }
+          className={dropdownClasses}
         />
+        <span className={labelClasses}>موضوع</span>
       </div>
 
       {/* Send method and date container */}
       <div className="flex justify-between gap-4">
         {/* Send method dropdown */}
-        <div className="flex-1">
+        <div className={dropdownContainerClasses}>
           <MyDropdown
             options={sendMethodOptions}
             defaultOption="نحوه ارسال"
             onSelect={(value) =>
               setFormData((prev) => ({ ...prev, sendMethod: value }))
             }
+            className={dropdownClasses}
           />
+          <span className={labelClasses}>نحوه ارسال</span>
         </div>
 
         {/* Send date dropdown */}
-        <div className="flex-1">
+        <div className={dropdownContainerClasses}>
           <MyDropdown
             options={sendDateOptions}
             defaultOption="موعد ارسال"
             onSelect={(value) =>
               setFormData((prev) => ({ ...prev, sendDate: value }))
             }
+            className={dropdownClasses}
           />
+          <span className={labelClasses}>موعد ارسال</span>
         </div>
       </div>
 

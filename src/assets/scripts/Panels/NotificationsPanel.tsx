@@ -1,4 +1,5 @@
 import { useState } from "react";
+import MyDropdown from "../Elements/MyDropdown";
 import MyNotificationCard, {
   Notification,
 } from "../Elements/MyNotificationCard";
@@ -10,9 +11,14 @@ interface NotificationsPanelProps {
 export default function NotificationsPanel({
   onNotificationSelect,
 }: NotificationsPanelProps) {
-  const [subject, setSubject] = useState("");
-  const [importance, setImportance] = useState("");
-  const [time, setTime] = useState("");
+  const [subject, setSubject] = useState("همه");
+  const [importance, setImportance] = useState("همه");
+  const [time, setTime] = useState("همه");
+
+  // Remove "همه" from options since it will be the default
+  const subjectOptions = ["مقاله", "قرارداد"] as const;
+  const importanceOptions = ["فوری", "عادی"] as const;
+  const timeOptions = ["امروز", "این هفته"] as const;
 
   const notifications: Notification[] = [
     {
@@ -40,51 +46,57 @@ export default function NotificationsPanel({
       tag: "green",
     },
   ];
+
+  // Using template literals instead of clsx
+  const labelClasses = `
+    absolute
+    -top-1.5
+    right-4
+    px-1
+    text-sm
+    text-gray-500
+    transition-colors
+    group-hover:text-gray-700
+  `
+    .trim()
+    .replace(/\s+/g, " ");
+
+  const dropdownContainerClasses = "relative w-1/3";
+  const dropdownClasses = "w-full pt-2";
+
   return (
     <div>
       {/* Filters */}
-      <div className="mb-6 flex gap-10 p-8">
-        <select
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-          className="w-full rounded-full bg-white px-6 py-4 text-gray-600"
-          dir="rtl"
-        >
-          <option value="" disabled>
-            موضوع
-          </option>
-          <option value="all">همه</option>
-          <option value="article">مقاله</option>
-          <option value="contract">قرارداد</option>
-        </select>
+      <div className="mb-6 flex justify-between gap-6 p-8">
+        <div className={dropdownContainerClasses}>
+          <MyDropdown
+            options={subjectOptions}
+            defaultOption="همه"
+            onSelect={setSubject}
+            className={dropdownClasses}
+          />
+          <span className={labelClasses}>موضوع</span>
+        </div>
 
-        <select
-          value={importance}
-          onChange={(e) => setImportance(e.target.value)}
-          className="w-full rounded-full bg-white px-6 py-2 text-gray-600"
-          dir="rtl"
-        >
-          <option value="" disabled>
-            اهمیت
-          </option>
-          <option value="all">همه</option>
-          <option value="urgent">فوری</option>
-          <option value="normal">عادی</option>
-        </select>
+        <div className={dropdownContainerClasses}>
+          <MyDropdown
+            options={importanceOptions}
+            defaultOption="همه"
+            onSelect={setImportance}
+            className={dropdownClasses}
+          />
+          <span className={labelClasses}>اهمیت</span>
+        </div>
 
-        <select
-          value={time}
-          onChange={(e) => setTime(e.target.value)}
-          className="w-full rounded-full bg-white px-6 py-2 text-gray-600"
-          dir="rtl"
-        >
-          <option value="" disabled>
-            زمان
-          </option>
-          <option value="all">همه</option>
-          <option value="today">امروز</option>
-          <option value="week">این هفته</option>
-        </select>
+        <div className={dropdownContainerClasses}>
+          <MyDropdown
+            options={timeOptions}
+            defaultOption="همه"
+            onSelect={setTime}
+            className={dropdownClasses}
+          />
+          <span className={labelClasses}>زمان</span>
+        </div>
       </div>
 
       {/* Notifications List */}

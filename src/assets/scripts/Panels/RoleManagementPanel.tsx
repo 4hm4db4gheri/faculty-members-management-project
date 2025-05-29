@@ -42,7 +42,8 @@ const mapDisplayToRole = (displayRole: string): string => {
 };
 
 export default function RoleManagementPanel() {
-  const roleOptions = ["ادمین کل", "ادمین", "هیچکدام"] as const;
+  // Define role options without همه
+  const roleOptions = ["ادمین کل", "ادمین"] as const;
   const [searchText, setSearchText] = useState<string>("");
   const [lastnameSearchText, setLastnameSearchText] = useState<string>("");
   const [selectedRole, setSelectedRole] = useState<string>("هیچکدام");
@@ -56,25 +57,28 @@ export default function RoleManagementPanel() {
     const fetchUsers = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('https://faculty.liara.run/api/panel/v1/user/GetList', {
-          headers: {
-            'accept': 'text/plain'
-          }
-        });
-        
+        const response = await fetch(
+          "https://faculty.liara.run/api/panel/v1/user/GetList",
+          {
+            headers: {
+              accept: "text/plain",
+            },
+          },
+        );
+
         if (!response.ok) {
-          throw new Error('Failed to fetch users');
+          throw new Error("Failed to fetch users");
         }
 
         const data: ApiResponse = await response.json();
-        
+
         if (!data.error) {
           setUsers(data.data);
         } else {
-          throw new Error(data.message.join(', '));
+          throw new Error(data.message.join(", "));
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setIsLoading(false);
       }
@@ -90,44 +94,48 @@ export default function RoleManagementPanel() {
       const response = await fetch(
         `https://faculty.liara.run/api/panel/v1/user/role/change?UserID=${userId}&RoleName=${apiRole}`,
         {
-          method: 'PUT',
+          method: "PUT",
           headers: {
-            'accept': 'text/plain'
-          }
-        }
+            accept: "text/plain",
+          },
+        },
       );
 
       if (!response.ok) {
-        throw new Error('Failed to update role');
+        throw new Error("Failed to update role");
       }
 
       const data = await response.json();
-      
+
       if (data.error) {
-        throw new Error(data.message.join(', '));
+        throw new Error(data.message.join(", "));
       }
 
       // Update local state only after successful API call
-      setUsers(prevUsers =>
-        prevUsers.map(user =>
-          user.id === userId ? { ...user, roles: apiRole } : user
-        )
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === userId ? { ...user, roles: apiRole } : user,
+        ),
       );
     } catch (error) {
-      console.error('Failed to update user role:', error);
+      console.error("Failed to update user role:", error);
       // You might want to show an error message to the user here
-      alert('خطا در بروزرسانی نقش کاربر');
+      alert("خطا در بروزرسانی نقش کاربر");
     }
   };
 
   // Filter users based on search criteria
   const filteredUsers = useMemo(() => {
-    return users.filter(user => {
-      const matchesFirstName = searchText ? 
-        user.firstName.toLowerCase().includes(searchText.toLowerCase()) : true;
-      const matchesLastName = lastnameSearchText ? 
-        user.lastName.toLowerCase().includes(lastnameSearchText.toLowerCase()) : true;
-      const matchesRole = selectedRole === "هیچکدام" || mapRoleToDisplay(user.roles) === selectedRole;
+    return users.filter((user) => {
+      const matchesFirstName = searchText
+        ? user.firstName.toLowerCase().includes(searchText.toLowerCase())
+        : true;
+      const matchesLastName = lastnameSearchText
+        ? user.lastName.toLowerCase().includes(lastnameSearchText.toLowerCase())
+        : true;
+      const matchesRole =
+        selectedRole === "هیچکدام" ||
+        mapRoleToDisplay(user.roles) === selectedRole;
 
       return matchesFirstName && matchesLastName && matchesRole;
     });
@@ -137,7 +145,7 @@ export default function RoleManagementPanel() {
   const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
   const currentUsers = filteredUsers.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    currentPage * ITEMS_PER_PAGE,
   );
 
   if (isLoading) {
@@ -147,12 +155,26 @@ export default function RoleManagementPanel() {
   if (error) {
     return (
       <div className="flex min-h-[200px] flex-col items-center justify-center">
-        <p className="text-lg font-semibold text-red-500">
-          خطا: {error}
-        </p>
+        <p className="text-lg font-semibold text-red-500">خطا: {error}</p>
       </div>
     );
   }
+
+  const labelClasses = `
+    absolute
+    -top-1.5
+    right-4
+    px-1
+    text-sm
+    text-gray-500
+    transition-colors
+    group-hover:text-gray-700
+  `
+    .trim()
+    .replace(/\s+/g, " ");
+
+  const dropdownContainerClasses = "relative w-full group px-4"; // Changed w-1/3 to w-full and added px-4
+  const dropdownClasses = "w-full pt-2";
 
   return (
     <div className="grid h-full grid-rows-[auto_auto_1fr] gap-4">
@@ -172,12 +194,14 @@ export default function RoleManagementPanel() {
             onChange={(value) => setLastnameSearchText(value)}
           />
         </div>
-        <div className="content-center px-20 text-center">
+        <div className={dropdownContainerClasses}>
           <MyDropdown
             options={roleOptions}
             defaultOption="هیچکدام"
             onSelect={setSelectedRole}
+            className={dropdownClasses}
           />
+          <span className={labelClasses}>نقش</span>
         </div>
       </div>
 
@@ -197,16 +221,19 @@ export default function RoleManagementPanel() {
           <div className="grid gap-5 pb-4">
             {currentUsers.map((user) => (
               <MyRoleManagerContainer
-
-              key={user.id}
+                key={user.id}
                 userId={user.id}
                 fullName={`${user.firstName} ${user.lastName}`}
                 role={mapRoleToDisplay(user.roles)}
-                onRoleChange={(userId, newRole) => updateUserRole(userId, mapDisplayToRole(newRole))}
+                onRoleChange={(userId, newRole) =>
+                  updateUserRole(userId, mapDisplayToRole(newRole))
+                }
               />
             ))}
             {currentUsers.length === 0 && (
-              <div className="text-center text-gray-500">هیچ نتیجه‌ای یافت نشد</div>
+              <div className="text-center text-gray-500">
+                هیچ نتیجه‌ای یافت نشد
+              </div>
             )}
           </div>
         </div>
