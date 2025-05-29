@@ -1,11 +1,7 @@
-import React, { useState } from "react";
-
-interface Notification {
-  id: number;
-  title: string;
-  priority: string;
-  tag: string;
-}
+import { useState } from "react";
+import MyNotificationCard, {
+  Notification,
+} from "../Elements/MyNotificationCard";
 
 interface NotificationsPanelProps {
   onNotificationSelect: (notification: Notification) => void;
@@ -94,29 +90,11 @@ export default function NotificationsPanel({
       {/* Notifications List */}
       <div className="space-y-5">
         {notifications.map((notification) => (
-          <div
+          <MyNotificationCard
             key={notification.id}
-            className="flex cursor-pointer items-center gap-5 rounded-2xl bg-white p-4 transition-colors hover:bg-gray-50"
-            onClick={() => onNotificationSelect(notification)}
-          >
-            <div className="flex items-center gap-4">
-              <span
-                className={`rounded-full px-3 py-1 text-sm ${
-                  notification.tag === "red"
-                    ? "bg-red-100 text-red-600"
-                    : notification.tag === "blue"
-                      ? "bg-blue-100 text-blue-600"
-                      : notification.tag === "yellow"
-                        ? "bg-yellow-100 text-yellow-600"
-                        : "bg-green-100 text-green-600"
-                }`}
-              >
-                {notification.priority}
-              </span>
-              {/* <span className="text-gray-600">{notification.time}</span> */}
-            </div>
-            <span className="text-gray-800">{notification.title}</span>
-          </div>
+            notification={notification}
+            onClick={onNotificationSelect}
+          />
         ))}
       </div>
     </div>
