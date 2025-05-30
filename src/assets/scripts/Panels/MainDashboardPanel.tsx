@@ -1,7 +1,10 @@
+import ChartComponent1 from "../../components/ChartComponent1";
+import ChartComponent2 from "../../components/ChartComponent2";
+
 export default function MainDashboardPanel() {
   return (
     <div className="box-border grid h-full grid-cols-3 gap-[30px] rounded-[25px]">
-      <div className="col-span-2 grid h-full grid-rows-[0.4fr_2fr_2fr] gap-[40px]">
+      <div className="col-span-2 grid h-full grid-rows-[0.4fr_2fr_2fr] gap-[30px]">
         <div className="grid grid-cols-10 rounded-[25px]">
           <div className="col-span-9 ml-4 grid grid-cols-10 items-center rounded-[25px] bg-white pr-[10px]">
             <input
@@ -18,16 +21,21 @@ export default function MainDashboardPanel() {
           </button>
         </div>
 
-        <div className="grid grid-cols-3 gap-5">
-          <div className="col-span-2 flex items-center justify-center rounded-[25px] bg-white text-5xl text-black">
-            نمودار
-          </div>
-          <div className="col-span-1 flex items-center justify-center rounded-[25px] bg-white text-5xl text-black">
-            نمودار
+        <div className="rounded-[25px] bg-white shadow">
+          <h2 className="text-center text-2xl font-bold">مرتبۀ علمی</h2>
+          <div className="h-fit">
+            <ChartComponent1 />
           </div>
         </div>
 
-        <div className="rounded-[25px] bg-white"></div>
+        <div className="rounded-[25px] bg-white shadow">
+          <h2 className="text-center text-2xl font-bold">
+            آمار تفکیکی اعضای هیئت علمی
+          </h2>
+          <div className="h-fit">
+            <ChartComponent2 />
+          </div>
+        </div>
       </div>
       <div className="col-span-1 flex h-full flex-col items-center justify-center rounded-[25px] bg-white pt-[10px]">
         <div className="flex h-[150px] w-[150px] items-center justify-center rounded-full bg-[#8D8D8D]">

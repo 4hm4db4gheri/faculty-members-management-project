@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { AuthService } from "./Services/AuthService";
 import MainDashboardPanel from "./Panels/MainDashboardPanel";
 import HistoryPanel from "./Panels/HistoryPanel";
 import RoleManagementPanel from "./Panels/RoleManagementPanel";
 import NotificationsPanel from "./Panels/NotificationsPanel";
 import ImprovementChartPanel from "./Panels/ImprovementChartPanel";
 import UserInfo from "./Panels/UserInfo";
+import NotificationDetail from "./Panels/NotificationDetail";
 
 interface Teacher {
   id: number;
@@ -14,17 +16,47 @@ interface Teacher {
   rank: string;
 }
 
+interface Notification {
+  id: number;
+  title: string;
+  priority: string;
+  tag: string;
+}
+
 export default function DashboardComponent() {
   const [selectedItem, setSelectedItem] = useState<string>("dashboard"); // Default to the first item
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
+  const [selectedNotification, setSelectedNotification] =
+    useState<Notification | null>(null);
+  const [hasFullAccess, setHasFullAccess] = useState(false);
+
+  useEffect(() => {
+    // Check if user has access when component mounts
+    const checkAccess = () => {
+      const hasAccess = AuthService.hasFullAccess();
+      setHasFullAccess(hasAccess);
+
+      // If user is on roles page but doesn't have access, redirect to dashboard
+      if (!hasAccess && selectedItem === "roles") {
+        setSelectedItem("dashboard");
+      }
+    };
+
+    checkAccess();
+  }, []);
 
   const handleSelect = (item: string) => {
     setSelectedItem(item);
     setSelectedTeacher(null); // Reset selected teacher when changing panels
+    setSelectedNotification(null); // Reset selected notification when changing panels
   };
 
   const handleTeacherSelect = (teacher: Teacher) => {
     setSelectedTeacher(teacher);
+  };
+
+  const handleNotificationSelect = (notification: Notification) => {
+    setSelectedNotification(notification);
   };
 
   const renderPanel = () => {
@@ -33,6 +65,15 @@ export default function DashboardComponent() {
         <UserInfo
           teacher={selectedTeacher}
           onBack={() => setSelectedTeacher(null)}
+        />
+      );
+    }
+
+    if (selectedNotification && selectedItem === "notifications") {
+      return (
+        <NotificationDetail
+          notification={selectedNotification}
+          onBack={() => setSelectedNotification(null)}
         />
       );
     }
@@ -47,7 +88,9 @@ export default function DashboardComponent() {
       case "roles":
         return <RoleManagementPanel />;
       case "notifications":
-        return <NotificationsPanel />;
+        return (
+          <NotificationsPanel onNotificationSelect={handleNotificationSelect} />
+        );
       default:
         return <MainDashboardPanel />; // Default to MainDashboard
     }
@@ -69,31 +112,53 @@ export default function DashboardComponent() {
 
         {/* Navigation Buttons */}
         <button
-          className={`m-[5px] inline-flex h-[90px] cursor-pointer items-center justify-center rounded-[25px] border-none text-center text-4xl text-white transition-colors duration-300 ease-in-out outline-none ${selectedItem === "dashboard" ? "bg-[#3388BC]" : "bg-transparent hover:bg-[#3388BC33]"}`}
+          className={`m-[5px] inline-flex h-[90px] cursor-pointer items-center justify-center rounded-[25px] border-none text-center text-4xl text-white transition-colors duration-300 ease-in-out outline-none ${
+            selectedItem === "dashboard"
+              ? "bg-[#3388BC]"
+              : "bg-transparent hover:bg-[#3388BC33]"
+          }`}
           onClick={() => handleSelect("dashboard")}
         >
           داشبورد
         </button>
         <button
-          className={`m-[5px] inline-flex h-[90px] cursor-pointer items-center justify-center rounded-[25px] border-none text-center text-4xl text-white transition-colors duration-300 ease-in-out outline-none ${selectedItem === "records" ? "bg-[#3388BC]" : "bg-transparent hover:bg-[#3388BC33]"}`}
+          className={`m-[5px] inline-flex h-[90px] cursor-pointer items-center justify-center rounded-[25px] border-none text-center text-4xl text-white transition-colors duration-300 ease-in-out outline-none ${
+            selectedItem === "records"
+              ? "bg-[#3388BC]"
+              : "bg-transparent hover:bg-[#3388BC33]"
+          }`}
           onClick={() => handleSelect("records")}
         >
           سوابق
         </button>
         <button
-          className={`m-[5px] inline-flex h-[90px] cursor-pointer items-center justify-center rounded-[25px] border-none text-center text-4xl text-white transition-colors duration-300 ease-in-out outline-none ${selectedItem === "progress" ? "bg-[#3388BC]" : "bg-transparent hover:bg-[#3388BC33]"}`}
+          className={`m-[5px] inline-flex h-[90px] cursor-pointer items-center justify-center rounded-[25px] border-none text-center text-4xl text-white transition-colors duration-300 ease-in-out outline-none ${
+            selectedItem === "progress"
+              ? "bg-[#3388BC]"
+              : "bg-transparent hover:bg-[#3388BC33]"
+          }`}
           onClick={() => handleSelect("progress")}
         >
           نمودار پیشرفت
         </button>
+        {hasFullAccess && (
+          <button
+            className={`m-[5px] inline-flex h-[90px] cursor-pointer items-center justify-center rounded-[25px] border-none text-center text-4xl text-white transition-colors duration-300 ease-in-out outline-none ${
+              selectedItem === "roles"
+                ? "bg-[#3388BC]"
+                : "bg-transparent hover:bg-[#3388BC33]"
+            }`}
+            onClick={() => handleSelect("roles")}
+          >
+            مدیریت نقش ها
+          </button>
+        )}
         <button
-          className={`m-[5px] inline-flex h-[90px] cursor-pointer items-center justify-center rounded-[25px] border-none text-center text-4xl text-white transition-colors duration-300 ease-in-out outline-none ${selectedItem === "roles" ? "bg-[#3388BC]" : "bg-transparent hover:bg-[#3388BC33]"}`}
-          onClick={() => handleSelect("roles")}
-        >
-          مدیریت نقش ها
-        </button>
-        <button
-          className={`m-[5px] inline-flex h-[90px] cursor-pointer items-center justify-center rounded-[25px] border-none text-center text-4xl text-white transition-colors duration-300 ease-in-out outline-none ${selectedItem === "notifications" ? "bg-[#3388BC]" : "bg-transparent hover:bg-[#3388BC33]"}`}
+          className={`m-[5px] inline-flex h-[90px] cursor-pointer items-center justify-center rounded-[25px] border-none text-center text-4xl text-white transition-colors duration-300 ease-in-out outline-none ${
+            selectedItem === "notifications"
+              ? "bg-[#3388BC]"
+              : "bg-transparent hover:bg-[#3388BC33]"
+          }`}
           onClick={() => handleSelect("notifications")}
         >
           اعلان ها

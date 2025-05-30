@@ -3,7 +3,7 @@ import MyDropdown from "./MyDropdown";
 interface MyRoleManagerContainerProps {
   fullName: string;
   role: string;
-  userId: string; // Changed to string to match API response
+  userId: string;
   onRoleChange: (userId: string, newRole: string) => void;
 }
 
@@ -13,8 +13,8 @@ export default function MyRoleManagerContainer({
   userId,
   onRoleChange,
 }: MyRoleManagerContainerProps) {
-  // Match role options with RoleManagementPanel
-  const roleOptions = ["Admin", "FullAccess", "هیچکدام"] as const;
+  
+  const roleOptions = ["ادمین کل", "ادمین", "هیچکدام"];
 
   return (
     <div className="grid h-18 grid-cols-4 rounded-[25px] bg-white">
