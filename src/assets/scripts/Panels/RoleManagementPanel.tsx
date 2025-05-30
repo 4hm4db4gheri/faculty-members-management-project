@@ -162,9 +162,9 @@ export default function RoleManagementPanel() {
 
   const labelClasses = `
     absolute
-    -top-1.5
+    -top-2.5
     right-4
-    px-1
+    px-21
     text-sm
     text-gray-500
     transition-colors
@@ -172,9 +172,6 @@ export default function RoleManagementPanel() {
   `
     .trim()
     .replace(/\s+/g, " ");
-
-  const dropdownContainerClasses = "relative w-full group px-4"; // Changed w-1/3 to w-full and added px-4
-  const dropdownClasses = "w-full pt-2";
 
   return (
     <div className="grid h-full grid-rows-[auto_auto_1fr] gap-4">
@@ -194,12 +191,12 @@ export default function RoleManagementPanel() {
             onChange={(value) => setLastnameSearchText(value)}
           />
         </div>
-        <div className={dropdownContainerClasses}>
+        <div className="group relative px-20">
           <MyDropdown
             options={roleOptions}
             defaultOption="هیچکدام"
             onSelect={setSelectedRole}
-            className={dropdownClasses}
+            className=""
           />
           <span className={labelClasses}>نقش</span>
         </div>
