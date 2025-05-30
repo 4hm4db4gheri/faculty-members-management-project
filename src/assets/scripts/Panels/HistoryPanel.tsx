@@ -11,7 +11,7 @@ interface HistoryPanelProps {
   onTeacherSelect: (teacher: Teacher) => void;
 }
 
-const initialMockTeachers: Teacher[] = [
+export const initialMockTeachers: Teacher[] = [
   // First 20 teachers with firstName "جواد"
   {
     id: 1,

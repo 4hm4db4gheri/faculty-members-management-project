@@ -1,24 +1,91 @@
+import { useState, useEffect, useRef } from "react";
 import ChartComponent1 from "../../components/ChartComponent1";
 import ChartComponent2 from "../../components/ChartComponent2";
+import MyInput from "../Elements/MyInput";
+import UserInfo from "./UserInfo";
+import type { Teacher } from "../types/Teacher";
+import { initialMockTeachers } from "./HistoryPanel"; // Update import to use named import
 
 export default function MainDashboardPanel() {
+  const [searchText, setSearchText] = useState("");
+  const [searchResults, setSearchResults] = useState<Teacher[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleSearch = (value: string) => {
+    setSearchText(value);
+    
+    if (value.trim() === "") {
+      setSearchResults([]);
+      setShowDropdown(false);
+      return;
+    }
+
+    const results = initialMockTeachers.filter((teacher) => {
+      const searchLower = value.toLowerCase();
+      return (
+        teacher.firstName.toLowerCase().includes(searchLower) ||
+        teacher.lastName.toLowerCase().includes(searchLower)
+      );
+    }).slice(0, 5); // Limit to 5 results
+
+    setSearchResults(results);
+    setShowDropdown(true);
+  };
+
+  const handleTeacherSelect = (teacher: Teacher) => {
+    setSelectedTeacher(teacher);
+    setShowDropdown(false);
+    setSearchText("");
+  };
+
+  if (selectedTeacher) {
+    return <UserInfo teacher={selectedTeacher} />;
+  }
+
   return (
     <div className="box-border grid h-full grid-cols-3 gap-[30px] rounded-[25px]">
       <div className="col-span-2 grid h-full grid-rows-[0.4fr_2fr_2fr] gap-[30px]">
-        <div className="grid grid-cols-10 rounded-[25px]">
-          <div className="col-span-9 ml-4 grid grid-cols-10 items-center rounded-[25px] bg-white pr-[10px]">
-            <input
-              type="text"
-              className="col-span-9 box-border h-full w-full rounded-[25px] border-none bg-transparent pr-5 text-xl text-black outline-none placeholder:pr-5 placeholder:text-xl placeholder:text-[#aaa]"
+        <div className="rounded-[25px]">
+          <div className="relative items-center rounded-[25px] pr-[10px]">
+            <MyInput
               placeholder="جستجو"
+              value={searchText}
+              onChange={handleSearch}
+              className="bg-transparent"
             />
-            <button className="col-span-1 flex h-full w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-transparent transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]">
-              <img src="./src/assets/images/icons8-search.svg" alt="" />
-            </button>
+            
+            {/* Search Results Dropdown */}
+            {showDropdown && searchResults.length > 0 && (
+              <div 
+                ref={dropdownRef}
+                className="absolute z-50 mt-1 w-full rounded-[15px] bg-white shadow-lg"
+              >
+                {searchResults.map((teacher) => (
+                  <button
+                    key={teacher.id}
+                    onClick={() => handleTeacherSelect(teacher)}
+                    className="w-full px-4 py-2 text-right text-black hover:bg-gray-100 first:rounded-t-[15px] last:rounded-b-[15px]"
+                  >
+                    {`${teacher.firstName} ${teacher.lastName}`}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-          <button className="col-span-1 flex cursor-pointer items-center justify-center rounded-[25px] border-none bg-white text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]">
-            جستجو پ
-          </button>
         </div>
 
         <div className="rounded-[25px] bg-white shadow">
