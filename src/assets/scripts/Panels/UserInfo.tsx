@@ -1,7 +1,12 @@
 import { useState } from "react";
 import Timeline from "./../../components/TimeLineComponent";
+import type { Teacher } from "../types/Teacher";
 
-export default function UserInfo() {
+interface UserInfoProps {
+  teacher: Teacher;
+}
+
+export default function UserInfo({ teacher }: UserInfoProps) {
   const tabs = [
     "اطلاعات کاربر",
     "سوابق علمی پژوهشی",
@@ -82,10 +87,10 @@ export default function UserInfo() {
 
         <div className="relative z-0 -mt-4 h-[650px] w-[1100px] flex-1 rounded-2xl bg-white p-10">
           <div className="mr-40">
-            <h1 className="text-2xl font-bold text-black">استاد تمام</h1>
-            <h2 className="pt-4 text-3xl font-bold text-black">احمد باقری</h2>
+            <h1 className="text-2xl font-bold text-black">{teacher.rank}</h1>
+            <h2 className="pt-4 text-3xl font-bold text-black">{`${teacher.firstName} ${teacher.lastName}`}</h2>
             <p className="pt-4 text-gray-600">
-              دانشکده مهندسی کامپیوتر / نرم افزار و سیستم های اطلاعاتی
+              دانشکده {teacher.faculty}
             </p>
           </div>
           {renderTabContent()}
