@@ -6,6 +6,7 @@ import RoleManagementPanel from "./Panels/RoleManagementPanel";
 import NotificationsPanel from "./Panels/NotificationsPanel";
 import ImprovementChartPanel from "./Panels/ImprovementChartPanel";
 import UserInfo from "./Panels/UserInfo";
+import NotificationDetail from "./Panels/NotificationDetail";
 
 interface Teacher {
   id: number;
@@ -15,9 +16,18 @@ interface Teacher {
   rank: string;
 }
 
+interface Notification {
+  id: number;
+  title: string;
+  priority: string;
+  tag: string;
+}
+
 export default function DashboardComponent() {
   const [selectedItem, setSelectedItem] = useState<string>("dashboard"); // Default to the first item
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
+  const [selectedNotification, setSelectedNotification] =
+    useState<Notification | null>(null);
   const [hasFullAccess, setHasFullAccess] = useState(false);
 
   useEffect(() => {
@@ -38,10 +48,15 @@ export default function DashboardComponent() {
   const handleSelect = (item: string) => {
     setSelectedItem(item);
     setSelectedTeacher(null); // Reset selected teacher when changing panels
+    setSelectedNotification(null); // Reset selected notification when changing panels
   };
 
   const handleTeacherSelect = (teacher: Teacher) => {
     setSelectedTeacher(teacher);
+  };
+
+  const handleNotificationSelect = (notification: Notification) => {
+    setSelectedNotification(notification);
   };
 
   const renderPanel = () => {
@@ -50,6 +65,15 @@ export default function DashboardComponent() {
         <UserInfo
           teacher={selectedTeacher}
           onBack={() => setSelectedTeacher(null)}
+        />
+      );
+    }
+
+    if (selectedNotification && selectedItem === "notifications") {
+      return (
+        <NotificationDetail
+          notification={selectedNotification}
+          onBack={() => setSelectedNotification(null)}
         />
       );
     }
@@ -64,7 +88,9 @@ export default function DashboardComponent() {
       case "roles":
         return <RoleManagementPanel />;
       case "notifications":
-        return <NotificationsPanel />;
+        return (
+          <NotificationsPanel onNotificationSelect={handleNotificationSelect} />
+        );
       default:
         return <MainDashboardPanel />; // Default to MainDashboard
     }

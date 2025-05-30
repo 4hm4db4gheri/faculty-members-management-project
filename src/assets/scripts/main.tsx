@@ -5,7 +5,6 @@ import "../styles/main.css";
 import DashboardComponent from "./DashboardComponent";
 import LoginPage from "./Panels/LoginPage";
 import { RTLProvider } from "./RTLProvider";
-import NotificationDetail from "./Panels/NotificationDetail";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
@@ -22,7 +21,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
               </ProtectedRoute>
             }
           />
-          <Route path="/notification/detail" element={<NotificationDetail />} />
         </Routes>
       </BrowserRouter>
     </RTLProvider>
