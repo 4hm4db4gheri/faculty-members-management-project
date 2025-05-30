@@ -302,7 +302,9 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
   const [isPdfPopupOpen, setIsPdfPopupOpen] = useState(false);
   const [isExcelPopupOpen, setIsExcelPopupOpen] = useState(false);
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
-  const [advancedSearchResults, setAdvancedSearchResults] = useState<Teacher[] | null>(null);
+  const [advancedSearchResults, setAdvancedSearchResults] = useState<
+    Teacher[] | null
+  >(null);
   const [showUserInfo, setShowUserInfo] = useState(false);
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
   const [searchName, setSearchName] = useState("");
@@ -435,11 +437,16 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
           </div>
 
           {/* Update the advanced search button */}
-          <button 
+          <button
             onClick={() => setIsAdvancedSearchOpen(true)}
-            className="col-span-1 flex w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]"
+            className="col-span-1 flex w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white px-4 py-4 text-xl text-black shadow-xs ring-1 ring-gray-300 ring-inset transition-colors duration-300 hover:bg-gray-50"
+            title="جستجوی پیشرفته"
           >
-            جستجو پ
+            <img
+              src="./src/assets/images/AdvancedSearch.svg"
+              alt="جستجوی پیشرفته"
+              className="h-6 w-6"
+            />
           </button>
 
           <button
