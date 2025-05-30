@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import MyInput from "./MyInput";
 import MyDropdown from "./MyDropdown";
 import type { Teacher } from "../types/Teacher";
@@ -8,6 +8,12 @@ interface AdvancedSearchProps {
   onClose: () => void;
   onSearchResults: (teachers: Teacher[]) => void;
   teachers: Teacher[];
+  searchName: string;
+  setSearchName: (value: string) => void;
+  selectedFaculty: string;
+  setSelectedFaculty: (value: string) => void;
+  selectedDegree: string;
+  setSelectedDegree: (value: string) => void;
 }
 
 const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
@@ -15,12 +21,13 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   onClose,
   onSearchResults,
   teachers,
+  searchName,
+  setSearchName,
+  selectedFaculty,
+  setSelectedFaculty,
+  selectedDegree,
+  setSelectedDegree,
 }) => {
-  const [searchName, setSearchName] = useState("");
-  const [selectedFaculty, setSelectedFaculty] = useState<string>("کامپیوتر");
-  const [selectedDegree, setSelectedDegree] = useState<string>("استاد");
-
-  // Define dropdown options
   const facultyOptions = ["کامپیوتر", "برق", "مکانیک", "عمران"] as const;
   const groupOptions = ["گروه ۱", "گروه ۲", "گروه ۳"] as const;
   const statusOptions = ["استاد", "استادیار", "دانشیار"] as const;
@@ -32,8 +39,11 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
         teacher.firstName.toLowerCase().includes(searchName.toLowerCase()) ||
         teacher.lastName.toLowerCase().includes(searchName.toLowerCase());
 
-      const facultyMatch = teacher.faculty === selectedFaculty;
-      const degreeMatch = teacher.rank === selectedDegree;
+      const facultyMatch =
+        selectedFaculty === "همه" || teacher.faculty === selectedFaculty;
+
+      const degreeMatch =
+        selectedDegree === "همه" || teacher.rank === selectedDegree;
 
       return nameMatch && facultyMatch && degreeMatch;
     });
@@ -65,11 +75,11 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                 <div className="row-span-1 content-center">
                   <div className="grid h-full grid-cols-3 items-center gap-2">
                     <div className="col-span-1 content-center text-right text-black">
-                      نام
+                      نام یا نام خانوادگی
                     </div>
                     <div className="col-span-2 w-full content-center">
                       <MyInput
-                        placeholder="نام"
+                        placeholder="نمونه: علی علوی"
                         className="w-full text-black"
                         value={searchName}
                         onChange={setSearchName}
@@ -98,7 +108,7 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                     <div className="col-span-2 w-full content-center">
                       <MyDropdown
                         options={groupOptions}
-                        defaultOption={groupOptions[0]}
+                        defaultOption="همه" // Use selectedGroup instead of "همه"
                       />
                     </div>
                   </div>
@@ -128,8 +138,8 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                     <div className="col-span-2 w-full content-center">
                       <MyDropdown
                         options={facultyOptions}
-                        defaultOption={facultyOptions[0]}
-                        onSelect={setSelectedFaculty}
+                        defaultOption={selectedFaculty} // Now using prop
+                        onSelect={setSelectedFaculty} // Now using prop
                       />
                     </div>
                   </div>
@@ -142,8 +152,8 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                     <div className="col-span-2 w-full content-center">
                       <MyDropdown
                         options={statusOptions}
-                        defaultOption={statusOptions[0]}
-                        onSelect={setSelectedDegree}
+                        defaultOption={selectedDegree} // Now using prop
+                        onSelect={setSelectedDegree} // Now using prop
                       />
                     </div>
                   </div>

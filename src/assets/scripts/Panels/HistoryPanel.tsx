@@ -305,6 +305,9 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
   const [advancedSearchResults, setAdvancedSearchResults] = useState<Teacher[] | null>(null);
   const [showUserInfo, setShowUserInfo] = useState(false);
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
+  const [searchName, setSearchName] = useState("");
+  const [selectedFaculty, setSelectedFaculty] = useState("همه");
+  const [selectedDegree, setSelectedDegree] = useState("همه");
 
   const handleFileUpload = (file: File) => {
     // Here you would handle the file upload to backend
@@ -418,7 +421,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
   }
 
   return (
-    <div className="grid h-full grid-rows-[auto_auto_1fr] overflow-hidden">
+    <div className="grid h-full grid-rows-[auto_auto_1fr] gap-4">
       {/* Search Section */}
       <div className="mb-4">
         <div className="grid h-full grid-cols-10 gap-6 rounded-[25px] px-2 py-5">
@@ -520,6 +523,12 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
         onClose={() => setIsAdvancedSearchOpen(false)}
         onSearchResults={handleAdvancedSearchResults}
         teachers={initialMockTeachers}
+        searchName={searchName}
+        setSearchName={setSearchName}
+        selectedFaculty={selectedFaculty}
+        setSelectedFaculty={setSelectedFaculty}
+        selectedDegree={selectedDegree}
+        setSelectedDegree={setSelectedDegree}
       />
     </div>
   );
