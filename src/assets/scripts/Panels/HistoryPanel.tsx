@@ -4,20 +4,14 @@ import MyInput from "../Elements/MyInput";
 import MyPopup from "../Elements/MyPopup";
 import MyTeacherContainer from "../Elements/MyTeacherContainer";
 import AdvancedSearch from "../Elements/AdvancedSearch";
-
-interface Teacher {
-  id: number;
-  firstName: string;
-  lastName: string;
-  faculty: string;
-  rank: string;
-}
+import UserInfo from "../Panels/UserInfo"; // Import UserInfo component
+import type { Teacher } from "../types/Teacher";
 
 interface HistoryPanelProps {
   onTeacherSelect: (teacher: Teacher) => void;
 }
 
-const initialMockTeachers: Teacher[] = [
+export const initialMockTeachers: Teacher[] = [
   // First 20 teachers with firstName "جواد"
   {
     id: 1,
@@ -308,14 +302,35 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
   const [isPdfPopupOpen, setIsPdfPopupOpen] = useState(false);
   const [isExcelPopupOpen, setIsExcelPopupOpen] = useState(false);
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
+  const [advancedSearchResults, setAdvancedSearchResults] = useState<
+    Teacher[] | null
+  >(null);
+  const [showUserInfo, setShowUserInfo] = useState(false);
+  const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
+  const [searchName, setSearchName] = useState("");
+  const [selectedFaculty, setSelectedFaculty] = useState("همه");
+  const [selectedDegree, setSelectedDegree] = useState("همه");
 
   const handleFileUpload = (file: File) => {
     // Here you would handle the file upload to backend
     console.log(`File was uploaded: ${file.name}`);
   };
 
+  const handleAdvancedSearchResults = (results: Teacher[]) => {
+    if (results.length === 1) {
+      setSelectedTeacher(results[0]);
+      setShowUserInfo(true);
+    } else {
+      setAdvancedSearchResults(results);
+      setShowUserInfo(false);
+    }
+  };
+
   // Filter teachers based on search criteria
   const filteredTeachers = useMemo(() => {
+    if (advancedSearchResults) {
+      return advancedSearchResults;
+    }
     if (!searchText) return initialMockTeachers;
 
     const searchLower = searchText.toLowerCase();
@@ -383,7 +398,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
     }
 
     return priorityResults;
-  }, [searchText]);
+  }, [searchText, advancedSearchResults]);
 
   // Pagination logic
   const ITEMS_PER_PAGE = 5;
@@ -403,8 +418,12 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
     setCurrentPage(1);
   }, [filteredTeachers.length]); // Reset page when number of results changes
 
+  if (showUserInfo && selectedTeacher) {
+    return <UserInfo teacher={selectedTeacher} />;
+  }
+
   return (
-    <div className="grid h-full grid-rows-[auto_auto_1fr] overflow-hidden">
+    <div className="grid h-full grid-rows-[auto_auto_1fr] gap-4">
       {/* Search Section */}
       <div className="mb-4">
         <div className="grid h-full grid-cols-10 gap-6 rounded-[25px] px-2 py-5">
@@ -418,11 +437,16 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
           </div>
 
           {/* Update the advanced search button */}
-          <button 
+          <button
             onClick={() => setIsAdvancedSearchOpen(true)}
-            className="col-span-1 flex w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]"
+            className="col-span-1 flex w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white px-4 py-4 text-xl text-black shadow-xs ring-1 ring-gray-300 ring-inset transition-colors duration-300 hover:bg-gray-50"
+            title="جستجوی پیشرفته"
           >
-            جستجو پ
+            <img
+              src="./src/assets/images/AdvancedSearch.svg"
+              alt="جستجوی پیشرفته"
+              className="h-6 w-6"
+            />
           </button>
 
           <button
@@ -504,6 +528,14 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
       <AdvancedSearch
         isOpen={isAdvancedSearchOpen}
         onClose={() => setIsAdvancedSearchOpen(false)}
+        onSearchResults={handleAdvancedSearchResults}
+        teachers={initialMockTeachers}
+        searchName={searchName}
+        setSearchName={setSearchName}
+        selectedFaculty={selectedFaculty}
+        setSelectedFaculty={setSelectedFaculty}
+        selectedDegree={selectedDegree}
+        setSelectedDegree={setSelectedDegree}
       />
     </div>
   );
