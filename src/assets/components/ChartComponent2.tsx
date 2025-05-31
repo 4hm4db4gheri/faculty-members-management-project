@@ -9,24 +9,15 @@ import {
   CartesianGrid,
 } from "recharts";
 
-const data2 = [
-  { name: "علوم", " اجرایی": 20, " انتقال": 15, " بازنشسته": 10, " پیمانی": 5 },
-  { name: "فنی", " اجرایی": 18, " انتقال": 12, " بازنشسته": 8, " پیمانی": 4 },
-  { name: "حقوق", " اجرایی": 22, " انتقال": 13, " بازنشسته": 10, " پیمانی": 7 },
-  {
-    name: "روانشناسی",
-    " اجرایی": 25,
-    " انتقال": 14,
-    " بازنشسته": 11,
-    " پیمانی": 6,
-  },
-];
+interface ChartComponentProps {
+  data: any[]; // Expects data as a prop
+}
 
-export default function ChartComponent2() {
+export default function ChartComponent2({ data }: ChartComponentProps) {
   return (
     <ResponsiveContainer width="100%" height={240}>
       <BarChart
-        data={data2}
+        data={data}
         margin={{ top: 10, right: 20, bottom: 20, left: 20 }}
       >
         <CartesianGrid strokeDasharray="3 3" />
