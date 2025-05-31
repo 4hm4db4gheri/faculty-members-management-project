@@ -7,7 +7,7 @@ import NotificationsPanel from "./Panels/NotificationsPanel";
 import ImprovementChartPanel from "./Panels/ImprovementChartPanel";
 import UserInfo from "./Panels/UserInfo";
 import NotificationDetail from "./Panels/NotificationDetail";
-import { Route, Routes, useNavigate, useLocation } from "react-router-dom"; // Import necessary hooks
+import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
 
 interface Teacher {
   id: number;
@@ -22,49 +22,51 @@ interface Notification {
   title: string;
   priority: string;
   tag: string;
+  subject?: string;
+  sendMethod?: string;
+  sendDate?: string;
+  description?: string;
 }
 
 export default function DashboardComponent() {
   const navigate = useNavigate();
-  const location = useLocation(); // Hook to get current URL location
+  const location = useLocation();
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
   const [selectedNotification, setSelectedNotification] =
     useState<Notification | null>(null);
   const [hasFullAccess, setHasFullAccess] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const checkAccess = () => {
       const hasAccess = AuthService.hasFullAccess();
       setHasFullAccess(hasAccess);
 
-      // If user is on roles page but doesn't have access, redirect to dashboard
-      // Now using location.pathname to check current route
       if (!hasAccess && location.pathname === "/dashboard/roles") {
-        navigate("/dashboard"); // Redirect to dashboard if no access
+        navigate("/dashboard");
       }
     };
 
     checkAccess();
-  }, [location.pathname, navigate]); // Rerun effect if pathname changes
+  }, [location.pathname, navigate]);
 
-  // Function to handle navigation
   const handleNavigate = (path: string) => {
     navigate(path);
-    setSelectedTeacher(null); // Reset selected teacher when changing panels
-    setSelectedNotification(null); // Reset selected notification when changing panels
+    setSelectedTeacher(null);
+    setSelectedNotification(null);
+    setIsSidebarOpen(false);
   };
 
   const handleTeacherSelect = (teacher: Teacher) => {
     setSelectedTeacher(teacher);
-    navigate(`/dashboard/records/${teacher.id}`); // Navigate to a specific teacher's page
+    navigate(`/dashboard/records/${teacher.id}`);
   };
 
   const handleNotificationSelect = (notification: Notification) => {
     setSelectedNotification(notification);
-    navigate(`/dashboard/notifications/${notification.id}`); // Navigate to a specific notification's page
+    navigate(`/dashboard/notifications/${notification.id}`);
   };
 
-  // Determine active item based on current URL path
   const getActiveClass = (path: string) => {
     return location.pathname === path
       ? "bg-[#3388BC]"
@@ -72,9 +74,32 @@ export default function DashboardComponent() {
   };
 
   return (
-    <div className="fixed top-0 right-0 m-0 flex h-screen w-screen flex-row-reverse items-center justify-end bg-[#1B4965] text-white">
-      <div className="m-5 mr-0 flex h-[calc(100%-40px)] w-[calc(100%-40px)] flex-col rounded-[25px] bg-[#EBF2FA] p-5 text-base shadow-lg">
-        {/* Render nested routes */}
+    <div className="fixed inset-0 flex flex-col overflow-hidden bg-[#1B4965] text-white lg:flex-row-reverse">
+      {/* Hamburger menu for small screens */}
+      <div className="absolute top-4 right-4 z-50 bg-[#1B4965] lg:hidden">
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="rounded-md p-2 focus:ring-2 focus:ring-white focus:outline-none"
+        >
+          <svg
+            className="h-8 w-8 bg-[#1B4965] text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M4 6h16M4 12h16M4 18h16"
+            ></path>
+          </svg>
+        </button>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="m-2 flex h-[calc(100%-40px)] w-[calc(100%-40px)] flex-1 flex-col overflow-auto rounded-[25px] bg-[#EBF2FA] p-4 text-base shadow-lg lg:m-5 lg:mr-0 lg:w-auto lg:p-5">
         <Routes>
           <Route path="/" element={<MainDashboardPanel />} />
           <Route
@@ -89,8 +114,7 @@ export default function DashboardComponent() {
                 onBack={() => navigate("/dashboard/records")}
               />
             }
-          />{" "}
-          {/* TeacherDetail route */}
+          />
           <Route path="progress" element={<ImprovementChartPanel />} />
           {hasFullAccess && (
             <Route path="roles" element={<RoleManagementPanel />} />
@@ -111,53 +135,87 @@ export default function DashboardComponent() {
                 onBack={() => navigate("/dashboard/notifications")}
               />
             }
-          />{" "}
-          {/* NotificationDetail route */}
+          />
         </Routes>
       </div>
-      <div className="flex h-screen w-[24vw] flex-col items-stretch justify-start overflow-auto px-[0.5vw] pt-[2vh] text-2xl">
-        <div className="m-5 mx-auto flex h-[150px] w-[150px] items-center justify-center rounded-full bg-[#8D8D8D] text-lg font-bold text-white">
+
+      {/* Sidebar / Navigation Panel */}
+      <div
+        className={`fixed inset-y-0 right-0 z-40 flex w-64 flex-col items-stretch justify-start bg-[#1B4965] transition-transform duration-300 ease-in-out lg:w-64 xl:w-72 ${isSidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"} lg:static lg:flex lg:translate-x-0 lg:p-4`}
+      >
+        {/* Close button for mobile sidebar */}
+        <div className="flex justify-end p-4 lg:hidden">
+          <button
+            onClick={() => setIsSidebarOpen(false)}
+            className="rounded-md p-2 focus:ring-2 focus:ring-white focus:outline-none"
+          >
+            <svg
+              className="h-8 w-8 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              ></path>
+            </svg>
+          </button>
+        </div>
+
+        <div className="m-5 mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-[#8D8D8D] text-sm font-bold text-white sm:h-32 sm:w-32 md:text-lg lg:text-xl">
           Pic
         </div>
-        <div className="flex items-center justify-center text-5xl">
+        <div className="mb-4 flex items-center justify-center px-2 text-3xl sm:text-4xl">
           اسم سامانه
         </div>
-        <div className="mx-auto my-5 h-[2px] w-[calc(100%-40px)] rounded bg-[#8D8D8D]"></div>
+        <div className="mx-auto my-3 h-[2px] w-[calc(100%-40px)] rounded bg-[#8D8D8D]"></div>
 
-        {/* Navigation Buttons */}
+        {/* Navigation Buttons - adjusted font sizes */}
         <button
-          className={`m-[5px] inline-flex h-[90px] cursor-pointer items-center justify-center rounded-[25px] border-none text-center text-4xl text-white transition-colors duration-300 ease-in-out outline-none ${getActiveClass("/dashboard")}`}
+          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass("/dashboard")}`}
           onClick={() => handleNavigate("/dashboard")}
         >
           داشبورد
         </button>
         <button
-          className={`m-[5px] inline-flex h-[90px] cursor-pointer items-center justify-center rounded-[25px] border-none text-center text-4xl text-white transition-colors duration-300 ease-in-out outline-none ${getActiveClass("/dashboard/records")}`}
+          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass("/dashboard/records")}`}
           onClick={() => handleNavigate("/dashboard/records")}
         >
           سوابق
         </button>
         <button
-          className={`m-[5px] inline-flex h-[90px] cursor-pointer items-center justify-center rounded-[25px] border-none text-center text-4xl text-white transition-colors duration-300 ease-in-out outline-none ${getActiveClass("/dashboard/progress")}`}
+          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass("/dashboard/progress")}`}
           onClick={() => handleNavigate("/dashboard/progress")}
         >
           نمودار پیشرفت
         </button>
         {hasFullAccess && (
           <button
-            className={`m-[5px] inline-flex h-[90px] cursor-pointer items-center justify-center rounded-[25px] border-none text-center text-4xl text-white transition-colors duration-300 ease-in-out outline-none ${getActiveClass("/dashboard/roles")}`}
+            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass("/dashboard/roles")}`}
             onClick={() => handleNavigate("/dashboard/roles")}
           >
             مدیریت نقش ها
           </button>
         )}
         <button
-          className={`m-[5px] inline-flex h-[90px] cursor-pointer items-center justify-center rounded-[25px] border-none text-center text-4xl text-white transition-colors duration-300 ease-in-out outline-none ${getActiveClass("/dashboard/notifications")}`}
+          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass("/dashboard/notifications")}`}
           onClick={() => handleNavigate("/dashboard/notifications")}
         >
           اعلان ها
         </button>
       </div>
+
+      {/* Overlay for mobile sidebar */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black opacity-50 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
     </div>
   );
 }

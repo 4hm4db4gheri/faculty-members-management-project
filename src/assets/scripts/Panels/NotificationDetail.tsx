@@ -1,73 +1,20 @@
-import { useState, useEffect } from "react";
+// Import useState hook from React
+import { useState } from "react";
 import MyDropdown from "../Elements/MyDropdown";
-import { useParams } from "react-router-dom"; // Import useParams
-import { Notification } from "../Elements/MyNotificationCard"; // Import Notification type
-import LoadingSpinner from "../Elements/LoadingSpinner";
+import { toast } from "react-toastify"; // Import toast
 
-interface NotificationDetailProps {
-  // notification: Notification; // No longer needed as prop
-  onBack: () => void; // Add onBack prop for navigation
+// Define TypeScript interface for form data structure
+interface NotificationForm {
+  subject: string; // موضوع
+  sendMethod: string; // نحوه ارسال
+  sendDate: string; // موعد ارسال
+  description: string; // شرح اعلان
 }
 
-// Assume you have mock notifications or fetch from an API
-const mockNotifications: Notification[] = [
-  {
-    id: 1,
-    title: "دیر شدن تحویل مقاله",
-    priority: "اخطار فوری",
-    tag: "red",
-    subject: "مقاله",
-    sendMethod: "ایمیل",
-    sendDate: "آنی",
-    description: "شرح دیرکرد تحویل مقاله.",
-  },
-  {
-    id: 2,
-    title: "تبدیل وضعیت به پیمانی",
-    priority: "یادآوری",
-    tag: "blue",
-    subject: "قرارداد",
-    sendMethod: "پیامک",
-    sendDate: "زمانبندی شده",
-    description: "یادآوری برای تبدیل وضعیت به پیمانی.",
-  },
-  {
-    id: 3,
-    title: "دیر شدن تحویل مقاله",
-    priority: "اخطار",
-    tag: "yellow",
-    subject: "مقاله",
-    sendMethod: "هر دو",
-    sendDate: "آنی",
-    description: "اخطار ثانویه برای دیرکرد مقاله.",
-  },
-  {
-    id: 4,
-    title: "تمدید قرارداد",
-    priority: "پیشنهاد",
-    tag: "green",
-    subject: "قرارداد",
-    sendMethod: "ایمیل",
-    sendDate: "زمانبندی شده",
-    description: "پیشنهاد تمدید قرارداد سالانه.",
-  },
-];
-
-export default function NotificationDetail({
-  onBack,
-}: NotificationDetailProps) {
-  const { notificationId } = useParams<{ notificationId: string }>(); // Get notificationId from URL
-  const [notification, setNotification] = useState<Notification | null>(null);
-
-  useEffect(() => {
-    if (notificationId) {
-      const foundNotification = mockNotifications.find(
-        (n) => n.id === parseInt(notificationId),
-      );
-      setNotification(foundNotification || null);
-    }
-  }, [notificationId]);
-
+// Define main component
+export default function NotificationPanel() {
+  // Renamed to NotificationDetail for consistency
+  // Initialize form state using useState hook
   const [formData, setFormData] = useState<NotificationForm>({
     subject: "",
     sendMethod: "",
@@ -75,27 +22,22 @@ export default function NotificationDetail({
     description: "",
   });
 
-  useEffect(() => {
-    if (notification) {
-      setFormData({
-        subject: notification.subject || "",
-        sendMethod: notification.sendMethod || "",
-        sendDate: notification.sendDate || "",
-        description: notification.description || "",
-      });
-    }
-  }, [notification]);
-
+  // Define dropdown options
   const subjectOptions = ["دانشگاهی", "پژوهشی", "اداری"] as const;
+
   const sendMethodOptions = ["ایمیل", "پیامک", "هر دو"] as const;
+
   const sendDateOptions = ["آنی", "زمانبندی شده"] as const;
 
+  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Form submitted:", formData);
-    // Here you would typically send the updated data to your backend
+    e.preventDefault(); // Prevent default form submission
+    console.log("Form submitted:", formData); // Log form data
+    // You would typically send this data to your API here
+    toast.success("اعلان با موفقیت ارسال شد!"); // Success toast
   };
 
+  // Handle textarea changes
   const handleDescriptionChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
@@ -121,10 +63,7 @@ export default function NotificationDetail({
   const dropdownContainerClasses = "relative w-full";
   const dropdownClasses = "w-full pt-2";
 
-  if (!notification) {
-    return <LoadingSpinner text="در حال بارگذاری اطلاعات اعلان..." />;
-  }
-
+  // Component JSX
   return (
     <form
       onSubmit={handleSubmit}
@@ -134,7 +73,7 @@ export default function NotificationDetail({
       <div className={dropdownContainerClasses}>
         <MyDropdown
           options={subjectOptions}
-          defaultOption={formData.subject || "موضوع"} // Use formData
+          defaultOption="موضوع"
           onSelect={(value) =>
             setFormData((prev) => ({ ...prev, subject: value }))
           }
@@ -149,7 +88,7 @@ export default function NotificationDetail({
         <div className={dropdownContainerClasses}>
           <MyDropdown
             options={sendMethodOptions}
-            defaultOption={formData.sendMethod || "نحوه ارسال"} // Use formData
+            defaultOption="نحوه ارسال"
             onSelect={(value) =>
               setFormData((prev) => ({ ...prev, sendMethod: value }))
             }
@@ -162,7 +101,7 @@ export default function NotificationDetail({
         <div className={dropdownContainerClasses}>
           <MyDropdown
             options={sendDateOptions}
-            defaultOption={formData.sendDate || "موعد ارسال"} // Use formData
+            defaultOption="موعد ارسال"
             onSelect={(value) =>
               setFormData((prev) => ({ ...prev, sendDate: value }))
             }
@@ -194,20 +133,6 @@ export default function NotificationDetail({
           اعمال تغییرات
         </button>
       </div>
-      <button
-        onClick={onBack}
-        className="absolute top-4 left-4 rounded-full bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-      >
-        بازگشت
-      </button>
     </form>
   );
-}
-
-// Add the NotificationForm interface here or import it from a shared types file
-interface NotificationForm {
-  subject: string;
-  sendMethod: string;
-  sendDate: string;
-  description: string;
 }
