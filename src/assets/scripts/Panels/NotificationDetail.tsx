@@ -11,7 +11,7 @@ interface NotificationForm {
 }
 
 // Define main component
-export default function NotificationPanel() {
+export default function NotificationDetail() {
   // Initialize form state using useState hook
   const [formData, setFormData] = useState<NotificationForm>({
     subject: "",
