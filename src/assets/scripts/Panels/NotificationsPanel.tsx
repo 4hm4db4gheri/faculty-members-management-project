@@ -101,7 +101,7 @@ export default function NotificationsPanel({
   // Using template literals instead of clsx
   const labelClasses = `
     absolute
-    -top-1.5
+    -top-3.5
     right-4
     px-1
     text-sm

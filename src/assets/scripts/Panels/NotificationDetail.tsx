@@ -45,7 +45,7 @@ export default function NotificationDetail() {
 
   const labelClasses = `
     absolute
-    -top-1.5
+    -top-3.5
     right-4
     px-1
     text-sm

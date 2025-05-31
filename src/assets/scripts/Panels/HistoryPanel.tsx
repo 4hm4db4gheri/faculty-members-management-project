@@ -439,7 +439,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
           {/* Update the advanced search button */}
           <button
             onClick={() => setIsAdvancedSearchOpen(true)}
-            className="col-span-1 flex w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white px-4 py-4 text-xl text-black shadow-xs ring-1 ring-gray-300 ring-inset transition-colors duration-300 hover:bg-gray-50"
+            className="col-span-1 flex w-full h-10 cursor-pointer items-center justify-center rounded-[25px] border-none bg-white px-4 py-4 text-xl text-black shadow-xs ring-1 ring-gray-300 ring-inset transition-colors duration-300 hover:bg-gray-50"
             title="جستجوی پیشرفته"
           >
             <img
@@ -451,13 +451,13 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
 
           <button
             onClick={() => setIsPdfPopupOpen(true)}
-            className="col-span-1 my-2 mr-20 flex w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]"
+            className="col-span-1 my-2 mr-20 h-10 flex w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]"
           >
             PDF
           </button>
           <button
             onClick={() => setIsExcelPopupOpen(true)}
-            className="col-span-1 my-2 mr-20 flex w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]"
+            className="col-span-1 my-2 mr-20 h-10 flex w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]"
           >
             Excel
           </button>
@@ -465,8 +465,8 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
       </div>
 
       {/* Table Headers */}
-      <div className="mb-4 grid grid-cols-4">
-        <div className="col-span-2 content-end pr-20 pb-4 text-start text-black">
+      <div className="grid grid-cols-4">
+        <div className="col-span-2  content-end pr-20 pb-4 text-start text-black">
           نام استاد
         </div>
         <div className="col-span-1 content-end pb-4 text-center text-black">
