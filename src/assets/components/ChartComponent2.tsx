@@ -10,10 +10,16 @@ import {
 } from "recharts";
 
 const data2 = [
-  { name: "علوم", اجرایی: 20, انتقال: 15, بازنشسته: 10, پیمانی: 5 },
-  { name: "فنی", اجرایی: 18, انتقال: 12, بازنشسته: 8, پیمانی: 4 },
-  { name: "حقوق", اجرایی: 22, انتقال: 13, بازنشسته: 10, پیمانی: 7 },
-  { name: "روانشناسی", اجرایی: 25, انتقال: 14, بازنشسته: 11, پیمانی: 6 },
+  { name: "علوم", " اجرایی": 20, " انتقال": 15, " بازنشسته": 10, " پیمانی": 5 },
+  { name: "فنی", " اجرایی": 18, " انتقال": 12, " بازنشسته": 8, " پیمانی": 4 },
+  { name: "حقوق", " اجرایی": 22, " انتقال": 13, " بازنشسته": 10, " پیمانی": 7 },
+  {
+    name: "روانشناسی",
+    " اجرایی": 25,
+    " انتقال": 14,
+    " بازنشسته": 11,
+    " پیمانی": 6,
+  },
 ];
 
 export default function ChartComponent2() {
@@ -46,10 +52,10 @@ export default function ChartComponent2() {
           iconType="circle"
           wrapperStyle={{ fontSize: 13 }}
         />
-        <Bar dataKey="اجرایی" fill="#ff7f50" radius={[5, 5, 0, 0]} />
-        <Bar dataKey="انتقال" fill="#87ceeb" radius={[5, 5, 0, 0]} />
-        <Bar dataKey="بازنشسته" fill="#da70d6" radius={[5, 5, 0, 0]} />
-        <Bar dataKey="پیمانی" fill="#32cd32" radius={[5, 5, 0, 0]} />
+        <Bar dataKey=" اجرایی" fill="#ff7f50" radius={[5, 5, 0, 0]} />
+        <Bar dataKey=" انتقال" fill="#87ceeb" radius={[5, 5, 0, 0]} />
+        <Bar dataKey=" بازنشسته" fill="#da70d6" radius={[5, 5, 0, 0]} />
+        <Bar dataKey=" پیمانی" fill="#32cd32" radius={[5, 5, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

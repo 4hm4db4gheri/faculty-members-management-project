@@ -5,7 +5,7 @@ import "../styles/main.css";
 import DashboardComponent from "./DashboardComponent";
 import LoginPage from "./Panels/LoginPage";
 import { RTLProvider } from "./RTLProvider";
-import { ProtectedRoute } from "./components/ProtectedRoute";
+import { ProtectedRoute } from "./components/ProtectedRoute"; // Your ProtectedRoute
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -14,7 +14,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route
-            path="/dashboard/*"
+            path="/dashboard/*" // This covers all sub-routes of /dashboard
             element={
               <ProtectedRoute>
                 <DashboardComponent />

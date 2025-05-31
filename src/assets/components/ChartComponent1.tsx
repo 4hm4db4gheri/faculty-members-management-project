@@ -10,10 +10,10 @@ import {
 } from "recharts";
 
 const data1 = [
-  { name: "علوم", دانشيار: 20, استادیار: 15, "استاد تمام": 10 },
-  { name: "فنی", دانشيار: 15, استادیار: 18, "استاد تمام": 12 },
-  { name: "حقوق", دانشيار: 10, استادیار: 12, "استاد تمام": 18 },
-  { name: "روانشناسی", دانشيار: 18, استادیار: 14, "استاد تمام": 16 },
+  { name: "علوم", " دانشيار": 20, " استادیار": 15, " استاد تمام": 10 },
+  { name: "فنی", " دانشيار": 15, " استادیار": 18, " استاد تمام": 12 },
+  { name: "حقوق", " دانشيار": 10, " استادیار": 12, " استاد تمام": 18 },
+  { name: "روانشناسی", " دانشيار": 18, " استادیار": 14, " استاد تمام": 16 },
 ];
 
 export default function ChartComponent1() {
@@ -43,9 +43,9 @@ export default function ChartComponent1() {
           iconType="circle"
           wrapperStyle={{ fontSize: 13 }}
         />
-        <Bar dataKey="دانشيار" fill="#8884d8" radius={[5, 5, 0, 0]} />
-        <Bar dataKey="استادیار" fill="#82ca9d" radius={[5, 5, 0, 0]} />
-        <Bar dataKey="استاد تمام" fill="#ffc658" radius={[5, 5, 0, 0]} />
+        <Bar dataKey=" دانشيار" fill="#8884d8" radius={[5, 5, 0, 0]} />
+        <Bar dataKey=" استادیار" fill="#82ca9d" radius={[5, 5, 0, 0]} />
+        <Bar dataKey=" استاد تمام" fill="#ffc658" radius={[5, 5, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

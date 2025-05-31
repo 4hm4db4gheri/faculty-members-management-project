@@ -2,21 +2,26 @@ import { useState, useEffect, useRef } from "react";
 import ChartComponent1 from "../../components/ChartComponent1";
 import ChartComponent2 from "../../components/ChartComponent2";
 import MyInput from "../Elements/MyInput";
-import UserInfo from "./UserInfo";
+import UserInfo from "./UserInfo"; // Still needed if MainDashboardPanel can directly show UserInfo
 import type { Teacher } from "../types/Teacher";
-import { initialMockTeachers } from "./HistoryPanel"; // Update import to use named import
+import { initialMockTeachers } from "./HistoryPanel";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 export default function MainDashboardPanel() {
+  const navigate = useNavigate(); // Initialize useNavigate
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState<Teacher[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
+  // const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null); // No longer needed here
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setShowDropdown(false);
       }
     }
@@ -27,34 +32,36 @@ export default function MainDashboardPanel() {
 
   const handleSearch = (value: string) => {
     setSearchText(value);
-    
+
     if (value.trim() === "") {
       setSearchResults([]);
       setShowDropdown(false);
       return;
     }
 
-    const results = initialMockTeachers.filter((teacher) => {
-      const searchLower = value.toLowerCase();
-      return (
-        teacher.firstName.toLowerCase().includes(searchLower) ||
-        teacher.lastName.toLowerCase().includes(searchLower)
-      );
-    }).slice(0, 5); // Limit to 5 results
+    const results = initialMockTeachers
+      .filter((teacher) => {
+        const searchLower = value.toLowerCase();
+        return (
+          teacher.firstName.toLowerCase().includes(searchLower) ||
+          teacher.lastName.toLowerCase().includes(searchLower)
+        );
+      })
+      .slice(0, 5); // Limit to 5 results
 
     setSearchResults(results);
     setShowDropdown(true);
   };
 
   const handleTeacherSelect = (teacher: Teacher) => {
-    setSelectedTeacher(teacher);
+    // Instead of setting state, navigate to the UserInfo route
+    navigate(`/dashboard/records/${teacher.id}`);
     setShowDropdown(false);
     setSearchText("");
   };
 
-  if (selectedTeacher) {
-    return <UserInfo teacher={selectedTeacher} />;
-  }
+  // The conditional rendering of UserInfo directly in MainDashboardPanel is removed
+  // as UserInfo now has its own route.
 
   return (
     <div className="box-border grid h-full grid-cols-3 gap-[30px] rounded-[25px]">
@@ -67,10 +74,10 @@ export default function MainDashboardPanel() {
               onChange={handleSearch}
               className="bg-transparent"
             />
-            
+
             {/* Search Results Dropdown */}
             {showDropdown && searchResults.length > 0 && (
-              <div 
+              <div
                 ref={dropdownRef}
                 className="absolute z-50 mt-1 w-full rounded-[15px] bg-white shadow-lg"
               >
@@ -78,7 +85,7 @@ export default function MainDashboardPanel() {
                   <button
                     key={teacher.id}
                     onClick={() => handleTeacherSelect(teacher)}
-                    className="w-full px-4 py-2 text-right text-black hover:bg-gray-100 first:rounded-t-[15px] last:rounded-b-[15px]"
+                    className="w-full px-4 py-2 text-right text-black first:rounded-t-[15px] last:rounded-b-[15px] hover:bg-gray-100"
                   >
                     {`${teacher.firstName} ${teacher.lastName}`}
                   </button>
