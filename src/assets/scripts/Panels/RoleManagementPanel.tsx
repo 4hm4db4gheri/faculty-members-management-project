@@ -4,6 +4,7 @@ import MyInput from "./../Elements/MyInput";
 import MyPagination from "../Elements/MyPagination";
 import MyRoleManagerContainer from "../Elements/MyRoleManagerContainer";
 import LoadingSpinner from "../Elements/LoadingSpinner";
+import CreateUserForm from "../Elements/CreateUserForm";
 
 // Update interface to match API response
 interface User {
@@ -46,45 +47,46 @@ export default function RoleManagementPanel() {
   const roleOptions = ["ادمین کل", "ادمین"] as const;
   const [searchText, setSearchText] = useState<string>("");
   const [lastnameSearchText, setLastnameSearchText] = useState<string>("");
-  const [selectedRole, setSelectedRole] = useState<string>("هیچکدام");
+  const [selectedRole, setSelectedRole] = useState<string>("همه");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [users, setUsers] = useState<User[]>([]);
+  const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch users from API
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch(
-          "https://faculty.liara.run/api/panel/v1/user/GetList",
-          {
-            headers: {
-              accept: "text/plain",
-            },
+  const fetchUsers = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(
+        "https://faculty.liara.run/api/panel/v1/user/GetList",
+        {
+          headers: {
+            accept: "text/plain",
           },
-        );
+        },
+      );
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch users");
-        }
-
-        const data: ApiResponse = await response.json();
-
-        if (!data.error) {
-          setUsers(data.data);
-        } else {
-          throw new Error(data.message.join(", "));
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
-      } finally {
-        setIsLoading(false);
+      if (!response.ok) {
+        throw new Error("Failed to fetch users");
       }
-    };
 
+      const data: ApiResponse = await response.json();
+
+      if (!data.error) {
+        setUsers(data.data);
+      } else {
+        throw new Error(data.message.join(", "));
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Move fetchUsers call to useEffect
+  useEffect(() => {
     fetchUsers();
   }, []);
 
@@ -135,8 +137,7 @@ export default function RoleManagementPanel() {
         ? user.lastName.toLowerCase().includes(lastnameSearchText.toLowerCase())
         : true;
       const matchesRole =
-        selectedRole === "هیچکدام" ||
-        mapRoleToDisplay(user.roles) === selectedRole;
+        selectedRole === "همه" || mapRoleToDisplay(user.roles) === selectedRole;
 
       return matchesFirstName && matchesLastName && matchesRole;
     });
@@ -150,7 +151,11 @@ export default function RoleManagementPanel() {
   );
 
   if (isLoading) {
-    return <LoadingSpinner size="lg" />;
+    return (
+      <div className="flex h-full items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
   }
 
   if (error) {
@@ -174,6 +179,12 @@ export default function RoleManagementPanel() {
     .trim()
     .replace(/\s+/g, " ");
 
+  // Add this function to refresh users after creating a new one
+  const handleUserCreated = () => {
+    // Refetch users
+    fetchUsers();
+  };
+
   return (
     <div className="grid h-full grid-rows-[auto_auto_1fr] gap-4">
       {/* Search Section */}
@@ -195,7 +206,7 @@ export default function RoleManagementPanel() {
         <div className="group relative px-20">
           <MyDropdown
             options={roleOptions}
-            defaultOption="هیچکدام"
+            defaultOption="همه"
             onSelect={setSelectedRole}
             className=""
           />
@@ -211,7 +222,22 @@ export default function RoleManagementPanel() {
         <div className="textsize col-span-1 content-center text-center text-xl text-black">
           نقش
         </div>
+        <div className="col-span-1 flex items-center justify-center">
+          <button
+            onClick={() => setIsCreateUserOpen(true)}
+            className="rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+          >
+            افزودن کاربر
+          </button>
+        </div>
       </div>
+
+      {/* Add the CreateUserForm component */}
+      <CreateUserForm
+        isOpen={isCreateUserOpen}
+        onClose={() => setIsCreateUserOpen(false)}
+        onSuccess={handleUserCreated}
+      />
 
       {/* Content Area */}
       <div className="flex flex-col gap-5 overflow-hidden">
@@ -223,9 +249,7 @@ export default function RoleManagementPanel() {
                 userId={user.id}
                 fullName={`${user.firstName} ${user.lastName}`}
                 role={mapRoleToDisplay(user.roles)}
-                onRoleChange={(userId, newRole) =>
-                  updateUserRole(userId, mapDisplayToRole(newRole))
-                }
+                onRoleChange={updateUserRole} // updateUserRole already returns a Promise
               />
             ))}
             {currentUsers.length === 0 && (
