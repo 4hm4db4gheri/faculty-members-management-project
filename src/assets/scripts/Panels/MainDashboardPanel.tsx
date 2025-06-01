@@ -16,7 +16,10 @@ export default function MainDashboardPanel() {
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setShowDropdown(false);
       }
     }
@@ -27,7 +30,7 @@ export default function MainDashboardPanel() {
 
   const handleSearch = (value: string) => {
     setSearchText(value);
-    
+
     if (value.trim() === "") {
       setSearchResults([]);
       setShowDropdown(false);
@@ -40,7 +43,7 @@ export default function MainDashboardPanel() {
         teacher.firstName.toLowerCase().includes(searchLower) ||
         teacher.lastName.toLowerCase().includes(searchLower)
       );
-    }).slice(0, 5); // Limit to 5 results
+    }); // Removed the slice(0, 5)
 
     setSearchResults(results);
     setShowDropdown(true);
@@ -67,18 +70,18 @@ export default function MainDashboardPanel() {
               onChange={handleSearch}
               className="bg-transparent"
             />
-            
-            {/* Search Results Dropdown */}
+
+            {/* Updated Search Results Dropdown */}
             {showDropdown && searchResults.length > 0 && (
-              <div 
+              <div
                 ref={dropdownRef}
-                className="absolute z-50 mt-1 w-full rounded-[15px] bg-white shadow-lg"
+                className="scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 absolute z-50 mt-1 max-h-[300px] w-full overflow-y-auto rounded-[15px] bg-white shadow-lg"
               >
                 {searchResults.map((teacher) => (
                   <button
                     key={teacher.id}
                     onClick={() => handleTeacherSelect(teacher)}
-                    className="w-full px-4 py-2 text-right text-black hover:bg-gray-100 first:rounded-t-[15px] last:rounded-b-[15px]"
+                    className="w-full px-4 py-2 text-right text-black first:rounded-t-[15px] last:rounded-b-[15px] hover:bg-gray-100"
                   >
                     {`${teacher.firstName} ${teacher.lastName}`}
                   </button>
