@@ -151,7 +151,11 @@ export default function RoleManagementPanel() {
   );
 
   if (isLoading) {
-    return <LoadingSpinner size="lg" />;
+    return (
+      <div className="flex h-full items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
   }
 
   if (error) {
