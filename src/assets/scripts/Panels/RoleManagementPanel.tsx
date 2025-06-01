@@ -46,7 +46,7 @@ export default function RoleManagementPanel() {
   const roleOptions = ["ادمین کل", "ادمین"] as const;
   const [searchText, setSearchText] = useState<string>("");
   const [lastnameSearchText, setLastnameSearchText] = useState<string>("");
-  const [selectedRole, setSelectedRole] = useState<string>("هیچکدام");
+  const [selectedRole, setSelectedRole] = useState<string>("همه");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [users, setUsers] = useState<User[]>([]);
 
@@ -135,7 +135,7 @@ export default function RoleManagementPanel() {
         ? user.lastName.toLowerCase().includes(lastnameSearchText.toLowerCase())
         : true;
       const matchesRole =
-        selectedRole === "هیچکدام" ||
+        selectedRole === "همه" ||
         mapRoleToDisplay(user.roles) === selectedRole;
 
       return matchesFirstName && matchesLastName && matchesRole;
@@ -195,7 +195,7 @@ export default function RoleManagementPanel() {
         <div className="group relative px-20">
           <MyDropdown
             options={roleOptions}
-            defaultOption="هیچکدام"
+            defaultOption="همه"
             onSelect={setSelectedRole}
             className=""
           />
