@@ -13,8 +13,7 @@ export default function MyRoleManagerContainer({
   userId,
   onRoleChange,
 }: MyRoleManagerContainerProps) {
-  
-  const roleOptions = ["ادمین کل", "ادمین", "هیچکدام"];
+  const roleOptions = ["ادمین کل", "ادمین"];
 
   return (
     <div className="grid h-14 grid-cols-4 rounded-[25px] bg-white">
@@ -26,6 +25,7 @@ export default function MyRoleManagerContainer({
           options={roleOptions}
           defaultOption={role}
           onSelect={(newRole) => onRoleChange(userId, newRole)}
+          showAllOption={false} // Add this line
         />
       </div>
       <div className="col-span-1 rounded-[25px]"></div>
