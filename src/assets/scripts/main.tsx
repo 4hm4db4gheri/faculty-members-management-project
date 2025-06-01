@@ -6,6 +6,7 @@ import DashboardComponent from "./DashboardComponent";
 import LoginPage from "./Panels/LoginPage";
 import { RTLProvider } from "./RTLProvider";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { Toaster } from "react-hot-toast";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -23,6 +24,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           />
         </Routes>
       </BrowserRouter>
+      <Toaster />
     </RTLProvider>
   </StrictMode>,
 );

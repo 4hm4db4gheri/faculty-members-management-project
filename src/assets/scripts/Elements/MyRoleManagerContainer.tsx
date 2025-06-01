@@ -1,6 +1,7 @@
 import { useState } from "react";
 import MyDropdown from "./MyDropdown";
 import LoadingSpinner from "./LoadingSpinner";
+import toast from "react-hot-toast";
 
 interface MyRoleManagerContainerProps {
   fullName: string;
@@ -22,6 +23,25 @@ export default function MyRoleManagerContainer({
     setIsLoading(true);
     try {
       await onRoleChange(userId, newRole);
+      toast.success(`نقش ${fullName} با موفقیت به ${newRole} تغییر کرد`, {
+        duration: 4000,
+        position: "bottom-center",
+        style: {
+          background: "#F0FDF4",
+          color: "#166534",
+          direction: "rtl",
+        },
+      });
+    } catch {
+      toast.error(`خطا در تغییر نقش ${fullName}`, {
+        duration: 4000,
+        position: "bottom-center",
+        style: {
+          background: "#FEF2F2",
+          color: "#991B1B",
+          direction: "rtl",
+        },
+      });
     } finally {
       setIsLoading(false);
     }
