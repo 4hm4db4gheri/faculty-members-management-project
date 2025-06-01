@@ -37,12 +37,25 @@ export default function MainDashboardPanel() {
       return;
     }
 
+    // Split search text into words to handle first name and last name separately
+    const searchTerms = value.trim().toLowerCase().split(/\s+/);
+
     const results = initialMockTeachers.filter((teacher) => {
-      const searchLower = value.toLowerCase();
-      return (
-        teacher.firstName.toLowerCase().includes(searchLower) ||
-        teacher.lastName.toLowerCase().includes(searchLower)
-      );
+      if (searchTerms.length === 1) {
+        // Search in both first name and last name for single word
+        const searchTerm = searchTerms[0];
+        return (
+          teacher.firstName.toLowerCase().includes(searchTerm) ||
+          teacher.lastName.toLowerCase().includes(searchTerm)
+        );
+      } else {
+        // For multiple words, try to match first name and last name separately
+        return searchTerms.every(
+          (term) =>
+            teacher.firstName.toLowerCase().includes(term) ||
+            teacher.lastName.toLowerCase().includes(term),
+        );
+      }
     }); // Removed the slice(0, 5)
 
     setSearchResults(results);

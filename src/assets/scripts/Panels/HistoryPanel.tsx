@@ -326,76 +326,47 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
     }
   };
 
-  // Filter teachers based on search criteria
+  // Updated filtering logic
   const filteredTeachers = useMemo(() => {
     if (advancedSearchResults) {
       return advancedSearchResults;
     }
-    if (!searchText) return initialMockTeachers;
+    if (!searchText.trim()) return initialMockTeachers;
 
-    const searchLower = searchText.toLowerCase();
+    const searchTerms = searchText.trim().toLowerCase().split(/\s+/);
     const results = new Set(); // To track unique records
     const priorityResults: Teacher[] = [];
 
-    // First priority: First name matches
+    // Helper function to check if teacher matches search terms
+    const matchesSearchTerms = (teacher: Teacher) => {
+      if (searchTerms.length === 1) {
+        // Single word search
+        const term = searchTerms[0];
+        return (
+          teacher.firstName.toLowerCase().includes(term) ||
+          teacher.lastName.toLowerCase().includes(term) ||
+          teacher.faculty.toLowerCase().includes(term) ||
+          teacher.rank.toLowerCase().includes(term)
+        );
+      } else {
+        // Multi-word search
+        return searchTerms.every(
+          (term) =>
+            teacher.firstName.toLowerCase().includes(term) ||
+            teacher.lastName.toLowerCase().includes(term) ||
+            teacher.faculty.toLowerCase().includes(term) ||
+            teacher.rank.toLowerCase().includes(term),
+        );
+      }
+    };
+
+    // First priority: Exact matches in first name or last name
     initialMockTeachers.forEach((teacher) => {
-      if (
-        teacher.firstName.toLowerCase().startsWith(searchLower) &&
-        !results.has(teacher.id)
-      ) {
+      if (matchesSearchTerms(teacher) && !results.has(teacher.id)) {
         priorityResults.push(teacher);
         results.add(teacher.id);
       }
     });
-
-    // Second priority: Last name matches
-    initialMockTeachers.forEach((teacher) => {
-      if (
-        teacher.lastName.toLowerCase().startsWith(searchLower) &&
-        !results.has(teacher.id)
-      ) {
-        priorityResults.push(teacher);
-        results.add(teacher.id);
-      }
-    });
-
-    // Third priority: Faculty matches
-    initialMockTeachers.forEach((teacher) => {
-      if (
-        teacher.faculty.toLowerCase().startsWith(searchLower) &&
-        !results.has(teacher.id)
-      ) {
-        priorityResults.push(teacher);
-        results.add(teacher.id);
-      }
-    });
-
-    // Fourth priority: Rank matches
-    initialMockTeachers.forEach((teacher) => {
-      if (
-        teacher.rank.toLowerCase().startsWith(searchLower) &&
-        !results.has(teacher.id)
-      ) {
-        priorityResults.push(teacher);
-        results.add(teacher.id);
-      }
-    });
-
-    // If no exact matches found, try including partial matches
-    if (priorityResults.length === 0) {
-      initialMockTeachers.forEach((teacher) => {
-        if (
-          (teacher.firstName.toLowerCase().includes(searchLower) ||
-            teacher.lastName.toLowerCase().includes(searchLower) ||
-            teacher.faculty.toLowerCase().includes(searchLower) ||
-            teacher.rank.toLowerCase().includes(searchLower)) &&
-          !results.has(teacher.id)
-        ) {
-          priorityResults.push(teacher);
-          results.add(teacher.id);
-        }
-      });
-    }
 
     return priorityResults;
   }, [searchText, advancedSearchResults]);
@@ -439,7 +410,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
           {/* Update the advanced search button */}
           <button
             onClick={() => setIsAdvancedSearchOpen(true)}
-            className="col-span-1 flex w-full h-10 cursor-pointer items-center justify-center rounded-[25px] border-none bg-white px-4 py-4 text-xl text-black shadow-xs ring-1 ring-gray-300 ring-inset transition-colors duration-300 hover:bg-gray-50"
+            className="col-span-1 flex h-10 w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white px-4 py-4 text-xl text-black shadow-xs ring-1 ring-gray-300 transition-colors duration-300 ring-inset hover:bg-gray-50"
             title="جستجوی پیشرفته"
           >
             <img
@@ -451,13 +422,13 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
 
           <button
             onClick={() => setIsPdfPopupOpen(true)}
-            className="col-span-1 my-2 mr-20 h-10 flex w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]"
+            className="col-span-1 my-2 mr-20 flex h-10 w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]"
           >
             PDF
           </button>
           <button
             onClick={() => setIsExcelPopupOpen(true)}
-            className="col-span-1 my-2 mr-20 h-10 flex w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]"
+            className="col-span-1 my-2 mr-20 flex h-10 w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]"
           >
             Excel
           </button>
@@ -466,7 +437,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
 
       {/* Table Headers */}
       <div className="grid grid-cols-4">
-        <div className="col-span-2  content-end pr-20 pb-4 text-start text-black">
+        <div className="col-span-2 content-end pr-20 pb-4 text-start text-black">
           نام استاد
         </div>
         <div className="col-span-1 content-end pb-4 text-center text-black">
