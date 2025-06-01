@@ -4,301 +4,36 @@ import MyInput from "../Elements/MyInput";
 import MyPopup from "../Elements/MyPopup";
 import MyTeacherContainer from "../Elements/MyTeacherContainer";
 import AdvancedSearch from "../Elements/AdvancedSearch";
-import UserInfo from "../Panels/UserInfo"; // Import UserInfo component
+import UserInfo from "../Panels/UserInfo";
 import type { Teacher } from "../types/Teacher";
+import LoadingSpinner from "../Elements/LoadingSpinner";
 
 interface HistoryPanelProps {
   onTeacherSelect: (teacher: Teacher) => void;
 }
 
-export const initialMockTeachers: Teacher[] = [
-  // First 20 teachers with firstName "جواد"
-  {
-    id: 1,
-    firstName: "جواد",
-    lastName: "محمدی",
-    faculty: "کامپیوتر",
-    rank: "استاد",
-  },
-  {
-    id: 2,
-    firstName: "جواد",
-    lastName: "علوی",
-    faculty: "مکانیک",
-    rank: "دانشیار",
-  },
-  {
-    id: 3,
-    firstName: "جواد",
-    lastName: "رضایی",
-    faculty: "برق",
-    rank: "استادیار",
-  },
-  {
-    id: 4,
-    firstName: "جواد",
-    lastName: "حسینی",
-    faculty: "کامپیوتر",
-    rank: "استاد",
-  },
-  {
-    id: 5,
-    firstName: "جواد",
-    lastName: "مرادی",
-    faculty: "عمران",
-    rank: "دانشیار",
-  },
-  {
-    id: 6,
-    firstName: "جواد",
-    lastName: "زارعی",
-    faculty: "کامپیوتر",
-    rank: "استاد",
-  },
-  {
-    id: 7,
-    firstName: "جواد",
-    lastName: "امیری",
-    faculty: "برق",
-    rank: "استادیار",
-  },
-  {
-    id: 8,
-    firstName: "جواد",
-    lastName: "فتحی",
-    faculty: "مکانیک",
-    rank: "دانشیار",
-  },
-  {
-    id: 9,
-    firstName: "جواد",
-    lastName: "سعیدی",
-    faculty: "عمران",
-    rank: "استاد",
-  },
-  {
-    id: 10,
-    firstName: "جواد",
-    lastName: "نادری",
-    faculty: "کامپیوتر",
-    rank: "دانشیار",
-  },
-  {
-    id: 11,
-    firstName: "جواد",
-    lastName: "کاظمی",
-    faculty: "برق",
-    rank: "استاد",
-  },
-  {
-    id: 12,
-    firstName: "جواد",
-    lastName: "لطفی",
-    faculty: "مکانیک",
-    rank: "استادیار",
-  },
-  {
-    id: 13,
-    firstName: "جواد",
-    lastName: "حمیدی",
-    faculty: "کامپیوتر",
-    rank: "دانشیار",
-  },
-  {
-    id: 14,
-    firstName: "جواد",
-    lastName: "بهرامی",
-    faculty: "عمران",
-    rank: "استاد",
-  },
-  {
-    id: 15,
-    firstName: "جواد",
-    lastName: "مجیدی",
-    faculty: "برق",
-    rank: "استادیار",
-  },
-  {
-    id: 16,
-    firstName: "جواد",
-    lastName: "سلیمی",
-    faculty: "کامپیوتر",
-    rank: "دانشیار",
-  },
-  {
-    id: 17,
-    firstName: "جواد",
-    lastName: "جوادی",
-    faculty: "مکانیک",
-    rank: "استاد",
-  },
-  {
-    id: 18,
-    firstName: "جواد",
-    lastName: "نیکخواه",
-    faculty: "عمران",
-    rank: "استادیار",
-  },
-  {
-    id: 19,
-    firstName: "جواد",
-    lastName: "الهی",
-    faculty: "برق",
-    rank: "دانشیار",
-  },
-  {
-    id: 20,
-    firstName: "جواد",
-    lastName: "رحمانی",
-    faculty: "کامپیوتر",
-    rank: "استاد",
-  },
-  // ... rest of the teachers remain unchanged
-  {
-    id: 21,
-    firstName: "کاظم",
-    lastName: "کاظمی",
-    faculty: "برق",
-    rank: "استاد",
-  },
-  {
-    id: 22,
-    firstName: "لیلا",
-    lastName: "لطفی",
-    faculty: "مکانیک",
-    rank: "استادیار",
-  },
-  {
-    id: 23,
-    firstName: "حمید",
-    lastName: "حمیدی",
-    faculty: "کامپیوتر",
-    rank: "دانشیار",
-  },
-  {
-    id: 24,
-    firstName: "بهاره",
-    lastName: "بهرامی",
-    faculty: "عمران",
-    rank: "استاد",
-  },
-  {
-    id: 25,
-    firstName: "مجید",
-    lastName: "مجیدی",
-    faculty: "برق",
-    rank: "استادیار",
-  },
-  {
-    id: 26,
-    firstName: "سارا",
-    lastName: "سلیمی",
-    faculty: "کامپیوتر",
-    rank: "دانشیار",
-  },
-  {
-    id: 27,
-    firstName: "جواد",
-    lastName: "جوادی",
-    faculty: "مکانیک",
-    rank: "استاد",
-  },
-  {
-    id: 28,
-    firstName: "نیما",
-    lastName: "نیکخواه",
-    faculty: "عمران",
-    rank: "استادیار",
-  },
-  {
-    id: 29,
-    firstName: "الهه",
-    lastName: "الهی",
-    faculty: "برق",
-    rank: "دانشیار",
-  },
-  {
-    id: 30,
-    firstName: "رامین",
-    lastName: "رحمانی",
-    faculty: "کامپیوتر",
-    rank: "استاد",
-  },
-  {
-    id: 31,
-    firstName: "کاظم",
-    lastName: "کاظمی",
-    faculty: "برق",
-    rank: "استاد",
-  },
-  {
-    id: 32,
-    firstName: "لیلا",
-    lastName: "لطفی",
-    faculty: "مکانیک",
-    rank: "استادیار",
-  },
-  {
-    id: 33,
-    firstName: "حمید",
-    lastName: "حمیدی",
-    faculty: "کامپیوتر",
-    rank: "دانشیار",
-  },
-  {
-    id: 34,
-    firstName: "بهاره",
-    lastName: "بهرامی",
-    faculty: "عمران",
-    rank: "استاد",
-  },
-  {
-    id: 35,
-    firstName: "مجید",
-    lastName: "مجیدی",
-    faculty: "برق",
-    rank: "استادیار",
-  },
-  {
-    id: 36,
-    firstName: "سارا",
-    lastName: "سلیمی",
-    faculty: "کامپیوتر",
-    rank: "دانشیار",
-  },
-  {
-    id: 37,
-    firstName: "جواد",
-    lastName: "جوادی",
-    faculty: "مکانیک",
-    rank: "استاد",
-  },
-  {
-    id: 38,
-    firstName: "نیما",
-    lastName: "نیکخواه",
-    faculty: "عمران",
-    rank: "استادیار",
-  },
-  {
-    id: 39,
-    firstName: "الهه",
-    lastName: "الهی",
-    faculty: "برق",
-    rank: "دانشیار",
-  },
-  {
-    id: 40,
-    firstName: "رامین",
-    lastName: "رحمانی",
-    faculty: "کامپیوتر",
-    rank: "استاد",
-  },
-];
+// Update Teacher interface to match API response
+interface ApiTeacher {
+  id: number;
+  firstName: string;
+  lastName: string;
+  facultyName: string;
+  academicRank: number;
+  // ...other fields from API
+}
+
+interface ApiResponse {
+  data: ApiTeacher[];
+  error: boolean;
+  message: string[];
+}
 
 export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchText, setSearchText] = useState("");
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isPdfPopupOpen, setIsPdfPopupOpen] = useState(false);
   const [isExcelPopupOpen, setIsExcelPopupOpen] = useState(false);
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
@@ -326,21 +61,77 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
     }
   };
 
+  // Function to convert academicRank number to string
+  const getRankString = (rank: number): string => {
+    switch (rank) {
+      case 0:
+        return "استاد";
+      case 1:
+        return "دانشیار";
+      case 2:
+        return "استادیار";
+      default:
+        return "نامشخص";
+    }
+  };
+
+  // Fetch teachers from API
+  useEffect(() => {
+    const fetchTeachers = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(
+          "https://faculty.liara.run/api/teacher/read-teacher?PageNumber=1&PageSize=9999",
+          {
+            headers: {
+              accept: "*/*",
+            },
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch teachers");
+        }
+
+        const apiData: ApiResponse = await response.json();
+
+        if (!apiData.error) {
+          // Convert API data to match your Teacher interface
+          const convertedTeachers: Teacher[] = apiData.data.map(
+            (apiTeacher) => ({
+              id: apiTeacher.id,
+              firstName: apiTeacher.firstName,
+              lastName: apiTeacher.lastName,
+              faculty: apiTeacher.facultyName,
+              rank: getRankString(apiTeacher.academicRank),
+            }),
+          );
+
+          setTeachers(convertedTeachers);
+        } else {
+          throw new Error(apiData.message.join(", "));
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTeachers();
+  }, []);
+
   // Updated filtering logic
   const filteredTeachers = useMemo(() => {
     if (advancedSearchResults) {
       return advancedSearchResults;
     }
-    if (!searchText.trim()) return initialMockTeachers;
+    if (!searchText.trim()) return teachers;
 
     const searchTerms = searchText.trim().toLowerCase().split(/\s+/);
-    const results = new Set(); // To track unique records
-    const priorityResults: Teacher[] = [];
 
-    // Helper function to check if teacher matches search terms
-    const matchesSearchTerms = (teacher: Teacher) => {
+    return teachers.filter((teacher) => {
       if (searchTerms.length === 1) {
-        // Single word search
         const term = searchTerms[0];
         return (
           teacher.firstName.toLowerCase().includes(term) ||
@@ -349,7 +140,6 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
           teacher.rank.toLowerCase().includes(term)
         );
       } else {
-        // Multi-word search
         return searchTerms.every(
           (term) =>
             teacher.firstName.toLowerCase().includes(term) ||
@@ -358,18 +148,8 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
             teacher.rank.toLowerCase().includes(term),
         );
       }
-    };
-
-    // First priority: Exact matches in first name or last name
-    initialMockTeachers.forEach((teacher) => {
-      if (matchesSearchTerms(teacher) && !results.has(teacher.id)) {
-        priorityResults.push(teacher);
-        results.add(teacher.id);
-      }
     });
-
-    return priorityResults;
-  }, [searchText, advancedSearchResults]);
+  }, [searchText, advancedSearchResults, teachers]);
 
   // Pagination logic
   const ITEMS_PER_PAGE = 5;
@@ -391,6 +171,24 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
 
   if (showUserInfo && selectedTeacher) {
     return <UserInfo teacher={selectedTeacher} />;
+  }
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center text-red-500">
+        خطا در دریافت اطلاعات: {error}
+      </div>
+    );
   }
 
   return (
@@ -500,7 +298,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
         isOpen={isAdvancedSearchOpen}
         onClose={() => setIsAdvancedSearchOpen(false)}
         onSearchResults={handleAdvancedSearchResults}
-        teachers={initialMockTeachers}
+        teachers={teachers}
         searchName={searchName}
         setSearchName={setSearchName}
         selectedFaculty={selectedFaculty}

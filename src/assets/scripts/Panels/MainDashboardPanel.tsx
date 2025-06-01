@@ -4,14 +4,89 @@ import ChartComponent2 from "../../components/ChartComponent2";
 import MyInput from "../Elements/MyInput";
 import UserInfo from "./UserInfo";
 import type { Teacher } from "../types/Teacher";
-import { initialMockTeachers } from "./HistoryPanel"; // Update import to use named import
+import LoadingSpinner from "../Elements/LoadingSpinner";
+
+interface ApiTeacher {
+  id: number;
+  firstName: string;
+  lastName: string;
+  facultyName: string;
+  academicRank: number;
+}
+
+interface ApiResponse {
+  data: ApiTeacher[];
+  error: boolean;
+  message: string[];
+}
 
 export default function MainDashboardPanel() {
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState<Teacher[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Fetch teachers from API
+  useEffect(() => {
+    const fetchTeachers = async () => {
+      try {
+        const response = await fetch(
+          "https://faculty.liara.run/api/teacher/read-teacher?PageNumber=1&PageSize=9999",
+          {
+            headers: {
+              accept: "*/*",
+            },
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch teachers");
+        }
+
+        const apiData: ApiResponse = await response.json();
+
+        if (!apiData.error) {
+          const convertedTeachers: Teacher[] = apiData.data.map(
+            (apiTeacher) => ({
+              id: apiTeacher.id,
+              firstName: apiTeacher.firstName,
+              lastName: apiTeacher.lastName,
+              faculty: apiTeacher.facultyName,
+              rank: getRankString(apiTeacher.academicRank),
+            }),
+          );
+
+          setTeachers(convertedTeachers);
+        } else {
+          throw new Error(apiData.message.join(", "));
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTeachers();
+  }, []);
+
+  // Helper function to convert rank number to string
+  const getRankString = (rank: number): string => {
+    switch (rank) {
+      case 0:
+        return "استاد";
+      case 1:
+        return "دانشیار";
+      case 2:
+        return "استادیار";
+      default:
+        return "نامشخص";
+    }
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -37,26 +112,23 @@ export default function MainDashboardPanel() {
       return;
     }
 
-    // Split search text into words to handle first name and last name separately
     const searchTerms = value.trim().toLowerCase().split(/\s+/);
 
-    const results = initialMockTeachers.filter((teacher) => {
+    const results = teachers.filter((teacher) => {
       if (searchTerms.length === 1) {
-        // Search in both first name and last name for single word
         const searchTerm = searchTerms[0];
         return (
           teacher.firstName.toLowerCase().includes(searchTerm) ||
           teacher.lastName.toLowerCase().includes(searchTerm)
         );
       } else {
-        // For multiple words, try to match first name and last name separately
         return searchTerms.every(
           (term) =>
             teacher.firstName.toLowerCase().includes(term) ||
             teacher.lastName.toLowerCase().includes(term),
         );
       }
-    }); // Removed the slice(0, 5)
+    });
 
     setSearchResults(results);
     setShowDropdown(true);
@@ -70,6 +142,22 @@ export default function MainDashboardPanel() {
 
   if (selectedTeacher) {
     return <UserInfo teacher={selectedTeacher} />;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center text-red-500">
+        خطا در دریافت اطلاعات: {error}
+      </div>
+    );
   }
 
   return (
