@@ -35,7 +35,7 @@ export default function Dropdown({
       )}
       <Menu as="div" className="relative inline-block w-full">
         <div>
-          <MenuButton className="inline-flex w-full items-center justify-between rounded-[25px] bg-white px-3 py-4 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50">
+          <MenuButton className="inline-flex w-full items-center justify-between rounded-[25px] bg-white px-3 py-2.5 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50">
             <span className="text-right text-gray-500">{selectedOption}</span>
             <ChevronDownIcon
               aria-hidden="true"

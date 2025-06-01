@@ -163,7 +163,7 @@ export default function RoleManagementPanel() {
 
   const labelClasses = `
     absolute
-    -top-2.5
+    -top-5
     right-4
     px-21
     text-sm
@@ -177,7 +177,7 @@ export default function RoleManagementPanel() {
   return (
     <div className="grid h-full grid-rows-[auto_auto_1fr] gap-4">
       {/* Search Section */}
-      <div className="grid h-2/15 grid-cols-3 rounded-[25px] bg-transparent px-2 py-5">
+      <div className="grid h-2/15 grid-cols-3 rounded-[25px] bg-transparent px-2 py-3">
         <div className="content-center px-20 text-center">
           <MyInput
             placeholder="نام"

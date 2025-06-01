@@ -17,7 +17,7 @@ export default function MyRoleManagerContainer({
   const roleOptions = ["ادمین کل", "ادمین", "هیچکدام"];
 
   return (
-    <div className="grid h-18 grid-cols-4 rounded-[25px] bg-white">
+    <div className="grid h-14 grid-cols-4 rounded-[25px] bg-white">
       <div className="col-span-2 content-center rounded-[25px] pr-20 text-right text-black">
         {fullName}
       </div>

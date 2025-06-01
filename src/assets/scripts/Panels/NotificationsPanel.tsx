@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MyDropdown from "../Elements/MyDropdown";
 import MyNotificationCard, {
   Notification,
@@ -6,6 +6,20 @@ import MyNotificationCard, {
 
 interface NotificationsPanelProps {
   onNotificationSelect: (notification: Notification) => void;
+}
+
+interface notificationModel {
+  id: number;
+  title: string;
+  sendType: number;
+  notificationType: number;
+  beforeSendDay: string;
+}
+
+interface notificationResponse {
+  data: notificationModel[];
+  error: boolean;
+  message: string[];
 }
 
 export default function NotificationsPanel({
@@ -19,38 +33,75 @@ export default function NotificationsPanel({
   const subjectOptions = ["مقاله", "قرارداد"] as const;
   const importanceOptions = ["فوری", "عادی"] as const;
   const timeOptions = ["امروز", "این هفته"] as const;
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [notification, setnotification] = useState<notificationModel[]>([]);
 
-  const notifications: Notification[] = [
-    {
-      id: 1,
-      title: "دیر شدن تحویل مقاله",
-      priority: "اخطار فوری",
-      tag: "red",
-    },
-    {
-      id: 2,
-      title: "تبدیل وضعیت به پیمانی",
-      priority: "یادآوری",
-      tag: "blue",
-    },
-    {
-      id: 3,
-      title: "دیر شدن تحویل مقاله",
-      priority: "اخطار",
-      tag: "yellow",
-    },
-    {
-      id: 4,
-      title: "تمدید قرارداد",
-      priority: "پیشنهاد",
-      tag: "green",
-    },
-  ];
+  useEffect(() => {
+    const fetchNotification = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(
+          "https://faculty.liara.run/api/panel/v1/notification/list",
+          {
+            headers: {
+              accept: "text/plain",
+            },
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error("اشکال در دریافت اطلاعات اعلان ها");
+        }
+
+        const data: notificationResponse = await response.json();
+
+        if (!data.error) {
+          setnotification(data.data);
+        } else {
+          throw new Error(data.message.join(", "));
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchNotification();
+  }, []);
+
+  // const notifications: Notification[] = [
+  //   {
+  //     id: 1,
+  //     title: "دیر شدن تحویل مقاله",
+  //     priority: "اخطار فوری",
+  //     tag: "red",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "تبدیل وضعیت به پیمانی",
+  //     priority: "یادآوری",
+  //     tag: "blue",
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "دیر شدن تحویل مقاله",
+  //     priority: "اخطار",
+  //     tag: "yellow",
+  //   },
+  //   {
+  //     id: 4,
+  //     title: "تمدید قرارداد",
+  //     priority: "پیشنهاد",
+  //     tag: "green",
+  //   },
+  // ];
 
   // Using template literals instead of clsx
   const labelClasses = `
     absolute
-    -top-1.5
+    -top-3.5
     right-4
     px-1
     text-sm
@@ -66,8 +117,8 @@ export default function NotificationsPanel({
 
   return (
     <div>
-      {/* Filters */}
-      <div className="mb-6 flex justify-between gap-6 p-8">
+      {/* Filters */}{" "}
+      <div className="mt-2 mb-9 flex justify-between gap-6 px-4">
         <div className={dropdownContainerClasses}>
           <MyDropdown
             options={subjectOptions}
@@ -97,11 +148,10 @@ export default function NotificationsPanel({
           />
           <span className={labelClasses}>زمان</span>
         </div>
-      </div>
-
-      {/* Notifications List */}
-      <div className="space-y-5">
-        {notifications.map((notification) => (
+      </div>{" "}
+      {/* Notifications List */}{" "}
+      <div className="space-y-2.5 px-4">
+        {notification.map((notification) => (
           <MyNotificationCard
             key={notification.id}
             notification={notification}

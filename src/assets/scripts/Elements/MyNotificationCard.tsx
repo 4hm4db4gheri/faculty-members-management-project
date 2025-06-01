@@ -1,3 +1,7 @@
+// import MyNotificatinPanel, {
+//   notificationModel,
+// } from "./script/Panels/MyNotificatinPanel";
+
 export interface Notification {
   id: number;
   title: string;
@@ -9,8 +13,16 @@ export interface Notification {
   description?: string;
 }
 
+interface notificationModel {
+  id: number;
+  title: string;
+  sendType: number;
+  notificationType: number;
+  beforeSendDay: string;
+}
+
 interface MyNotificationCardProps {
-  notification: Notification;
+  notification: notificationModel;
   onClick: (notification: Notification) => void;
 }
 
@@ -32,17 +44,49 @@ export default function MyNotificationCard({
 
   return (
     <div
-      className="flex cursor-pointer items-center gap-5 rounded-2xl bg-white p-4 transition-colors hover:bg-gray-50"
-      onClick={() => onClick(notification)}
+      className="flex cursor-pointer items-center gap-3 rounded-2xl bg-white px-4 py-2.5 transition-colors hover:bg-gray-50"
+      onClick={() => onClick(notification as any)}
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <span
-          className={`rounded-full px-3 py-1 text-sm ${getTagStyles(notification.tag)}`}
+          className={`rounded-full px-2 py-0.5 text-xs ${getTagStyles(
+            getTypeColor(notification.notificationType),
+          )}`}
         >
-          {notification.priority}
+          {getTypeName(notification.notificationType)}
         </span>
       </div>
-      <span className="text-gray-800">{notification.title}</span>
+      <span className="text-sm text-gray-800">{notification.title}</span>
     </div>
   );
+}
+
+// Helper function to map notificationType to color string
+function getTypeColor(type: number): string {
+  switch (type) {
+    case 0:
+      return "blue";
+    case 1:
+      return "yellow";
+    case 2:
+      return "red";
+    case 3:
+      return "green";
+    default:
+      return "gray";
+  }
+}
+function getTypeName(type: number): string {
+  switch (type) {
+    case 0:
+      return "یادآوری";
+    case 1:
+      return "اخطار";
+    case 2:
+      return "اخطار نهایی";
+    case 3:
+      return "پیشنهاد";
+    default:
+      return "gray";
+  }
 }

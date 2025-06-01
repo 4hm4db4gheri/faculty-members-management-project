@@ -18,7 +18,7 @@ export default function MyTeacherContainer({
   return (
     <button
       onClick={() => onClick(teacher)}
-      className="grid h-18 grid-cols-4 rounded-[25px] bg-white text-left transition-colors hover:bg-gray-50 focus:outline-none"
+      className="grid h-14 grid-cols-4 rounded-[25px] bg-white py-2 text-left transition-colors hover:bg-gray-50 focus:outline-none"
     >
       <div className="col-span-2 content-center pr-20 text-start text-black">
         {`${teacher.firstName} ${teacher.lastName}`}
