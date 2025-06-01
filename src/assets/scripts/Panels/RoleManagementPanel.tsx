@@ -135,8 +135,7 @@ export default function RoleManagementPanel() {
         ? user.lastName.toLowerCase().includes(lastnameSearchText.toLowerCase())
         : true;
       const matchesRole =
-        selectedRole === "همه" ||
-        mapRoleToDisplay(user.roles) === selectedRole;
+        selectedRole === "همه" || mapRoleToDisplay(user.roles) === selectedRole;
 
       return matchesFirstName && matchesLastName && matchesRole;
     });
@@ -223,9 +222,7 @@ export default function RoleManagementPanel() {
                 userId={user.id}
                 fullName={`${user.firstName} ${user.lastName}`}
                 role={mapRoleToDisplay(user.roles)}
-                onRoleChange={(userId, newRole) =>
-                  updateUserRole(userId, mapDisplayToRole(newRole))
-                }
+                onRoleChange={updateUserRole} // updateUserRole already returns a Promise
               />
             ))}
             {currentUsers.length === 0 && (
