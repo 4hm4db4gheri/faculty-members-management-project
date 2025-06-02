@@ -4,7 +4,7 @@ import MyNotificationCard, {
   Notification,
 } from "../Elements/MyNotificationCard";
 import LoadingSpinner from "../Elements/LoadingSpinner";
-// import NotificationDetail from "../Elements/NotificationDetail"; // Import the NotificationDetail component
+import NotificationDetail from "./NotificationDetail";
 
 interface NotificationsPanelProps {
   onNotificationSelect: (notification: Notification) => void;
@@ -30,7 +30,8 @@ export default function NotificationsPanel({
   const [subject, setSubject] = useState("همه");
   const [importance, setImportance] = useState("همه");
   const [time, setTime] = useState("همه");
-  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null); // State to manage the selected notification
+  const [selectedNotification, setSelectedNotification] =
+    useState<Notification | null>(null); // State to manage the selected notification
 
   // Remove "همه" from options since it will be the default
   const subjectOptions = ["مقاله", "قرارداد"] as const;
@@ -163,23 +164,31 @@ export default function NotificationsPanel({
           />
           <span className={labelClasses}>زمان</span>
         </div>
-      </div>
-
+      </div>{" "}
       {/* Notifications List */}
       <div className="space-y-2.5 px-4">
-        {notification.map((notification) => (
+        {notification.map((notif) => (
           <MyNotificationCard
-            key={notification.id}
-            notification={notification}
-            onClick={onNotificationSelect}
+            key={notif.id}
+            notification={notif}
+            onClick={() => {
+              const notification = {
+                id: notif.id,
+                title: notif.title,
+                priority: notif.notificationType === 1 ? "فوری" : "عادی",
+                tag: notif.notificationType === 1 ? "red" : "blue",
+              };
+              setSelectedNotification(notification);
+              onNotificationSelect(notification);
+            }}
           />
         ))}
       </div>
-
       {/* Notification Detail Component */}
       {selectedNotification && (
         <NotificationDetail
-          selectedNotification={selectedNotification}
+          notificationId={selectedNotification.id}
+          initialTitle={selectedNotification.title}
         />
       )}
     </div>
