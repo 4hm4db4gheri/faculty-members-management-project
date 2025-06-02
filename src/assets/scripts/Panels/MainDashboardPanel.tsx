@@ -221,13 +221,53 @@ export default function MainDashboardPanel() {
         <div className="flex content-center items-center justify-center pt-[30px] text-5xl text-black">
           اسم کاربر
         </div>
-        <div className="grid h-[23%] grid-cols-4 gap-[10px] p-5 pt-[125px]">
-          <div className="col-span-1 flex h-full items-center justify-center rounded-[25px] bg-red-500">
-            نقش
-          </div>
-          <button className="col-span-3 flex h-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-[#D9D9D9] p-[10px_20px] text-center text-3xl font-bold text-black transition-colors duration-300 hover:bg-[#A6A6A6]">
-            مدت زمان
+        
+        {/* New notifications section */}
+        <div className="mt-8 flex w-full flex-col gap-4 p-5">
+          <button 
+            onClick={() => navigate("/dashboard/sent-notifications")}
+            className="w-full rounded-[25px] bg-[#1B4965] px-6 py-3 text-xl font-semibold text-white transition-colors hover:bg-[#3388BC]"
+          >
+            اعلان‌های ارسال شده
           </button>
+          
+          <div className="flex flex-col gap-2 rounded-[25px] bg-gray-50 p-4">
+            <h3 className="mb-2 text-lg font-semibold text-gray-800">آخرین اعلان‌ها</h3>
+            {[
+              {
+                title: "یادآوری مهلت ارسال مقاله",
+                date: "۱۴۰۴/۰۳/۱۲",
+                importance: "فوری"
+              },
+              {
+                title: "تمدید قرارداد پژوهشی",
+                date: "۱۴۰۴/۰۳/۱۰",
+                importance: "عادی"
+              },
+              {
+                title: "درخواست اصلاح مقاله",
+                date: "۱۴۰۴/۰۳/۰۸",
+                importance: "فوری"
+              }
+            ].map((notification, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between rounded-lg bg-white p-3 shadow-sm"
+              >
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-800">{notification.title}</p>
+                  <p className="text-xs text-gray-500">{notification.date}</p>
+                </div>
+                <span className={`rounded-full px-2 py-1 text-xs ${
+                  notification.importance === "فوری" 
+                    ? "bg-red-100 text-red-800" 
+                    : "bg-blue-100 text-blue-800"
+                }`}>
+                  {notification.importance}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

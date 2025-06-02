@@ -7,6 +7,7 @@ import NotificationsPanel from "./Panels/NotificationsPanel";
 import ImprovementChartPanel from "./Panels/ImprovementChartPanel";
 import UserInfo from "./Panels/UserInfo";
 import NotificationDetail from "./Panels/NotificationDetail";
+import SentNotificationsPanel from "./Panels/SentNotificationsPanel";
 import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
 
 interface Teacher {
@@ -135,6 +136,10 @@ export default function DashboardComponent() {
                 onBack={() => navigate("/dashboard/notifications")}
               />
             }
+          />
+          <Route
+            path="sent-notifications"
+            element={<SentNotificationsPanel />}
           />
         </Routes>
       </div>
