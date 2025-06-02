@@ -1,29 +1,12 @@
-import { useState, useEffect } from "react"; // Import useEffect
+import { useState } from "react";
 import Timeline from "./../../components/TimeLineComponent";
 import type { Teacher } from "../types/Teacher";
-import { useParams } from "react-router-dom"; // Import useParams
-import { initialMockTeachers } from "./HistoryPanel"; // Import mock data
-import LoadingSpinner from "../Elements/LoadingSpinner";
 
 interface UserInfoProps {
-  // teacher: Teacher; // No longer needed as prop
-  onBack: () => void; // Add onBack prop for navigation
+  teacher: Teacher;
 }
 
-export default function UserInfo({ onBack }: UserInfoProps) {
-  const { teacherId } = useParams<{ teacherId: string }>(); // Get teacherId from URL
-  const [teacher, setTeacher] = useState<Teacher | null>(null); // State for teacher data
-
-  useEffect(() => {
-    // Find the teacher from your mock data or fetch from API
-    if (teacherId) {
-      const foundTeacher = initialMockTeachers.find(
-        (t) => t.id === parseInt(teacherId),
-      );
-      setTeacher(foundTeacher || null);
-    }
-  }, [teacherId]);
-
+export default function UserInfo({ teacher }: UserInfoProps) {
   const tabs = [
     "اطلاعات کاربر",
     "سوابق علمی پژوهشی",
@@ -37,9 +20,6 @@ export default function UserInfo({ onBack }: UserInfoProps) {
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
   const renderTabContent = () => {
-    if (!teacher)
-      return <p className="text-center text-gray-500">استاد یافت نشد.</p>; // Handle case where teacher is not found
-
     switch (activeTab) {
       case "اطلاعات کاربر":
         return (
@@ -121,10 +101,6 @@ export default function UserInfo({ onBack }: UserInfoProps) {
     }
   };
 
-  if (!teacher) {
-    return <LoadingSpinner text="در حال بارگذاری اطلاعات استاد..." />;
-  }
-
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       {/* Profile photo section */}
@@ -148,19 +124,15 @@ export default function UserInfo({ onBack }: UserInfoProps) {
               {tab}
             </button>
           ))}
-          <button
-            onClick={onBack}
-            className="mr-auto rounded-full bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-          >
-            بازگشت
-          </button>
         </div>
 
         <div className="relative z-20 -mt-4 h-full w-full flex-1 rounded-2xl bg-white p-10">
           <div className="mr-40">
             <h1 className="text-2xl font-bold text-black">{teacher.rank}</h1>
             <h2 className="pt-4 text-3xl font-bold text-black">{`${teacher.firstName} ${teacher.lastName}`}</h2>
-            <p className="pt-4 text-gray-600">دانشکده {teacher.faculty}</p>
+            <p className="pt-4 text-gray-600">
+              دانشکده {teacher.faculty}
+            </p>
           </div>
           {renderTabContent()}
         </div>
