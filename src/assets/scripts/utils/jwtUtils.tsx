@@ -1,5 +1,6 @@
 interface DecodedToken {
   FullAccess?: string;
+  exp?: number; // Add expiration time field
   // Add other token fields if needed
 }
 

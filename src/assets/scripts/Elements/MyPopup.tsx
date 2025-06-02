@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify"; // Import toast
 
 interface PopupProps {
   isOpen: boolean;
@@ -28,7 +29,7 @@ export default function MyPopup({
 
     // Check file type
     if (type === "pdf" && file.type !== "application/pdf") {
-      alert("لطفا فقط فایل PDF انتخاب کنید");
+      toast.error("لطفا فقط فایل PDF انتخاب کنید"); // Replaced alert
       return;
     }
     if (
@@ -38,7 +39,7 @@ export default function MyPopup({
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       ].includes(file.type)
     ) {
-      alert("لطفا فقط فایل Excel انتخاب کنید");
+      toast.error("لطفا فقط فایل Excel انتخاب کنید"); // Replaced alert
       return;
     }
 
@@ -48,10 +49,11 @@ export default function MyPopup({
   const handleSubmit = () => {
     if (selectedFile) {
       onUpload(selectedFile);
+      toast.success("فایل با موفقیت بارگذاری شد!"); // Success toast
       setSelectedFile(null); // Reset after upload
       onClose();
     } else {
-      alert("لطفا ابتدا فایل را انتخاب کنید");
+      toast.warn("لطفا ابتدا فایل را انتخاب کنید"); // Replaced alert
     }
   };
 

@@ -1,6 +1,7 @@
 // Import useState hook from React
 import { useState } from "react";
 import MyDropdown from "../Elements/MyDropdown";
+import { toast } from "react-toastify"; // Import toast
 
 // Define TypeScript interface for form data structure
 interface NotificationForm {
@@ -31,6 +32,8 @@ export default function NotificationDetail() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission
     console.log("Form submitted:", formData); // Log form data
+    // You would typically send this data to your API here
+    toast.success("اعلان با موفقیت ارسال شد!"); // Success toast
   };
 
   // Handle textarea changes

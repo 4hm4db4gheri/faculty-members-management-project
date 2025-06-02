@@ -4,6 +4,7 @@ import MyInput from "./../Elements/MyInput";
 import MyPagination from "../Elements/MyPagination";
 import MyRoleManagerContainer from "../Elements/MyRoleManagerContainer";
 import LoadingSpinner from "../Elements/LoadingSpinner";
+import { toast } from "react-toastify"; // Import toast
 import CreateUserForm from "../Elements/CreateUserForm";
 
 // Update interface to match API response
@@ -64,8 +65,6 @@ export default function RoleManagementPanel() {
           headers: {
             accept: "text/plain",
           },
-        },
-      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch users");
@@ -95,7 +94,7 @@ export default function RoleManagementPanel() {
     try {
       const apiRole = mapDisplayToRole(newRole); // Convert display role to API role
       const response = await fetch(
-        `https://faculty.liara.run/api/panel/v1/user/role/change?UserID=${userId}&RoleName=${apiRole}`,
+        `https://faculty.liara.run/api/panel/v1/user/role/change?UserID=<span class="math-inline">\{userId\}&RoleName\=</span>{apiRole}`,
         {
           method: "PUT",
           headers: {
@@ -120,10 +119,12 @@ export default function RoleManagementPanel() {
           user.id === userId ? { ...user, roles: apiRole } : user,
         ),
       );
+      toast.success("نقش کاربر با موفقیت به‌روزرسانی شد."); // Success toast
     } catch (error) {
       console.error("Failed to update user role:", error);
-      // You might want to show an error message to the user here
-      alert("خطا در بروزرسانی نقش کاربر");
+      toast.error(
+        `خطا در بروزرسانی نقش کاربر: ${error instanceof Error ? error.message : "خطای ناشناخته"}`,
+      ); // Error toast
     }
   };
 
