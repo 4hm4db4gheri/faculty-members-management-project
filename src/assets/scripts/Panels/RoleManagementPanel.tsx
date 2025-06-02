@@ -5,6 +5,7 @@ import MyPagination from "../Elements/MyPagination";
 import MyRoleManagerContainer from "../Elements/MyRoleManagerContainer";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import CreateUserForm from "../Elements/CreateUserForm";
+import { toast } from "react-toastify";
 
 // Update interface to match API response
 interface User {
@@ -105,7 +106,7 @@ export default function RoleManagementPanel() {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to update role");
+        throw new Error("خطا در بروزرسانی نقش کاربر");
       }
 
       const data = await response.json();
@@ -120,10 +121,25 @@ export default function RoleManagementPanel() {
           user.id === userId ? { ...user, roles: apiRole } : user,
         ),
       );
+      
+      toast.success("نقش کاربر با موفقیت تغییر کرد", {
+        position: "bottom-left",
+        style: {
+          background: "#F0FDF4",
+          color: "#166534",
+          direction: "rtl",
+        },
+      });
     } catch (error) {
       console.error("Failed to update user role:", error);
-      // You might want to show an error message to the user here
-      alert("خطا در بروزرسانی نقش کاربر");
+      toast.error(error instanceof Error ? error.message : "خطا در بروزرسانی نقش کاربر", {
+        position: "bottom-left", 
+        style: {
+          background: "#FEF2F2",
+          color: "#991B1B",
+          direction: "rtl",
+        },
+      });
     }
   };
 
