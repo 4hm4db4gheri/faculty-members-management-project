@@ -3,6 +3,8 @@ import MyDropdown from "../Elements/MyDropdown";
 import MyNotificationCard, {
   Notification,
 } from "../Elements/MyNotificationCard";
+import LoadingSpinner from "../Elements/LoadingSpinner";
+// import NotificationDetail from "../Elements/NotificationDetail"; // Import the NotificationDetail component
 
 interface NotificationsPanelProps {
   onNotificationSelect: (notification: Notification) => void;
@@ -28,6 +30,7 @@ export default function NotificationsPanel({
   const [subject, setSubject] = useState("همه");
   const [importance, setImportance] = useState("همه");
   const [time, setTime] = useState("همه");
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null); // State to manage the selected notification
 
   // Remove "همه" from options since it will be the default
   const subjectOptions = ["مقاله", "قرارداد"] as const;
@@ -115,9 +118,21 @@ export default function NotificationsPanel({
   const dropdownContainerClasses = "relative w-1/3";
   const dropdownClasses = "w-full pt-2";
 
+  if (isLoading) {
+    return <LoadingSpinner size="lg" />;
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-[200px] flex-col items-center justify-center">
+        <p className="text-lg font-semibold text-red-500">خطا: {error}</p>
+      </div>
+    );
+  }
+
   return (
     <div>
-      {/* Filters */}{" "}
+      {/* Filters */}
       <div className="mt-2 mb-9 flex justify-between gap-6 px-4">
         <div className={dropdownContainerClasses}>
           <MyDropdown
@@ -148,8 +163,9 @@ export default function NotificationsPanel({
           />
           <span className={labelClasses}>زمان</span>
         </div>
-      </div>{" "}
-      {/* Notifications List */}{" "}
+      </div>
+
+      {/* Notifications List */}
       <div className="space-y-2.5 px-4">
         {notification.map((notification) => (
           <MyNotificationCard
@@ -159,6 +175,13 @@ export default function NotificationsPanel({
           />
         ))}
       </div>
+
+      {/* Notification Detail Component */}
+      {selectedNotification && (
+        <NotificationDetail
+          selectedNotification={selectedNotification}
+        />
+      )}
     </div>
   );
 }

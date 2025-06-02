@@ -43,9 +43,17 @@ export default function NotificationDetail() {
     }));
   };
 
+  // Add handler for subject input change
+  const handleSubjectChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      subject: e.target.value,
+    }));
+  };
+
   const labelClasses = `
     absolute
-    -top-3.5
+    -top-4
     right-4
     px-1
     text-sm
@@ -65,15 +73,14 @@ export default function NotificationDetail() {
       onSubmit={handleSubmit}
       className="relative min-h-screen space-y-7 p-4 text-right text-gray-900"
     >
-      {/* Subject dropdown */}
-      <div className={dropdownContainerClasses}>
-        <MyDropdown
-          options={subjectOptions}
-          defaultOption="موضوع"
-          onSelect={(value) =>
-            setFormData((prev) => ({ ...prev, subject: value }))
-          }
-          className={dropdownClasses}
+      {/* Subject input - replacing dropdown */}
+      <div className="relative w-full">
+        <input
+          type="text"
+          value={formData.subject}
+          onChange={handleSubjectChange}
+          className="w-full h-10 rounded-4xl bg-white p-2 pt-4 mt-2 text-right"
+          // className="absolute -top-3 right-4 bg-white px-2 text-sm text-gray-600"
         />
         <span className={labelClasses}>موضوع</span>
       </div>
