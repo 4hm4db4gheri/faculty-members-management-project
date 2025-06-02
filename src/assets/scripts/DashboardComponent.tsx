@@ -64,16 +64,17 @@ export default function DashboardComponent() {
       return (
         <UserInfo
           teacher={selectedTeacher}
-          onBack={() => setSelectedTeacher(null)}
+          // onBack={() => setSelectedTeacher(null)}
         />
       );
     }
 
+    debugger;
     if (selectedNotification && selectedItem === "notifications") {
       return (
         <NotificationDetail
-          notification={selectedNotification}
-          onBack={() => setSelectedNotification(null)}
+          notificationId={selectedNotification.id}
+          // onBack={() => setSelectedNotification(null)}
         />
       );
     }

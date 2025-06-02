@@ -8,6 +8,7 @@ interface DropdownProps {
   onSelect?: (selected: string) => void;
   label?: string;
   className?: string;
+  value?: string;
 }
 
 export default function Dropdown({
@@ -16,8 +17,11 @@ export default function Dropdown({
   onSelect,
   label,
   className = "",
+  value,
 }: DropdownProps) {
-  const [selectedOption, setSelectedOption] = useState(defaultOption || "همه");
+  const [selectedOption, setSelectedOption] = useState(
+    value || defaultOption || "همه",
+  );
 
   const handleSelect = (option: string) => {
     setSelectedOption(option);
