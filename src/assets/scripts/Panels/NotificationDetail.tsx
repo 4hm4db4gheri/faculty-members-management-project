@@ -12,8 +12,7 @@ interface NotificationForm {
 }
 
 // Define main component
-export default function NotificationPanel() {
-  // Renamed to NotificationDetail for consistency
+export default function NotificationDetail() {
   // Initialize form state using useState hook
   const [formData, setFormData] = useState<NotificationForm>({
     subject: "",
@@ -49,7 +48,7 @@ export default function NotificationPanel() {
 
   const labelClasses = `
     absolute
-    -top-1.5
+    -top-3.5
     right-4
     px-1
     text-sm

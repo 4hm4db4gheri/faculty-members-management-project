@@ -3,10 +3,24 @@ import ChartComponent1 from "../../components/ChartComponent1";
 import ChartComponent2 from "../../components/ChartComponent2";
 import MyInput from "../Elements/MyInput";
 import type { Teacher } from "../types/Teacher";
-import { initialMockTeachers } from "./HistoryPanel";
+
 import { useNavigate } from "react-router-dom";
 import { useChartData } from "../hooks/useChartData"; // Import the custom hook
-import LoadingSpinner from "../Elements/LoadingSpinner"; // Make sure LoadingSpinner is imported
+import LoadingSpinner from "../Elements/LoadingSpinner";
+
+interface ApiTeacher {
+  id: number;
+  firstName: string;
+  lastName: string;
+  facultyName: string;
+  academicRank: number;
+}
+
+interface ApiResponse {
+  data: ApiTeacher[];
+  error: boolean;
+  message: string[];
+}
 
 export default function MainDashboardPanel() {
   const navigate = useNavigate();
@@ -15,8 +29,72 @@ export default function MainDashboardPanel() {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const { chartData1, chartData2, isLoading, error } = useChartData(); // Use the custom hook
+  const { chartData1, chartData2} = useChartData(); // Use the custom hook
 
+  const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch teachers from API
+  useEffect(() => {
+    const fetchTeachers = async () => {
+      try {
+        const response = await fetch(
+          "https://faculty.liara.run/api/teacher/read-teacher?PageNumber=1&PageSize=9999",
+          {
+            headers: {
+              accept: "*/*",
+            },
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch teachers");
+        }
+
+        const apiData: ApiResponse = await response.json();
+
+        if (!apiData.error) {
+          const convertedTeachers: Teacher[] = apiData.data.map(
+            (apiTeacher) => ({
+              id: apiTeacher.id,
+              firstName: apiTeacher.firstName,
+              lastName: apiTeacher.lastName,
+              faculty: apiTeacher.facultyName,
+              rank: getRankString(apiTeacher.academicRank),
+            }),
+          );
+
+          setTeachers(convertedTeachers);
+        } else {
+          throw new Error(apiData.message.join(", "));
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTeachers();
+  }, []);
+
+  // Helper function to convert rank number to string
+  const getRankString = (rank: number): string => {
+    switch (rank) {
+      case 0:
+        return "استاد";
+      case 1:
+        return "دانشیار";
+      case 2:
+        return "استادیار";
+      default:
+        return "نامشخص";
+    }
+  };
+
+  // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -40,15 +118,23 @@ export default function MainDashboardPanel() {
       return;
     }
 
-    const results = initialMockTeachers
-      .filter((teacher) => {
-        const searchLower = value.toLowerCase();
+    const searchTerms = value.trim().toLowerCase().split(/\s+/);
+
+    const results = teachers.filter((teacher) => {
+      if (searchTerms.length === 1) {
+        const searchTerm = searchTerms[0];
         return (
-          teacher.firstName.toLowerCase().includes(searchLower) ||
-          teacher.lastName.toLowerCase().includes(searchLower)
+          teacher.firstName.toLowerCase().includes(searchTerm) ||
+          teacher.lastName.toLowerCase().includes(searchTerm)
         );
-      })
-      .slice(0, 5);
+      } else {
+        return searchTerms.every(
+          (term) =>
+            teacher.firstName.toLowerCase().includes(term) ||
+            teacher.lastName.toLowerCase().includes(term),
+        );
+      }
+    });
 
     setSearchResults(results);
     setShowDropdown(true);
@@ -59,6 +145,26 @@ export default function MainDashboardPanel() {
     setShowDropdown(false);
     setSearchText("");
   };
+
+  if (selectedTeacher) {
+    return <UserInfo teacher={selectedTeacher} />;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center text-red-500">
+        خطا در دریافت اطلاعات: {error}
+      </div>
+    );
+  }
 
   return (
     <div className="box-border grid h-full grid-cols-1 gap-4 overflow-y-auto rounded-[25px] lg:grid-cols-3 lg:gap-[30px]">
@@ -72,18 +178,16 @@ export default function MainDashboardPanel() {
               className="bg-transparent"
             />
 
-            {/* Search Results Dropdown */}
             {showDropdown && searchResults.length > 0 && (
               <div
                 ref={dropdownRef}
-                className="absolute z-50 mt-1 w-full rounded-[15px] bg-white shadow-lg"
+                className="scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 absolute z-50 mt-1 max-h-[300px] w-full overflow-y-auto rounded-[15px] bg-white shadow-lg"
               >
                 {searchResults.map((teacher) => (
                   <button
                     key={teacher.id}
                     onClick={() => handleTeacherSelect(teacher)}
                     className="w-full px-4 py-2 text-right text-sm text-black first:rounded-t-[15px] last:rounded-b-[15px] hover:bg-gray-100"
-                  >
                     {`${teacher.firstName} ${teacher.lastName}`}
                   </button>
                 ))}
