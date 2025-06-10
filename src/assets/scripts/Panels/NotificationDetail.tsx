@@ -186,18 +186,21 @@ export default function NotificationDetail({
         description: formData.description.trim(),
         message: formData.description.trim(), // ارسال متن شرح اعلان به عنوان پیام
       };
-
       console.log("Sending update request:", requestBody);
+      const queryParams = new URLSearchParams({
+        Id: notificationId?.toString() || "",
+        Message: formData.description.trim(),
+        SendType: sendType.toString(),
+        BeforeSendDay: JSON.stringify(sendDays),
+      });
 
       const response = await fetch(
-        "https://faculty.liara.run/api/panel/v1/notification/update",
+        `https://faculty.liara.run/api/panel/v1/notification/update?${queryParams.toString()}`,
         {
           method: "PUT",
           headers: {
-            "Content-Type": "application/json",
             accept: "text/plain",
           },
-          body: JSON.stringify(requestBody),
         },
       );
 
@@ -219,17 +222,6 @@ export default function NotificationDetail({
             ? responseData.message.join("، ")
             : "خطا در بروزرسانی اعلان";
         throw new Error(errorMessage);
-      } // Update form data with the response to ensure consistency
-      if (responseData.data) {
-        setFormData({
-          subject: responseData.data.title || formData.subject,
-          sendMethod: getSendMethod(responseData.data.sendType),
-          sendDate: getDateType(responseData.data.beforeSendDay),
-          description:
-            responseData.message?.join("\n") ||
-            responseData.data.message ||
-            formData.description,
-        });
       }
 
       // Success case
@@ -256,17 +248,14 @@ export default function NotificationDetail({
         <div className="mb-4 rounded-lg bg-red-50 p-4 text-red-500">
           {error}
         </div>
-      )}
-
-      <div className="relative w-full">
+      )}      <div className="relative w-full">
         <input
           type="text"
           value={formData.subject}
-          onChange={(e) =>
-            setFormData((prev) => ({ ...prev, subject: e.target.value }))
-          }
+          readOnly
+          disabled
           placeholder="موضوع"
-          className="mt-2 h-10 w-full rounded-[25px] bg-white px-3 text-right text-black"
+          className="mt-2 h-10 w-full cursor-not-allowed rounded-[25px] bg-white px-3 text-right text-gray-700"
         />
       </div>
 
