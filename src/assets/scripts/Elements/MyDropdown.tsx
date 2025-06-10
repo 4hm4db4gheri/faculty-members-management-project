@@ -8,12 +8,8 @@ interface DropdownProps {
   onSelect?: (selected: string | string[]) => void;
   label?: string;
   className?: string;
-
   value?: string | string[];
   multiSelect?: boolean;
-
-  showAllOption?: boolean; // Add this new prop
-
 }
 
 export default function Dropdown({
@@ -24,7 +20,6 @@ export default function Dropdown({
   className = "",
   value,
   multiSelect = false,
-  showAllOption = true, // Default to true to maintain existing behavior
 }: DropdownProps) {
   const [selectedOptions, setSelectedOptions] = useState<string[]>(
     multiSelect
@@ -112,20 +107,6 @@ export default function Dropdown({
           className="absolute right-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-hidden"
         >
           <div className="flex w-full flex-col">
-            {showAllOption && (
-              <MenuItem key="همه">
-                {({ active }) => (
-                  <button
-                    className={`w-full px-4 py-2 text-right text-sm ${
-                      active ? "bg-gray-100 text-gray-900" : "text-gray-700"
-                    }`}
-                    onClick={() => handleSelect("همه")}
-                  >
-                    همه
-                  </button>
-                )}
-              </MenuItem>
-            )}
             {options.map((option) => (
               <MenuItem key={option}>
                 {({ active }) => (
