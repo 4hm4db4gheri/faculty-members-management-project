@@ -99,7 +99,7 @@ export default function DashboardComponent() {
       </div>
 
       {/* Main Content Area */}
-      <div className="m-2 flex h-[calc(100%-40px)] w-[calc(100%-40px)] flex-1 flex-col overflow-auto rounded-[25px] bg-[#EBF2FA] p-4 text-base shadow-lg lg:m-5 lg:mr-0 lg:w-auto lg:p-5">
+      <div className="lg:mr- m-2 flex h-[calc(100%-40px)] flex-1 flex-col overflow-auto rounded-[25px] bg-[#EBF2FA] p-4 text-base shadow-lg lg:m-5 lg:w-auto lg:p-5">
         <Routes>
           <Route path="/" element={<MainDashboardPanel />} />
           <Route
@@ -169,8 +169,8 @@ export default function DashboardComponent() {
         <div className="m-5 mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-[#8D8D8D] text-sm font-bold text-white sm:h-32 sm:w-32 md:text-lg lg:text-xl">
           Pic
         </div>
-        <div className="mb-4 flex items-center justify-center px-2 text-3xl sm:text-4xl">
-          اسم سامانه
+        <div className="mb-4 flex items-center justify-center px-2 text-xl sm:text-5xl">
+          سماه
         </div>
         <div className="mx-auto my-3 h-[2px] w-[calc(100%-40px)] rounded bg-[#8D8D8D]"></div>
 
