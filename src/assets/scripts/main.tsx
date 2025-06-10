@@ -6,6 +6,8 @@ import DashboardComponent from "./DashboardComponent";
 import LoginPage from "./Panels/LoginPage";
 import { RTLProvider } from "./RTLProvider";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { ToastContainer } from "react-toastify"; // Import ToastContainer
+import "react-toastify/dist/ReactToastify.css"; // Import the CSS
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -23,6 +25,18 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           />
         </Routes>
       </BrowserRouter>
+      <ToastContainer
+        position="bottom-right" // موقعیت نمایش اعلان‌ها
+        autoClose={5000} // زمان ماندگاری اعلان (میلی‌ثانیه)
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={true} // برای پشتیبانی از زبان فارسی (راست به چپ)
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light" // تم روشن یا تاریک
+      />
     </RTLProvider>
   </StrictMode>,
 );

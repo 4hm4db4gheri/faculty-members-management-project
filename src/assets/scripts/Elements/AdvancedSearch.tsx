@@ -2,6 +2,7 @@ import React from "react";
 import MyInput from "./MyInput";
 import MyDropdown from "./MyDropdown";
 import type { Teacher } from "../types/Teacher";
+import { toast } from "react-toastify"; // Import toast
 
 interface AdvancedSearchProps {
   isOpen: boolean;
@@ -49,7 +50,7 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
     });
 
     if (results.length === 0) {
-      alert("هیچ استادی یافت نشد");
+      toast.info("هیچ استادی یافت نشد."); // Replaced alert
     } else {
       onSearchResults(results);
       onClose();

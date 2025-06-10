@@ -1,5 +1,5 @@
 import { LoginResponse } from "../types/auth.types";
-import { decodeToken } from '../utils/jwtUtils';
+import { decodeToken } from "../utils/jwtUtils";
 
 export class AuthService {
   private static readonly ACCESS_TOKEN_KEY = "accessToken";
@@ -30,14 +30,32 @@ export class AuthService {
   }
 
   static isAuthenticated(): boolean {
-    return !!this.getAccessToken();
+    const token = this.getAccessToken();
+    if (!token) return false;
+
+    try {
+      const decoded = decodeToken(token);
+      // Check if the token has an expiration time (exp) and if it's in the future
+      if (decoded && decoded.exp) {
+        const currentTime = Date.now() / 1000; // current time in seconds
+        return decoded.exp > currentTime; // Token is valid if expiration time is in the future
+      }
+      return false; // No expiration time or invalid decoded token
+    } catch (error) {
+      console.error("Error checking token validity:", error);
+      this.clearAuth(); // Clear invalid token
+      return false;
+    }
   }
 
   static hasFullAccess(): boolean {
     const token = this.getAccessToken();
     if (!token) return false;
-    
+
+    // First, check if the token is authenticated and not expired
+    if (!this.isAuthenticated()) return false; // Re-use the isAuthenticated logic
+
     const decoded = decodeToken(token);
-    return decoded.FullAccess === 'User - FullAccess';
+    return decoded.FullAccess === "User - FullAccess";
   }
 }

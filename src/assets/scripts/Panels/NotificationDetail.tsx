@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import MyDropdown from "../Elements/MyDropdown";
 import LoadingSpinner from "../Elements/LoadingSpinner";
+import { toast } from "react-toastify"; // Import toast
 
 interface NotificationDetailProps {
   notificationId?: number;
@@ -31,6 +32,7 @@ interface UpdateNotificationRequest {
   description: string;
   message?: string;
 }
+
 
 interface NotificationForm {
   subject: string;
@@ -82,6 +84,7 @@ export default function NotificationDetail({
         );
         const data: NotificationResponse = await response.json();
         console.log("Response Data:", data); // برای دیباگ
+
 
         if (!response.ok) {
           throw new Error("خطا در دریافت اطلاعات اعلان");
@@ -137,6 +140,7 @@ export default function NotificationDetail({
       .map((date) => parseInt(date.split(" ")[0]))
       .filter((num) => !isNaN(num))
       .sort((a, b) => a - b);
+
   };
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (

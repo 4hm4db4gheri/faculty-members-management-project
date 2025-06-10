@@ -9,18 +9,15 @@ import {
   CartesianGrid,
 } from "recharts";
 
-const data2 = [
-  { name: "علوم", اجرایی: 20, انتقال: 15, بازنشسته: 10, پیمانی: 5 },
-  { name: "فنی", اجرایی: 18, انتقال: 12, بازنشسته: 8, پیمانی: 4 },
-  { name: "حقوق", اجرایی: 22, انتقال: 13, بازنشسته: 10, پیمانی: 7 },
-  { name: "روانشناسی", اجرایی: 25, انتقال: 14, بازنشسته: 11, پیمانی: 6 },
-];
+interface ChartComponentProps {
+  data: any[]; // Expects data as a prop
+}
 
-export default function ChartComponent2() {
+export default function ChartComponent2({ data }: ChartComponentProps) {
   return (
     <ResponsiveContainer width="100%" height={240}>
       <BarChart
-        data={data2}
+        data={data}
         margin={{ top: 10, right: 20, bottom: 20, left: 20 }}
       >
         <CartesianGrid strokeDasharray="3 3" />
@@ -46,10 +43,10 @@ export default function ChartComponent2() {
           iconType="circle"
           wrapperStyle={{ fontSize: 13 }}
         />
-        <Bar dataKey="اجرایی" fill="#ff7f50" radius={[5, 5, 0, 0]} />
-        <Bar dataKey="انتقال" fill="#87ceeb" radius={[5, 5, 0, 0]} />
-        <Bar dataKey="بازنشسته" fill="#da70d6" radius={[5, 5, 0, 0]} />
-        <Bar dataKey="پیمانی" fill="#32cd32" radius={[5, 5, 0, 0]} />
+        <Bar dataKey=" اجرایی" fill="#ff7f50" radius={[5, 5, 0, 0]} />
+        <Bar dataKey=" انتقال" fill="#87ceeb" radius={[5, 5, 0, 0]} />
+        <Bar dataKey=" بازنشسته" fill="#da70d6" radius={[5, 5, 0, 0]} />
+        <Bar dataKey=" پیمانی" fill="#32cd32" radius={[5, 5, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );
