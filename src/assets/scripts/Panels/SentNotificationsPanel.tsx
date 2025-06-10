@@ -7,10 +7,10 @@ import { toast } from "react-toastify";
 interface SentNotification {
   id: number;
   title: string;
-  date: string;
+  createTime: string;
   recipientCount: number;
-  subject: "مقاله" | "قرارداد";
-  importance: "فوری" | "عادی";
+  sendType: number;
+  notificationType: number;
 }
 
 interface ApiResponse {
@@ -30,7 +30,7 @@ export default function SentNotificationsPanel() {
       try {
         setIsLoading(true);
         const response = await ApiService.get<ApiResponse>(
-          `/panel/v1/notification/sent-list?page=${currentPage}&pageSize=5`
+          "/panel/v1/notification/list"
         );
 
         if (!response.error) {
@@ -49,6 +49,20 @@ export default function SentNotificationsPanel() {
 
     fetchNotifications();
   }, [currentPage]);
+
+  const mapImportance = (notificationType: number): string => {
+    return notificationType === 1 ? "فوری" : "عادی";
+  };
+
+  const formatDate = (createTime: string): string => {
+    try {
+      const date = new Date(createTime);
+      // Convert to Persian date format (you might want to use a proper date formatter library)
+      return date.toLocaleDateString('fa-IR');
+    } catch {
+      return createTime;
+    }
+  };
 
   const ITEMS_PER_PAGE = 5;
   const totalPages = Math.ceil(notifications.length / ITEMS_PER_PAGE);
@@ -87,15 +101,15 @@ export default function SentNotificationsPanel() {
                 <h3 className="font-semibold text-gray-800">{notification.title}</h3>
               </div>
               <div className="text-center text-gray-600">
-                {notification.date}
+                {formatDate(notification.createTime)}
               </div>
               <div className="text-center">
                 <span className={`rounded-full px-3 py-1 text-sm ${
-                  notification.importance === "فوری" 
+                  mapImportance(notification.notificationType) === "فوری" 
                     ? "bg-red-100 text-red-800" 
                     : "bg-blue-100 text-blue-800"
                 }`}>
-                  {notification.importance}
+                  {mapImportance(notification.notificationType)}
                 </span>
               </div>
               <div className="text-center text-gray-600">
@@ -103,8 +117,15 @@ export default function SentNotificationsPanel() {
               </div>
             </div>
           ))}
+
+          {currentNotifications.length === 0 && (
+            <div className="text-center text-gray-500">
+              هیچ اعلانی یافت نشد
+            </div>
+          )}
         </div>
       </div>
+
       {totalPages > 1 && (
         <div className="mt-auto">
           <MyPagination
