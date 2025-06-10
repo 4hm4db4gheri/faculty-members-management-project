@@ -18,9 +18,12 @@ interface ApiTeacher {
   id: number;
   firstName: string;
   lastName: string;
-  facultyName: string;
+  facultyNameInPersian: string;
+  facultyNameInEnglish: string;
   academicRank: number;
-  // ...other fields from API
+  tId: string;
+  createTime: string;
+  // ...other fields can be added as needed
 }
 
 interface ApiResponse {
@@ -93,7 +96,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
       setIsLoading(true);
       try {
         const response = await ApiService.get<ApiResponse>(
-          "/teacher/read-teacher?PageNumber=1&PageSize=9999"
+          "/panel/v1/teacher/read-teachers?PageNumber=1&PageSize=1000"
         );
 
         if (!response.error) {
@@ -103,7 +106,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
               id: apiTeacher.id,
               firstName: apiTeacher.firstName,
               lastName: apiTeacher.lastName,
-              faculty: apiTeacher.facultyName,
+              faculty: apiTeacher.facultyNameInPersian,
               rank: getRankString(apiTeacher.academicRank),
             }),
           );
@@ -114,6 +117,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
+        console.error("Failed to fetch teachers:", err);
       } finally {
         setIsLoading(false);
       }
