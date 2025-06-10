@@ -33,7 +33,7 @@ export default function MainDashboardPanel() {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const { chartData1, chartData2} = useChartData(); // Use the custom hook
+  const { chartData1, chartData2 } = useChartData(); // Use the custom hook
 
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
@@ -159,9 +159,9 @@ export default function MainDashboardPanel() {
   }
 
   return (
-    <div className="box-border grid h-full grid-cols-3 gap-[30px] rounded-[25px]">
-      <div className="col-span-2 grid h-full grid-rows-[0.4fr_2fr_2fr] gap-[30px]">
-        <div className="rounded-[25px]">
+    <div className="box-border grid h-full grid-cols-1 gap-4 overflow-y-auto rounded-[25px] lg:grid-cols-3 lg:gap-[30px]">
+      <div className="col-span-1 grid h-full grid-rows-[auto_auto_auto] gap-4 lg:col-span-2 lg:gap-[30px]">
+        <div className="rounded-[25px] p-2">
           <div className="relative items-center rounded-[25px] pr-[10px]">
             <MyInput
               placeholder="جستجو"

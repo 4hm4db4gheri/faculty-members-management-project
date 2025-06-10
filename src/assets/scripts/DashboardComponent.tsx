@@ -10,6 +10,7 @@ import NotificationDetail from "./Panels/NotificationDetail";
 import SentNotificationsPanel from "./Panels/SentNotificationsPanel";
 import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
 
+
 interface Teacher {
   id: number;
   firstName: string;
@@ -23,55 +24,80 @@ interface Notification {
   title: string;
   priority: string;
   tag: string;
-  subject?: string;
-  sendMethod?: string;
-  sendDate?: string;
-  description?: string;
 }
 
 export default function DashboardComponent() {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [selectedItem, setSelectedItem] = useState<string>("dashboard"); // Default to the first item
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
   const [selectedNotification, setSelectedNotification] =
     useState<Notification | null>(null);
   const [hasFullAccess, setHasFullAccess] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
+    // Check if user has access when component mounts
     const checkAccess = () => {
       const hasAccess = AuthService.hasFullAccess();
       setHasFullAccess(hasAccess);
 
-      if (!hasAccess && location.pathname === "/dashboard/roles") {
-        navigate("/dashboard");
+      // If user is on roles page but doesn't have access, redirect to dashboard
+      if (!hasAccess && selectedItem === "roles") {
+        setSelectedItem("dashboard");
       }
     };
 
     checkAccess();
-  }, [location.pathname, navigate]);
+  }, []);
 
-  const handleNavigate = (path: string) => {
-    navigate(path);
-    setSelectedTeacher(null);
-    setSelectedNotification(null);
-    setIsSidebarOpen(false);
+  const handleSelect = (item: string) => {
+    setSelectedItem(item);
+    setSelectedTeacher(null); // Reset selected teacher when changing panels
+    setSelectedNotification(null); // Reset selected notification when changing panels
   };
 
   const handleTeacherSelect = (teacher: Teacher) => {
     setSelectedTeacher(teacher);
-    navigate(`/dashboard/records/${teacher.id}`);
   };
 
   const handleNotificationSelect = (notification: Notification) => {
     setSelectedNotification(notification);
-    navigate(`/dashboard/notifications/${notification.id}`);
   };
 
-  const getActiveClass = (path: string) => {
-    return location.pathname === path
-      ? "bg-[#3388BC]"
-      : "bg-transparent hover:bg-[#3388BC33]";
+  const renderPanel = () => {
+    if (selectedTeacher && selectedItem === "records") {
+      return (
+        <UserInfo
+          teacher={selectedTeacher}
+          // onBack={() => setSelectedTeacher(null)}
+        />
+      );
+    }
+
+    debugger;
+    if (selectedNotification && selectedItem === "notifications") {
+      return (
+        <NotificationDetail
+          notificationId={selectedNotification.id}
+          // onBack={() => setSelectedNotification(null)}
+        />
+      );
+    }
+
+    switch (selectedItem) {
+      case "dashboard":
+        return <MainDashboardPanel />;
+      case "records":
+        return <HistoryPanel onTeacherSelect={handleTeacherSelect} />;
+      case "progress":
+        return <ImprovementChartPanel />;
+      case "roles":
+        return <RoleManagementPanel />;
+      case "notifications":
+        return (
+          <NotificationsPanel onNotificationSelect={handleNotificationSelect} />
+        );
+      default:
+        return <MainDashboardPanel />; // Default to MainDashboard
+    }
   };
 
   return (
@@ -174,53 +200,65 @@ export default function DashboardComponent() {
         <div className="m-5 mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-[#8D8D8D] text-sm font-bold text-white sm:h-32 sm:w-32 md:text-lg lg:text-xl">
           Pic
         </div>
-        <div className="mb-4 flex items-center justify-center px-2 text-3xl sm:text-4xl">
+        <div className="flex items-center justify-center text-5xl">
           اسم سامانه
         </div>
-        <div className="mx-auto my-3 h-[2px] w-[calc(100%-40px)] rounded bg-[#8D8D8D]"></div>
+        <div className="mx-auto my-5 h-[2px] w-[calc(100%-40px)] rounded bg-[#8D8D8D]"></div>
 
-        {/* Navigation Buttons - adjusted font sizes */}
+        {/* Navigation Buttons */}
         <button
-          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass("/dashboard")}`}
-          onClick={() => handleNavigate("/dashboard")}
+          className={`m-[5px] inline-flex h-[90px] cursor-pointer items-center justify-center rounded-[25px] border-none text-center text-4xl text-white transition-colors duration-300 ease-in-out outline-none ${
+            selectedItem === "dashboard"
+              ? "bg-[#3388BC]"
+              : "bg-transparent hover:bg-[#3388BC33]"
+          }`}
+          onClick={() => handleSelect("dashboard")}
         >
           داشبورد
         </button>
         <button
-          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass("/dashboard/records")}`}
-          onClick={() => handleNavigate("/dashboard/records")}
+          className={`m-[5px] inline-flex h-[90px] cursor-pointer items-center justify-center rounded-[25px] border-none text-center text-4xl text-white transition-colors duration-300 ease-in-out outline-none ${
+            selectedItem === "records"
+              ? "bg-[#3388BC]"
+              : "bg-transparent hover:bg-[#3388BC33]"
+          }`}
+          onClick={() => handleSelect("records")}
         >
           سوابق
         </button>
         <button
-          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass("/dashboard/progress")}`}
-          onClick={() => handleNavigate("/dashboard/progress")}
+          className={`m-[5px] inline-flex h-[90px] cursor-pointer items-center justify-center rounded-[25px] border-none text-center text-4xl text-white transition-colors duration-300 ease-in-out outline-none ${
+            selectedItem === "progress"
+              ? "bg-[#3388BC]"
+              : "bg-transparent hover:bg-[#3388BC33]"
+          }`}
+          onClick={() => handleSelect("progress")}
         >
           نمودار پیشرفت
         </button>
         {hasFullAccess && (
           <button
-            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass("/dashboard/roles")}`}
-            onClick={() => handleNavigate("/dashboard/roles")}
+            className={`m-[5px] inline-flex h-[90px] cursor-pointer items-center justify-center rounded-[25px] border-none text-center text-4xl text-white transition-colors duration-300 ease-in-out outline-none ${
+              selectedItem === "roles"
+                ? "bg-[#3388BC]"
+                : "bg-transparent hover:bg-[#3388BC33]"
+            }`}
+            onClick={() => handleSelect("roles")}
           >
             مدیریت نقش ها
           </button>
         )}
         <button
-          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass("/dashboard/notifications")}`}
-          onClick={() => handleNavigate("/dashboard/notifications")}
+          className={`m-[5px] inline-flex h-[90px] cursor-pointer items-center justify-center rounded-[25px] border-none text-center text-4xl text-white transition-colors duration-300 ease-in-out outline-none ${
+            selectedItem === "notifications"
+              ? "bg-[#3388BC]"
+              : "bg-transparent hover:bg-[#3388BC33]"
+          }`}
+          onClick={() => handleSelect("notifications")}
         >
           اعلان ها
         </button>
       </div>
-
-      {/* Overlay for mobile sidebar */}
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-black opacity-50 lg:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
     </div>
   );
 }
