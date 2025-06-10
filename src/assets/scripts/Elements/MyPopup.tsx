@@ -6,6 +6,7 @@ interface PopupProps {
   onClose: () => void;
   type: "pdf" | "excel";
   onUpload: (file: File) => void;
+  title?: string;
 }
 
 export default function MyPopup({

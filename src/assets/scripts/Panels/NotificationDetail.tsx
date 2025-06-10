@@ -1,7 +1,10 @@
-// Import useState hook from React
-import { useState } from "react";
+// Import necessary hooks and components
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import MyDropdown from "../Elements/MyDropdown";
-import { toast } from "react-toastify"; // Import toast
+import { toast } from "react-toastify";
+import { ApiService } from "../Services/ApiService";
+import LoadingSpinner from "../Elements/LoadingSpinner";
 
 // Define TypeScript interface for form data structure
 interface NotificationForm {
@@ -11,8 +14,19 @@ interface NotificationForm {
   description: string; // شرح اعلان
 }
 
+// Define TypeScript interface for API response structure
+interface ApiResponse {
+  data: NotificationForm;
+  error: boolean;
+  message: string[];
+}
+
 // Define main component
 export default function NotificationDetail() {
+  const { notificationId } = useParams(); // Get notification ID from URL parameters
+  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [error, setError] = useState<string | null>(null); // Error state
+
   // Initialize form state using useState hook
   const [formData, setFormData] = useState<NotificationForm>({
     subject: "",
@@ -28,12 +42,54 @@ export default function NotificationDetail() {
 
   const sendDateOptions = ["آنی", "زمانبندی شده"] as const;
 
+  // Fetch notification details on component mount
+  useEffect(() => {
+    const fetchNotificationDetails = async () => {
+      try {
+        setIsLoading(true);
+        const response = await ApiService.get<ApiResponse>(
+          `/panel/v1/notification/${notificationId}`,
+        );
+
+        if (!response.error) {
+          setFormData(response.data);
+        } else {
+          throw new Error(response.message.join(", "));
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "خطا در دریافت اطلاعات اعلان";
+        setError(errorMessage);
+        toast.error(errorMessage);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (notificationId) {
+      fetchNotificationDetails();
+    }
+  }, [notificationId]);
+
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault(); // Prevent default form submission
-    console.log("Form submitted:", formData); // Log form data
-    // You would typically send this data to your API here
-    toast.success("اعلان با موفقیت ارسال شد!"); // Success toast
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await ApiService.post<ApiResponse>(
+        `/panel/v1/notification/${notificationId}/update`,
+        formData,
+      );
+
+      if (!response.error) {
+        toast.success("اعلان با موفقیت به‌روزرسانی شد");
+      } else {
+        throw new Error(response.message.join(", "));
+      }
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "خطا در به‌روزرسانی اعلان",
+      );
+    }
   };
 
   // Handle textarea changes
@@ -61,6 +117,24 @@ export default function NotificationDetail() {
 
   const dropdownContainerClasses = "relative w-full";
   const dropdownClasses = "w-full pt-2";
+
+  // Show loading spinner while data is being fetched
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  // Show error message if there was an error fetching data
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center text-red-500">
+        {error}
+      </div>
+    );
+  }
 
   // Component JSX
   return (

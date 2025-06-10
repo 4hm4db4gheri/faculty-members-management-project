@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MyPagination from "../Elements/MyPagination";
 import LoadingSpinner from "../Elements/LoadingSpinner";
+import { ApiService } from "../Services/ApiService";
+import { toast } from "react-toastify";
 
 interface SentNotification {
   id: number;
@@ -11,57 +13,46 @@ interface SentNotification {
   importance: "فوری" | "عادی";
 }
 
+interface ApiResponse {
+  data: SentNotification[];
+  error: boolean;
+  message: string[];
+}
+
 export default function SentNotificationsPanel() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [notifications, setNotifications] = useState<SentNotification[]>([]);
 
-  // Mock data - replace with API call later
-  const mockNotifications: SentNotification[] = [
-    {
-      id: 1,
-      title: "یادآوری مهلت ارسال مقاله",
-      date: "۱۴۰۴/۰۳/۱۲",
-      recipientCount: 15,
-      subject: "مقاله",
-      importance: "فوری"
-    },
-    {
-      id: 2,
-      title: "تمدید قرارداد پژوهشی",
-      date: "۱۴۰۴/۰۳/۱۰",
-      recipientCount: 8,
-      subject: "قرارداد",
-      importance: "عادی"
-    },
-    {
-      id: 3,
-      title: "درخواست اصلاح مقاله",
-      date: "۱۴۰۴/۰۳/۰۸",
-      recipientCount: 5,
-      subject: "مقاله",
-      importance: "فوری"
-    },
-    {
-      id: 4,
-      title: "اطلاعیه جلسه بررسی مقالات",
-      date: "۱۴۰۴/۰۳/۰۵",
-      recipientCount: 20,
-      subject: "مقاله",
-      importance: "عادی"
-    },
-    {
-      id: 5,
-      title: "تمدید مهلت تحویل قرارداد",
-      date: "۱۴۰۴/۰۳/۰۲",
-      recipientCount: 12,
-      subject: "قرارداد",
-      importance: "فوری"
-    }
-  ];
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        setIsLoading(true);
+        const response = await ApiService.get<ApiResponse>(
+          `/panel/v1/notification/sent-list?page=${currentPage}&pageSize=5`
+        );
+
+        if (!response.error) {
+          setNotifications(response.data);
+        } else {
+          throw new Error(response.message.join(", "));
+        }
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "خطا در دریافت اطلاعات";
+        setError(errorMessage);
+        toast.error(errorMessage);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchNotifications();
+  }, [currentPage]);
 
   const ITEMS_PER_PAGE = 5;
-  const totalPages = Math.ceil(mockNotifications.length / ITEMS_PER_PAGE);
-  const currentNotifications = mockNotifications.slice(
+  const totalPages = Math.ceil(notifications.length / ITEMS_PER_PAGE);
+  const currentNotifications = notifications.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
@@ -70,6 +61,14 @@ export default function SentNotificationsPanel() {
     return (
       <div className="flex h-full items-center justify-center">
         <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center text-red-500">
+        {error}
       </div>
     );
   }

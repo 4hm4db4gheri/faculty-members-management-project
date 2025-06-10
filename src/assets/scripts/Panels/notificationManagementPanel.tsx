@@ -1,10 +1,18 @@
 import { useState } from "react";
+import { ApiService } from "../Services/ApiService";
+import { toast } from "react-toastify";
 
 interface NotificationForm {
   subject: string;
   sendMethod: string;
   sendDate: string;
   description: string;
+}
+
+interface ApiResponse {
+  data: unknown;
+  error: boolean;
+  message: string[];
 }
 
 export default function NotificationManagementPanel() {
@@ -15,10 +23,28 @@ export default function NotificationManagementPanel() {
     description: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log("Form submitted:", formData);
+    try {
+      const response = await ApiService.post<ApiResponse>(
+        "/panel/v1/notification/create",
+        formData,
+      );
+
+      if (!response.error) {
+        toast.success("اعلان با موفقیت ایجاد شد");
+        setFormData({
+          subject: "",
+          sendMethod: "",
+          sendDate: "",
+          description: "",
+        });
+      } else {
+        throw new Error(response.message.join(", "));
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "خطا در ایجاد اعلان");
+    }
   };
 
   const handleChange = (

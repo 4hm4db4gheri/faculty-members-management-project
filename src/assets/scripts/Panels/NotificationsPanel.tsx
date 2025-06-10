@@ -3,6 +3,7 @@ import MyDropdown from "../Elements/MyDropdown";
 import MyNotificationCard, {
   Notification,
 } from "../Elements/MyNotificationCard";
+import { ApiService } from "../Services/ApiService";
 
 interface NotificationsPanelProps {
   onNotificationSelect: (notification: Notification) => void;
@@ -41,25 +42,14 @@ export default function NotificationsPanel({
     const fetchNotification = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(
-          "https://faculty.liara.run/api/panel/v1/notification/list",
-          {
-            headers: {
-              accept: "text/plain",
-            },
-          },
+        const response = await ApiService.get<notificationResponse>(
+          "/panel/v1/notification/list"
         );
 
-        if (!response.ok) {
-          throw new Error("اشکال در دریافت اطلاعات اعلان ها");
-        }
-
-        const data: notificationResponse = await response.json();
-
-        if (!data.error) {
-          setnotification(data.data);
+        if (!response.error) {
+          setnotification(response.data);
         } else {
-          throw new Error(data.message.join(", "));
+          throw new Error(response.message.join(", "));
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");

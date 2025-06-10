@@ -7,6 +7,7 @@ import AdvancedSearch from "../Elements/AdvancedSearch";
 import UserInfo from "../Panels/UserInfo";
 import type { Teacher } from "../types/Teacher";
 import LoadingSpinner from "../Elements/LoadingSpinner";
+import { ApiService } from "../Services/ApiService";
 
 interface HistoryPanelProps {
   onTeacherSelect: (teacher: Teacher) => void;
@@ -36,6 +37,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
   const [error, setError] = useState<string | null>(null);
   const [isPdfPopupOpen, setIsPdfPopupOpen] = useState(false);
   const [isExcelPopupOpen, setIsExcelPopupOpen] = useState(false);
+  const [isTeachersUploadOpen, setIsTeachersUploadOpen] = useState(false);
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
   const [advancedSearchResults, setAdvancedSearchResults] = useState<
     Teacher[] | null
@@ -49,6 +51,16 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
   const handleFileUpload = (file: File) => {
     // Here you would handle the file upload to backend
     console.log(`File was uploaded: ${file.name}`);
+  };
+
+  const handleTeachersUpload = (file: File) => {
+    // TODO: Implement API call to upload teachers list
+    console.log(`Teachers list file uploaded: ${file.name}`);
+    // In the future, you would:
+    // 1. Send the file to the server
+    // 2. Process the response
+    // 3. Update the teachers list if successful
+    // 4. Show appropriate toast messages
   };
 
   const handleAdvancedSearchResults = (results: Teacher[]) => {
@@ -80,24 +92,13 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
     const fetchTeachers = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(
-          "https://faculty.liara.run/api/teacher/read-teacher?PageNumber=1&PageSize=9999",
-          {
-            headers: {
-              accept: "*/*",
-            },
-          },
+        const response = await ApiService.get<ApiResponse>(
+          "/teacher/read-teacher?PageNumber=1&PageSize=9999"
         );
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch teachers");
-        }
-
-        const apiData: ApiResponse = await response.json();
-
-        if (!apiData.error) {
+        if (!response.error) {
           // Convert API data to match your Teacher interface
-          const convertedTeachers: Teacher[] = apiData.data.map(
+          const convertedTeachers: Teacher[] = response.data.map(
             (apiTeacher) => ({
               id: apiTeacher.id,
               firstName: apiTeacher.firstName,
@@ -109,7 +110,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
 
           setTeachers(convertedTeachers);
         } else {
-          throw new Error(apiData.message.join(", "));
+          throw new Error(response.message.join(", "));
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
@@ -195,7 +196,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
     <div className="grid h-full grid-rows-[auto_auto_1fr] gap-4">
       {/* Search Section */}
       <div className="mb-4">
-        <div className="grid h-full grid-cols-10 gap-6 rounded-[25px] px-2 py-5">
+        <div className="grid h-full grid-cols-10 gap-6 rounded-[25px] px-2 pt-5">
           {/* Single Search Field */}
           <div className="col-span-6">
             <MyInput
@@ -229,6 +230,14 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
             className="col-span-1 my-2 mr-20 flex h-10 w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]"
           >
             Excel
+          </button>
+        </div>
+        <div className="flex justify-center mt-4">
+          <button
+            onClick={() => setIsTeachersUploadOpen(true)}
+            className="rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+          >
+            آپلود لیست اساتید
           </button>
         </div>
       </div>
@@ -291,6 +300,13 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
         onClose={() => setIsExcelPopupOpen(false)}
         type="excel"
         onUpload={handleFileUpload}
+      />
+      <MyPopup
+        isOpen={isTeachersUploadOpen}
+        onClose={() => setIsTeachersUploadOpen(false)}
+        type="excel"
+        onUpload={handleTeachersUpload}
+        title="آپلود لیست اساتید"
       />
 
       {/* Add AdvancedSearch component */}

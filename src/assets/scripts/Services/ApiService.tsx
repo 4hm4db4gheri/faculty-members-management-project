@@ -29,4 +29,56 @@ export class ApiService {
 
     return response.json();
   }
+
+  static async put<T>(endpoint: string): Promise<T> {
+    const token = AuthService.getAccessToken();
+
+    const headers: HeadersInit = {
+      accept: "text/plain",
+    };
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${this.BASE_URL}${endpoint}`, {
+      method: "PUT",
+      headers,
+    });
+
+    if (response.status === 401) {
+      AuthService.clearAuth();
+      window.location.href = "/";
+      throw new Error("Unauthorized");
+    }
+
+    // For empty responses, return a default response that matches the expected type
+    const text = await response.text();
+    return text ? JSON.parse(text) : { data: null, error: false, message: [] } as T;
+  }
+
+  static async get<T>(endpoint: string): Promise<T> {
+    const token = AuthService.getAccessToken();
+
+    const headers: HeadersInit = {
+      accept: "text/plain",
+    };
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${this.BASE_URL}${endpoint}`, {
+      method: "GET",
+      headers,
+    });
+
+    if (response.status === 401) {
+      AuthService.clearAuth();
+      window.location.href = "/";
+      throw new Error("Unauthorized");
+    }
+
+    return response.json();
+  }
 }

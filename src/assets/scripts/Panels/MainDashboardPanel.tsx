@@ -5,8 +5,9 @@ import MyInput from "../Elements/MyInput";
 import type { Teacher } from "../types/Teacher";
 import UserInfo from "./UserInfo";
 import { useNavigate } from "react-router-dom";
-import { useChartData } from "../hooks/useChartData"; // Import the custom hook
+import { useChartData } from "../hooks/useChartData";
 import LoadingSpinner from "../Elements/LoadingSpinner";
+import { ApiService } from "../Services/ApiService";
 
 interface ApiTeacher {
   id: number;
@@ -39,37 +40,25 @@ export default function MainDashboardPanel() {
   // Fetch teachers from API
   useEffect(() => {
     const fetchTeachers = async () => {
+      setIsLoading(true);
       try {
-        const response = await fetch(
-          "https://faculty.liara.run/api/teacher/read-teacher?PageNumber=1&PageSize=9999",
-          {
-            headers: {
-              accept: "*/*",
-            },
-          },
+        const response = await ApiService.get<ApiResponse>(
+          "/teacher/read-teacher?PageNumber=1&PageSize=9999"
         );
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch teachers");
+        if (response.error) {
+          throw new Error(response.message[0] || "Failed to fetch teachers");
         }
 
-        const apiData: ApiResponse = await response.json();
+        const convertedTeachers: Teacher[] = response.data.map((apiTeacher) => ({
+          id: apiTeacher.id,
+          firstName: apiTeacher.firstName,
+          lastName: apiTeacher.lastName,
+          faculty: apiTeacher.facultyName,
+          rank: getRankString(apiTeacher.academicRank),
+        }));
 
-        if (!apiData.error) {
-          const convertedTeachers: Teacher[] = apiData.data.map(
-            (apiTeacher) => ({
-              id: apiTeacher.id,
-              firstName: apiTeacher.firstName,
-              lastName: apiTeacher.lastName,
-              faculty: apiTeacher.facultyName,
-              rank: getRankString(apiTeacher.academicRank),
-            }),
-          );
-
-          setTeachers(convertedTeachers);
-        } else {
-          throw new Error(apiData.message.join(", "));
-        }
+        setTeachers(convertedTeachers);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
