@@ -5,15 +5,19 @@ import MyInput from "../Elements/MyInput";
 import type { Teacher } from "../types/Teacher";
 import UserInfo from "./UserInfo";
 import { useNavigate } from "react-router-dom";
-import { useChartData } from "../hooks/useChartData"; // Import the custom hook
+import { useChartData } from "../hooks/useChartData";
 import LoadingSpinner from "../Elements/LoadingSpinner";
+import { ApiService } from "../Services/ApiService";
 
 interface ApiTeacher {
   id: number;
   firstName: string;
   lastName: string;
-  facultyName: string;
+  facultyNameInPersian: string;
+  facultyNameInEnglish: string;
   academicRank: number;
+  tId: string;
+  createTime: string;
 }
 
 interface ApiResponse {
@@ -39,37 +43,25 @@ export default function MainDashboardPanel() {
   // Fetch teachers from API
   useEffect(() => {
     const fetchTeachers = async () => {
+      setIsLoading(true);
       try {
-        const response = await fetch(
-          "https://faculty.liara.run/api/teacher/read-teacher?PageNumber=1&PageSize=9999",
-          {
-            headers: {
-              accept: "*/*",
-            },
-          },
+        const response = await ApiService.get<ApiResponse>(
+          "/panel/v1/teacher/read-teachers?PageNumber=1&PageSize=1000"
         );
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch teachers");
+        if (response.error) {
+          throw new Error(response.message[0] || "Failed to fetch teachers");
         }
 
-        const apiData: ApiResponse = await response.json();
+        const convertedTeachers: Teacher[] = response.data.map((apiTeacher) => ({
+          id: apiTeacher.id,
+          firstName: apiTeacher.firstName,
+          lastName: apiTeacher.lastName,
+          faculty: apiTeacher.facultyNameInPersian,
+          rank: getRankString(apiTeacher.academicRank),
+        }));
 
-        if (!apiData.error) {
-          const convertedTeachers: Teacher[] = apiData.data.map(
-            (apiTeacher) => ({
-              id: apiTeacher.id,
-              firstName: apiTeacher.firstName,
-              lastName: apiTeacher.lastName,
-              faculty: apiTeacher.facultyName,
-              rank: getRankString(apiTeacher.academicRank),
-            }),
-          );
-
-          setTeachers(convertedTeachers);
-        } else {
-          throw new Error(apiData.message.join(", "));
-        }
+        setTeachers(convertedTeachers);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
@@ -221,13 +213,53 @@ export default function MainDashboardPanel() {
         <div className="flex content-center items-center justify-center pt-[30px] text-5xl text-black">
           اسم کاربر
         </div>
-        <div className="grid h-[23%] grid-cols-4 gap-[10px] p-5 pt-[125px]">
-          <div className="col-span-1 flex h-full items-center justify-center rounded-[25px] bg-red-500">
-            نقش
-          </div>
-          <button className="col-span-3 flex h-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-[#D9D9D9] p-[10px_20px] text-center text-3xl font-bold text-black transition-colors duration-300 hover:bg-[#A6A6A6]">
-            مدت زمان
+        
+        {/* New notifications section */}
+        <div className="mt-8 flex w-full flex-col gap-4 p-5">
+          <button 
+            onClick={() => navigate("/dashboard/sent-notifications")}
+            className="w-full rounded-[25px] bg-[#1B4965] px-6 py-3 text-xl font-semibold text-white transition-colors hover:bg-[#3388BC]"
+          >
+            اعلان‌های ارسال شده
           </button>
+          
+          <div className="flex flex-col gap-2 rounded-[25px] bg-gray-50 p-4">
+            <h3 className="mb-2 text-lg font-semibold text-gray-800">آخرین اعلان‌ها</h3>
+            {[
+              {
+                title: "یادآوری مهلت ارسال مقاله",
+                date: "۱۴۰۴/۰۳/۱۲",
+                importance: "فوری"
+              },
+              {
+                title: "تمدید قرارداد پژوهشی",
+                date: "۱۴۰۴/۰۳/۱۰",
+                importance: "عادی"
+              },
+              {
+                title: "درخواست اصلاح مقاله",
+                date: "۱۴۰۴/۰۳/۰۸",
+                importance: "فوری"
+              }
+            ].map((notification, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between rounded-lg bg-white p-3 shadow-sm"
+              >
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-800">{notification.title}</p>
+                  <p className="text-xs text-gray-500">{notification.date}</p>
+                </div>
+                <span className={`rounded-full px-2 py-1 text-xs ${
+                  notification.importance === "فوری" 
+                    ? "bg-red-100 text-red-800" 
+                    : "bg-blue-100 text-blue-800"
+                }`}>
+                  {notification.importance}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

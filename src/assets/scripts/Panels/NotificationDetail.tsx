@@ -70,7 +70,6 @@ export default function NotificationDetail({
 
       setIsLoading(true);
       setError(null);
-
       try {
         const response = await fetch(
           `https://faculty.liara.run/api/panel/v1/notification/get?Id=${notificationId}`,
@@ -239,6 +238,41 @@ export default function NotificationDetail({
     return <LoadingSpinner size="lg" />;
   }
 
+  const labelClasses = `
+    absolute
+    -top-3.5
+    right-4
+    px-1
+    text-sm
+    text-gray-500
+    transition-colors
+    group-hover:text-gray-700
+  `
+    .trim()
+    .replace(/\s+/g, " ");
+
+  const dropdownContainerClasses = "relative w-full";
+  const dropdownClasses = "w-full pt-2";
+
+  // Show loading spinner while data is being fetched
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  // Show error message if there was an error fetching data
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center text-red-500">
+        {error}
+      </div>
+    );
+  }
+
+  // Component JSX
   return (
     <form
       onSubmit={handleSubmit}

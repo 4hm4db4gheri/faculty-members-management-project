@@ -7,6 +7,9 @@ import NotificationsPanel from "./Panels/NotificationsPanel";
 import ImprovementChartPanel from "./Panels/ImprovementChartPanel";
 import UserInfo from "./Panels/UserInfo";
 import NotificationDetail from "./Panels/NotificationDetail";
+import SentNotificationsPanel from "./Panels/SentNotificationsPanel";
+import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
+
 
 interface Teacher {
   id: number;
@@ -98,12 +101,103 @@ export default function DashboardComponent() {
   };
 
   return (
-    <div className="fixed top-0 right-0 m-0 flex h-screen w-screen flex-row-reverse items-center justify-end bg-[#1B4965] text-white">
-      <div className="m-5 mr-0 flex h-[calc(100%-40px)] w-[calc(100%-40px)] flex-col rounded-[25px] bg-[#EBF2FA] p-5 text-base shadow-lg">
-        {renderPanel()}
-      </div>{" "}
-      <div className="flex h-screen w-[24vw] flex-col items-stretch justify-start overflow-auto px-[0.5vw] pt-[2vh] text-2xl">
-        <div className="m-5 mx-auto flex h-[150px] w-[150px] items-center justify-center rounded-full bg-[#8D8D8D] text-lg font-bold text-white">
+    <div className="fixed inset-0 flex flex-col overflow-hidden bg-[#1B4965] text-white lg:flex-row-reverse">
+      {/* Hamburger menu for small screens */}
+      <div className="absolute top-4 right-4 z-50 bg-[#1B4965] lg:hidden">
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="rounded-md p-2 focus:ring-2 focus:ring-white focus:outline-none"
+        >
+          <svg
+            className="h-8 w-8 bg-[#1B4965] text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M4 6h16M4 12h16M4 18h16"
+            ></path>
+          </svg>
+        </button>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="m-2 flex h-[calc(100%-40px)] w-[calc(100%-40px)] flex-1 flex-col overflow-auto rounded-[25px] bg-[#EBF2FA] p-4 text-base shadow-lg lg:m-5 lg:mr-0 lg:w-auto lg:p-5">
+        <Routes>
+          <Route path="/" element={<MainDashboardPanel />} />
+          <Route
+            path="records"
+            element={<HistoryPanel onTeacherSelect={handleTeacherSelect} />}
+          />
+          <Route
+            path="records/:teacherId"
+            element={
+              <UserInfo
+                teacher={selectedTeacher!}
+                onBack={() => navigate("/dashboard/records")}
+              />
+            }
+          />
+          <Route path="progress" element={<ImprovementChartPanel />} />
+          {hasFullAccess && (
+            <Route path="roles" element={<RoleManagementPanel />} />
+          )}
+          <Route
+            path="notifications"
+            element={
+              <NotificationsPanel
+                onNotificationSelect={handleNotificationSelect}
+              />
+            }
+          />
+          <Route
+            path="notifications/:notificationId"
+            element={
+              <NotificationDetail
+                notification={selectedNotification!}
+                onBack={() => navigate("/dashboard/notifications")}
+              />
+            }
+          />
+          <Route
+            path="sent-notifications"
+            element={<SentNotificationsPanel />}
+          />
+        </Routes>
+      </div>
+
+      {/* Sidebar / Navigation Panel */}
+      <div
+        className={`fixed inset-y-0 right-0 z-40 flex w-64 flex-col items-stretch justify-start bg-[#1B4965] transition-transform duration-300 ease-in-out lg:w-64 xl:w-72 ${isSidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"} lg:static lg:flex lg:translate-x-0 lg:p-4`}
+      >
+        {/* Close button for mobile sidebar */}
+        <div className="flex justify-end p-4 lg:hidden">
+          <button
+            onClick={() => setIsSidebarOpen(false)}
+            className="rounded-md p-2 focus:ring-2 focus:ring-white focus:outline-none"
+          >
+            <svg
+              className="h-8 w-8 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              ></path>
+            </svg>
+          </button>
+        </div>
+
+        <div className="m-5 mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-[#8D8D8D] text-sm font-bold text-white sm:h-32 sm:w-32 md:text-lg lg:text-xl">
           Pic
         </div>
         <div className="flex items-center justify-center text-5xl">
