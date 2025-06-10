@@ -4,16 +4,17 @@ import { ApiService } from "../Services/ApiService";
 import { AuthService } from "../Services/AuthService";
 import { LoginResponse } from "../types/auth.types";
 import LoadingSpinner from "../Elements/LoadingSpinner";
+import { toast } from "react-toastify"; // Import toast
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  // const [errorMessage, setErrorMessage] = useState(""); // No longer needed directly for toast
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
-    setErrorMessage("");
+    // setErrorMessage(""); // No longer needed
     setIsLoading(true);
     try {
       const response = await ApiService.post<LoginResponse>(
@@ -22,13 +23,14 @@ const LoginPage: React.FC = () => {
       );
 
       if (response.error) {
-        setErrorMessage(response.message[0]);
+        toast.error(response.message[0] || "خطا در ورود."); // Display error using toast
       } else {
         AuthService.setAuthData(response);
+        toast.success("ورود با موفقیت انجام شد!"); // Display success using toast
         navigate("/dashboard");
       }
     } catch {
-      setErrorMessage("ارتباط با سرور برقرار نشد");
+      toast.error("ارتباط با سرور برقرار نشد."); // Display connection error
     } finally {
       setIsLoading(false);
     }
@@ -68,9 +70,9 @@ const LoginPage: React.FC = () => {
                   className="focus:ring-primary-400 w-full rounded-[15px] border border-gray-300 bg-white px-4 py-2 focus:outline-none"
                   disabled={isLoading}
                 />
-                {errorMessage && (
+                {/* {errorMessage && ( // Remove this part
                   <p className="text-sm text-red-500">{errorMessage}</p>
-                )}
+                )} */}
                 <button
                   onClick={handleLogin}
                   disabled={isLoading}
