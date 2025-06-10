@@ -96,7 +96,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
       setIsLoading(true);
       try {
         const response = await ApiService.get<ApiResponse>(
-          "/panel/v1/teacher/read-teachers?PageNumber=1&PageSize=1000"
+          "/panel/v1/teacher/read-teachers?PageNumber=1&PageSize=1000",
         );
 
         if (!response.error) {
@@ -236,7 +236,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
             Excel
           </button>
         </div>
-        <div className="flex justify-center mt-4">
+        <div className="justify-end text-end">
           <button
             onClick={() => setIsTeachersUploadOpen(true)}
             className="rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
