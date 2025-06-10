@@ -248,7 +248,8 @@ export default function NotificationDetail({
         <div className="mb-4 rounded-lg bg-red-50 p-4 text-red-500">
           {error}
         </div>
-      )}      <div className="relative w-full">
+      )}{" "}
+      <div className="relative w-full">
         <input
           type="text"
           value={formData.subject}
@@ -258,7 +259,6 @@ export default function NotificationDetail({
           className="mt-2 h-10 w-full cursor-not-allowed rounded-[25px] bg-white px-3 text-right text-gray-700"
         />
       </div>
-
       <div className="flex justify-between gap-4">
         <div className="relative w-full">
           <MyDropdown
@@ -287,7 +287,6 @@ export default function NotificationDetail({
           />
         </div>
       </div>
-
       <div>
         <textarea
           name="description"
@@ -301,7 +300,6 @@ export default function NotificationDetail({
           className="h-full w-full resize-none rounded-[25px] bg-white p-4 text-black"
         />
       </div>
-
       <div className="flex justify-center">
         <button
           type="submit"
