@@ -45,7 +45,21 @@ export default function MyNotificationCard({
   return (
     <div
       className="flex cursor-pointer items-center gap-3 rounded-2xl bg-white px-4 py-2.5 transition-colors hover:bg-gray-50"
-      onClick={() => onClick(notification as any)}
+      onClick={() =>
+        onClick({
+          id: notification.id,
+          title: notification.title,
+          priority: notification.notificationType === 1 ? "فوری" : "عادی",
+          tag: notification.notificationType === 1 ? "red" : "blue",
+          sendMethod:
+            notification.sendType === 0
+              ? "پیامک"
+              : notification.sendType === 1
+                ? "ایمیل"
+                : "پیامک و ایمیل",
+          sendDate: notification.beforeSendDay,
+        })
+      }
     >
       <div className="flex items-center gap-3">
         <span
