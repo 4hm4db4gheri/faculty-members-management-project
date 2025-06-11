@@ -5,16 +5,16 @@ import { AuthService } from "../Services/AuthService";
 import { LoginResponse } from "../types/auth.types";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import { toast } from "react-toastify"; // Import toast
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai"; // Import eye icons
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  // const [errorMessage, setErrorMessage] = useState(""); // No longer needed directly for toast
   const [isLoading, setIsLoading] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false); // State to toggle password visibility
 
   const handleLogin = async () => {
-    // setErrorMessage(""); // No longer needed
     setIsLoading(true);
     try {
       const response = await ApiService.post<LoginResponse>(
@@ -33,6 +33,12 @@ const LoginPage: React.FC = () => {
       toast.error("ارتباط با سرور برقرار نشد."); // Display connection error
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleLogin(); // Trigger login on Enter key press
     }
   };
 
@@ -62,17 +68,28 @@ const LoginPage: React.FC = () => {
                   className="focus:ring-primary-400 w-full rounded-[15px] border border-gray-300 bg-white px-4 py-2 focus:outline-none"
                   disabled={isLoading}
                 />
-                <input
-                  type="password"
-                  placeholder="رمز عبور"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="focus:ring-primary-400 w-full rounded-[15px] border border-gray-300 bg-white px-4 py-2 focus:outline-none"
-                  disabled={isLoading}
-                />
-                {/* {errorMessage && ( // Remove this part
-                  <p className="text-sm text-red-500">{errorMessage}</p>
-                )} */}
+                <div className="relative">
+                  <input
+                    type={passwordVisible ? "text" : "password"} // Toggle password visibility
+                    placeholder="رمز عبور"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={handleKeyPress} // Allow login on Enter press
+                    className="focus:ring-primary-400 w-full rounded-[15px] border border-gray-300 bg-white px-4 py-2 focus:outline-none"
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setPasswordVisible(!passwordVisible)} // Toggle password visibility
+                    className="absolute top-1/2 left-3 -translate-y-1/2 transform text-gray-500"
+                  >
+                    {passwordVisible ? (
+                      <AiFillEyeInvisible size={24} />
+                    ) : (
+                      <AiFillEye size={24} />
+                    )}
+                  </button>
+                </div>
                 <button
                   onClick={handleLogin}
                   disabled={isLoading}

@@ -10,7 +10,6 @@ import NotificationDetail from "./Panels/NotificationDetail";
 import SentNotificationsPanel from "./Panels/SentNotificationsPanel";
 import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
 
-
 interface Teacher {
   id: number;
   firstName: string;
@@ -99,6 +98,10 @@ export default function DashboardComponent() {
         return <MainDashboardPanel />; // Default to MainDashboard
     }
   };
+
+  function setIsSidebarOpen(arg0: boolean): void {
+    throw new Error("Function not implemented.");
+  }
 
   return (
     <div className="fixed inset-0 flex flex-col overflow-hidden bg-[#1B4965] text-white lg:flex-row-reverse">
