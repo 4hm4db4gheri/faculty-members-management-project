@@ -6,6 +6,7 @@ import MyRoleManagerContainer from "../Elements/MyRoleManagerContainer";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import CreateUserForm from "../Elements/CreateUserForm";
 import { toast } from "react-toastify";
+import { ApiService } from "../Services/ApiService";
 
 // Update interface to match API response
 interface User {
@@ -59,25 +60,12 @@ export default function RoleManagementPanel() {
   const fetchUsers = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(
-        "https://faculty.liara.run/api/panel/v1/user/GetList",
-        {
-          headers: {
-            accept: "text/plain",
-          },
-        },
-      );
+      const response = await ApiService.get<ApiResponse>("/panel/v1/user/GetList");
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch users");
-      }
-
-      const data: ApiResponse = await response.json();
-
-      if (!data.error) {
-        setUsers(data.data);
+      if (!response.error) {
+        setUsers(response.data);
       } else {
-        throw new Error(data.message.join(", "));
+        throw new Error(response.message.join(", "));
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
@@ -95,31 +83,19 @@ export default function RoleManagementPanel() {
   const updateUserRole = async (userId: string, newRole: string) => {
     try {
       const apiRole = mapDisplayToRole(newRole); // Convert display role to API role
-      const response = await fetch(
-        `https://faculty.liara.run/api/panel/v1/user/role/change?UserID=${userId}&RoleName=${apiRole}`,
-        {
-          method: "PUT",
-          headers: {
-            accept: "text/plain",
-          },
-        },
+      const response = await ApiService.put<ApiResponse>(
+        `/panel/v1/user/role/change?UserID=${userId}&RoleName=${apiRole}`
       );
 
-      if (!response.ok) {
-        throw new Error("خطا در بروزرسانی نقش کاربر");
-      }
-
-      const data = await response.json();
-
-      if (data.error) {
-        throw new Error(data.message.join(", "));
+      if (response.error) {
+        throw new Error(response.message?.join(", ") || "Failed to update role");
       }
 
       // Update local state only after successful API call
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
-          user.id === userId ? { ...user, roles: apiRole } : user,
-        ),
+          user.id === userId ? { ...user, roles: apiRole } : user
+        )
       );
       
       toast.success("نقش کاربر با موفقیت تغییر کرد", {

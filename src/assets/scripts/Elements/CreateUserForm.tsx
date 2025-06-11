@@ -2,11 +2,18 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import LoadingSpinner from "./LoadingSpinner";
 import MyInput from "./MyInput";
+import { ApiService } from "../Services/ApiService";
 
 interface CreateUserFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+}
+
+interface ApiResponse {
+  error: boolean;
+  message: string[];
+  data: any;
 }
 
 export default function CreateUserForm({
@@ -57,28 +64,19 @@ export default function CreateUserForm({
 
     setIsLoading(true);
     try {
-      const response = await fetch(
-        "https://faculty.liara.run/api/panel/v1/user/create",
+      const response = await ApiService.post<ApiResponse>(
+        "/panel/v1/user/create",
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            accept: "text/plain",
-          },
-          body: JSON.stringify({
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            username: formData.username,
-            password: formData.password,
-            phoneNumber: formData.phoneNumber,
-            hasFullAccess: formData.hasFullAccess,
-          }),
-        },
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          username: formData.username,
+          password: formData.password,
+          phoneNumber: formData.phoneNumber,
+          hasFullAccess: formData.hasFullAccess,
+        }
       );
 
-      const data = await response.json();
-
-      if (!data.error) {
+      if (!response.error) {
         toast.success("کاربر با موفقیت ایجاد شد", {
           duration: 4000,
           position: "bottom-center",
@@ -91,7 +89,7 @@ export default function CreateUserForm({
         onSuccess();
         onClose();
       } else {
-        throw new Error(data.message.join(", "));
+        throw new Error(response.message.join(", "));
       }
     } catch (error) {
       toast.error(
