@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import MyDropdown from "../Elements/MyDropdown";
 import LoadingSpinner from "../Elements/LoadingSpinner";
+import { toast } from "react-toastify";
 
 interface NotificationDetailProps {
-  notificationId?: number;
-  initialTitle?: string;
+  notificationId: number | undefined;
+  initialTitle: string | undefined;
 }
 
 interface NotificationResponse {
@@ -70,6 +71,7 @@ export default function NotificationDetail({
 
       setIsLoading(true);
       setError(null);
+
       try {
         const response = await fetch(
           `https://faculty.liara.run/api/panel/v1/notification/get?Id=${notificationId}`,
@@ -224,11 +226,26 @@ export default function NotificationDetail({
       }
 
       // Success case
-      alert("اعلان با موفقیت بروزرسانی شد");
+      toast.success("اعلان با موفقیت بروزرسانی شد", {
+        position: "bottom-left",
+        style: {
+          background: "#F0FDF4",
+          color: "#166534",
+          direction: "rtl",
+        },
+      });
     } catch (error) {
       console.error("Error in handleSubmit:", error);
-      setError(
+      toast.error(
         error instanceof Error ? error.message : "خطا در بروزرسانی اعلان",
+        {
+          position: "bottom-left",
+          style: {
+            background: "#FEF2F2",
+            color: "#991B1B",
+            direction: "rtl",
+          },
+        },
       );
     } finally {
       setIsSubmitting(false);
@@ -238,118 +255,85 @@ export default function NotificationDetail({
     return <LoadingSpinner size="lg" />;
   }
 
-  const labelClasses = `
-    absolute
-    -top-3.5
-    right-4
-    px-1
-    text-sm
-    text-gray-500
-    transition-colors
-    group-hover:text-gray-700
-  `
-    .trim()
-    .replace(/\s+/g, " ");
-
-  const dropdownContainerClasses = "relative w-full";
-  const dropdownClasses = "w-full pt-2";
-
-  // Show loading spinner while data is being fetched
-  if (isLoading) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
-  }
-
-  // Show error message if there was an error fetching data
-  if (error) {
-    return (
-      <div className="flex h-full items-center justify-center text-red-500">
-        {error}
-      </div>
-    );
-  }
-
-  // Component JSX
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="relative min-h-screen space-y-7 p-4 text-right"
-    >
-      {error && (
-        <div className="mb-4 rounded-lg bg-red-50 p-4 text-red-500">
-          {error}
-        </div>
-      )}{" "}
-      <div className="relative w-full">
-        <input
-          type="text"
-          value={formData.subject}
-          readOnly
-          disabled
-          placeholder="موضوع"
-          className="mt-2 h-10 w-full cursor-not-allowed rounded-[25px] bg-white px-3 text-right text-gray-700"
-        />
-      </div>
-      <div className="flex justify-between gap-4">
+    <div>
+      <form
+        onSubmit={handleSubmit}
+        className="relative min-h-screen space-y-7 p-4 text-right"
+      >
+        {error && (
+          <div className="mb-4 rounded-lg bg-red-50 p-4 text-red-500">
+            {error}
+          </div>
+        )}{" "}
         <div className="relative w-full">
-          <MyDropdown
-            options={["پیامک", "ایمیل", "پیامک و ایمیل"]}
-            defaultOption="نحوه ارسال"
-            value={formData.sendMethod}
-            onSelect={(value) => {
-              if (typeof value === "string") {
-                setFormData((prev) => ({ ...prev, sendMethod: value }));
-              }
-            }}
+          <input
+            type="text"
+            value={formData.subject}
+            readOnly
+            disabled
+            placeholder="موضوع"
+            className="mt-2 h-10 w-full cursor-not-allowed rounded-[25px] bg-white px-3 text-right text-gray-700"
           />
         </div>
+        <div className="flex justify-between gap-4">
+          <div className="relative w-full">
+            <MyDropdown
+              options={["پیامک", "ایمیل", "پیامک و ایمیل"]}
+              defaultOption="نحوه ارسال"
+              value={formData.sendMethod}
+              onSelect={(value) => {
+                if (typeof value === "string") {
+                  setFormData((prev) => ({ ...prev, sendMethod: value }));
+                }
+              }}
+            />
+          </div>
 
-        <div className="relative w-full">
-          <MyDropdown
-            options={["1 روز قبل", "7 روز قبل", "30 روز قبل"]}
-            defaultOption="موعد ارسال"
-            value={formData.sendDate}
-            multiSelect={true}
-            onSelect={(values) => {
-              if (Array.isArray(values)) {
-                setFormData((prev) => ({ ...prev, sendDate: values }));
-              }
-            }}
+          <div className="relative w-full">
+            <MyDropdown
+              options={["1 روز قبل", "7 روز قبل", "30 روز قبل"]}
+              defaultOption="موعد ارسال"
+              value={formData.sendDate}
+              multiSelect={true}
+              onSelect={(values) => {
+                if (Array.isArray(values)) {
+                  setFormData((prev) => ({ ...prev, sendDate: values }));
+                }
+              }}
+            />
+          </div>
+        </div>
+        <div>
+          <textarea
+            name="description"
+            placeholder="شرح اعلان"
+            value={formData.description}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, description: e.target.value }))
+            }
+            rows={12}
+            dir="rtl"
+            className="h-full w-full resize-none rounded-[25px] bg-white p-4 text-black"
           />
         </div>
-      </div>
-      <div>
-        <textarea
-          name="description"
-          placeholder="شرح اعلان"
-          value={formData.description}
-          onChange={(e) =>
-            setFormData((prev) => ({ ...prev, description: e.target.value }))
-          }
-          rows={12}
-          dir="rtl"
-          className="h-full w-full resize-none rounded-[25px] bg-white p-4 text-black"
-        />
-      </div>
-      <div className="flex justify-center">
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className={`flex items-center justify-center gap-2 rounded-[25px] px-6 py-2 text-white transition-colors ${
-            isSubmitting
-              ? "cursor-not-allowed bg-gray-400"
-              : "bg-[#3388BC] hover:bg-[#1B4965]"
-          }`}
-        >
-          {isSubmitting && (
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-          )}
-          {isSubmitting ? "در حال ارسال..." : "اعمال تغییرات"}
-        </button>
-      </div>
-    </form>
+        <div className="flex justify-center">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`flex items-center justify-center gap-2 rounded-[25px] px-6 py-2 text-white transition-colors ${
+              isSubmitting
+                ? "cursor-not-allowed bg-gray-400"
+                : "bg-[#3388BC] hover:bg-[#1B4965]"
+            }`}
+          >
+            {isSubmitting && (
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            )}
+            {isSubmitting ? "در حال ارسال..." : "اعمال تغییرات"}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }

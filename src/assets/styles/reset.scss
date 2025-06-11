@@ -1,19 +1,13 @@
-// src/assets/styles/reset.scss
 html, body {
     margin: 0;
     padding: 0;
-    height: 100%; // Ensure the html and body take up the full height of the viewport
-    /* Removed overflow: hidden; from html, body to allow individual panels to scroll */
+    height: 100%; /* Ensure the body takes up the full height of the viewport */
+    overflow: hidden; /* Prevent scrolling caused by overflow */
 }
-
 body {
     margin: unset;
     display: unset;
-    /* Ensure no unwanted flex/grid on body */
-    min-height: 100vh; /* Ensure body is at least full viewport height */
-    overflow-y: auto; /* Allow body to scroll if content explicitly overflows it */
 }
-
 h1,
 h2,
 h3,
@@ -43,6 +37,3 @@ a {
 * {
     box-sizing: border-box;
 }
-
-/* Remove this extra closing brace, it's a syntax error */
-// }

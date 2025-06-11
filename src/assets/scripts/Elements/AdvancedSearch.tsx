@@ -139,8 +139,12 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                     <div className="col-span-2 w-full content-center">
                       <MyDropdown
                         options={facultyOptions}
-                        defaultOption={selectedFaculty} // Now using prop
-                        onSelect={setSelectedFaculty} // Now using prop
+                        defaultOption={selectedFaculty}
+                        onSelect={(selected) => {
+                          if (typeof selected === "string") {
+                            setSelectedFaculty(selected);
+                          }
+                        }}
                       />
                     </div>
                   </div>
@@ -153,8 +157,12 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                     <div className="col-span-2 w-full content-center">
                       <MyDropdown
                         options={statusOptions}
-                        defaultOption={selectedDegree} // Now using prop
-                        onSelect={setSelectedDegree} // Now using prop
+                        defaultOption={selectedDegree}
+                        onSelect={(selected) => {
+                          if (typeof selected === "string") {
+                            setSelectedDegree(selected);
+                          }
+                        }}
                       />
                     </div>
                   </div>

@@ -49,15 +49,12 @@ export default function MyNotificationCard({
         onClick({
           id: notification.id,
           title: notification.title,
-          priority: notification.notificationType === 1 ? "فوری" : "عادی",
-          tag: notification.notificationType === 1 ? "red" : "blue",
-          sendMethod:
-            notification.sendType === 0
-              ? "پیامک"
-              : notification.sendType === 1
-                ? "ایمیل"
-                : "پیامک و ایمیل",
-          sendDate: notification.beforeSendDay,
+          priority: "", // Provide appropriate value if available
+          tag: getTypeColor(notification.notificationType),
+          subject: undefined,
+          sendMethod: undefined,
+          sendDate: undefined,
+          description: undefined,
         })
       }
     >

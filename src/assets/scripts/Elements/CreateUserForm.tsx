@@ -1,8 +1,7 @@
 import { useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "react-toastify";
 import LoadingSpinner from "./LoadingSpinner";
 import MyInput from "./MyInput";
-import { ApiService } from "../Services/ApiService";
 
 interface CreateUserFormProps {
   isOpen: boolean;
@@ -10,10 +9,19 @@ interface CreateUserFormProps {
   onSuccess: () => void;
 }
 
+interface UserData {
+  id: number;
+  firstName: string;
+  lastName: string;
+  username: string;
+  phoneNumber: string;
+  hasFullAccess: boolean;
+}
+
 interface ApiResponse {
   error: boolean;
   message: string[];
-  data: any;
+  data: UserData;
 }
 
 export default function CreateUserForm({
@@ -32,7 +40,20 @@ export default function CreateUserForm({
     hasFullAccess: false,
   });
 
-  // Create wrapper functions to handle password and phone number inputs
+  // Add this function to handle form reset
+  const handleCancel = () => {
+    setFormData({
+      firstName: "",
+      lastName: "",
+      username: "",
+      password: "",
+      confirmPassword: "",
+      phoneNumber: "",
+      hasFullAccess: false,
+    });
+    onClose();
+  };
+
   const handlePasswordInput = (
     value: string,
     field: "password" | "confirmPassword",
@@ -41,7 +62,6 @@ export default function CreateUserForm({
   };
 
   const handlePhoneInput = (value: string) => {
-    // Only allow numbers and limit to 11 digits
     const phoneNumber = value.replace(/\D/g, "").slice(0, 11);
     setFormData({ ...formData, phoneNumber });
   };
@@ -51,8 +71,7 @@ export default function CreateUserForm({
 
     if (formData.password !== formData.confirmPassword) {
       toast.error("رمز عبور و تکرار آن مطابقت ندارند", {
-        duration: 4000,
-        position: "bottom-center",
+        position: "bottom-left",
         style: {
           background: "#FEF2F2",
           color: "#991B1B",
@@ -64,22 +83,30 @@ export default function CreateUserForm({
 
     setIsLoading(true);
     try {
-      const response = await ApiService.post<ApiResponse>(
-        "/panel/v1/user/create",
+      const response = await fetch(
+        "https://faculty.liara.run/api/panel/v1/user/create",
         {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          username: formData.username,
-          password: formData.password,
-          phoneNumber: formData.phoneNumber,
-          hasFullAccess: formData.hasFullAccess,
-        }
+          method: "POST",
+          headers: {
+            accept: "text/plain",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            username: formData.username,
+            password: formData.password,
+            phoneNumber: formData.phoneNumber,
+            hasFullAccess: formData.hasFullAccess,
+          }),
+        },
       );
 
-      if (!response.error) {
+      const data: ApiResponse = await response.json();
+
+      if (!data.error) {
         toast.success("کاربر با موفقیت ایجاد شد", {
-          duration: 4000,
-          position: "bottom-center",
+          position: "bottom-left",
           style: {
             background: "#F0FDF4",
             color: "#166534",
@@ -88,15 +115,23 @@ export default function CreateUserForm({
         });
         onSuccess();
         onClose();
+        setFormData({
+          firstName: "",
+          lastName: "",
+          username: "",
+          password: "",
+          confirmPassword: "",
+          phoneNumber: "",
+          hasFullAccess: false,
+        });
       } else {
-        throw new Error(response.message.join(", "));
+        throw new Error(data.message.join(", "));
       }
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "خطا در ایجاد کاربر",
         {
-          duration: 4000,
-          position: "bottom-center",
+          position: "bottom-left",
           style: {
             background: "#FEF2F2",
             color: "#991B1B",
@@ -174,7 +209,7 @@ export default function CreateUserForm({
           <div className="flex justify-end gap-2 pt-4">
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleCancel}
               className="rounded-[25px] bg-gray-200 px-6 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-300"
             >
               انصراف

@@ -26,7 +26,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         </Routes>
       </BrowserRouter>
       <ToastContainer
-        position="bottom-right" // موقعیت نمایش اعلان‌ها
+        position="bottom-left" // موقعیت نمایش اعلان‌ها
         autoClose={5000} // زمان ماندگاری اعلان (میلی‌ثانیه)
         hideProgressBar={false}
         newestOnTop={false}

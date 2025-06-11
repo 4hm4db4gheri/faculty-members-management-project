@@ -1,10 +1,10 @@
-// src/assets/scripts/Panels/UserInfo.tsx
 import { useState } from "react";
 import Timeline from "./../../components/TimeLineComponent";
 import type { Teacher } from "../types/Teacher";
 
 interface UserInfoProps {
   teacher: Teacher;
+  onBack?: () => void; // Made optional with ?
 }
 
 export default function UserInfo({ teacher }: UserInfoProps) {
@@ -25,9 +25,7 @@ export default function UserInfo({ teacher }: UserInfoProps) {
       case "اطلاعات کاربر":
         return (
           <div className="mt-8 space-y-6">
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-              {" "}
-              {/* Made grid responsive for smaller screens */}
+            <div className="grid grid-cols-2 gap-8">
               <div className="space-y-4">
                 <h3 className="text-xl font-bold">اطلاعات فردی</h3>
                 <div className="space-y-2">
@@ -113,14 +111,13 @@ export default function UserInfo({ teacher }: UserInfoProps) {
 
       {/* Content wrapper with tabs and white container */}
       <div className="relative -mt-36 flex-1">
-        <div className="relative z-10 mb-1.5 flex items-center gap-3 overflow-x-auto pr-50">
+        <div className="relative z-10 mb-1.5 flex items-center gap-3 pr-50">
           {tabs.map((tab) => (
             <button
               key={tab}
-              className={`flex-shrink-0 rounded-2xl px-3 py-2 text-sm transition-all outline-none sm:px-4 sm:py-3 sm:text-base ${
-                /* */
+              className={`rounded-2xl px-2 py-3 text-sm whitespace-nowrap transition-all outline-none ${
                 activeTab === tab
-                  ? "scale-105 bg-white font-bold text-black shadow-lg" // Adjusted scale slightly for smoother look
+                  ? "scale-110 bg-white px-4 font-bold text-black shadow-lg"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
               onClick={() => setActiveTab(tab)}
@@ -129,23 +126,12 @@ export default function UserInfo({ teacher }: UserInfoProps) {
             </button>
           ))}
         </div>
-        {/* User Info Content */}
-        {/* Removed fixed mr-40, using Tailwind's padding/margin for responsiveness */}
-        <div className="relative z-20 -mt-4 h-full w-full flex-1 rounded-2xl bg-white p-6 sm:p-8 md:p-10 lg:p-12">
-          {" "}
-          {/* */}
-          <div className="mr-0 mb-6 sm:mr-10 md:mr-20 lg:mr-32 xl:mr-40">
-            {" "}
-            {/* */}
-            <h1 className="text-xl font-bold text-black sm:text-2xl lg:text-3xl">
-              {teacher.rank}
-            </h1>{" "}
-            {/* */}
-            <h2 className="pt-2 text-2xl font-bold text-black sm:pt-3 sm:text-3xl lg:pt-4 lg:text-4xl">{`${teacher.firstName} ${teacher.lastName}`}</h2>{" "}
-            {/* */}
-            <p className="pt-2 text-gray-600 sm:pt-3 lg:pt-4">
-              دانشکده {teacher.faculty}
-            </p>
+
+        <div className="relative z-20 -mt-4 h-full w-full flex-1 rounded-2xl bg-white p-10">
+          <div className="mr-40">
+            <h1 className="text-2xl font-bold text-black">{teacher.rank}</h1>
+            <h2 className="pt-4 text-3xl font-bold text-black">{`${teacher.firstName} ${teacher.lastName}`}</h2>
+            <p className="pt-4 text-gray-600">دانشکده {teacher.faculty}</p>
           </div>
           {renderTabContent()}
         </div>

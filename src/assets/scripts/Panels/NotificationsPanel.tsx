@@ -3,9 +3,8 @@ import MyDropdown from "../Elements/MyDropdown";
 import MyNotificationCard, {
   Notification,
 } from "../Elements/MyNotificationCard";
-import { ApiService } from "../Services/ApiService";
 import LoadingSpinner from "../Elements/LoadingSpinner";
-import NotificationDetail from "./NotificationDetail";
+import { useNavigate } from "react-router-dom";
 
 interface NotificationsPanelProps {
   onNotificationSelect: (notification: Notification) => void;
@@ -28,9 +27,10 @@ interface notificationResponse {
 export default function NotificationsPanel({
   onNotificationSelect,
 }: NotificationsPanelProps) {
+  const navigate = useNavigate();
   const [importance, setImportance] = useState("همه");
   const [time, setTime] = useState("همه");
-  const [selectedNotification, setSelectedNotification] =
+  const [, setSelectedNotification] =
     useState<Notification | null>(null);
 
   const importanceOptions = [
@@ -49,14 +49,25 @@ export default function NotificationsPanel({
     const fetchNotification = async () => {
       try {
         setIsLoading(true);
-        const response = await ApiService.get<notificationResponse>(
-          "/panel/v1/notification/list"
+        const response = await fetch(
+          "https://faculty.liara.run/api/panel/v1/notification/list",
+          {
+            headers: {
+              accept: "text/plain",
+            },
+          },
         );
 
-        if (!response.error) {
-          setnotification(response.data);
+        if (!response.ok) {
+          throw new Error("اشکال در دریافت اطلاعات اعلان ها");
+        }
+
+        const data: notificationResponse = await response.json();
+
+        if (!data.error) {
+          setnotification(data.data);
         } else {
-          throw new Error(response.message.join(", "));
+          throw new Error(data.message.join(", "));
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
@@ -182,16 +193,11 @@ export default function NotificationsPanel({
               };
               setSelectedNotification(notification);
               onNotificationSelect(notification);
+              navigate(`/dashboard/notifications/${notif.id}`);
             }}
           />
         ))}
       </div>
-      {selectedNotification && (
-        <NotificationDetail
-          notificationId={selectedNotification.id}
-          initialTitle={selectedNotification.title}
-        />
-      )}
     </div>
   );
 }
@@ -222,10 +228,11 @@ function matchesTimeFilter(dateString: string, timeFilter: string): boolean {
         date.getMonth() === now.getMonth() &&
         date.getDate() === now.getDate()
       );
-    case "این هفته":
+    case "این هفته": {
       const startOfWeek = new Date(now);
       startOfWeek.setDate(now.getDate() - now.getDay());
       return date >= startOfWeek && date <= now;
+    }
     default:
       return true;
   }
