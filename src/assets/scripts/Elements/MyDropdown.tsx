@@ -1,15 +1,14 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface DropdownProps {
   options: readonly string[];
   defaultOption?: string;
-  onSelect?: (selected: string | string[]) => void;
+  onSelect?: (selected: string) => void;
   label?: string;
   className?: string;
-  value?: string | string[];
-  multiSelect?: boolean;
+  showAllOption?: boolean; // Add this new prop
 }
 
 export default function Dropdown({
@@ -18,68 +17,15 @@ export default function Dropdown({
   onSelect,
   label,
   className = "",
-  value,
-  multiSelect = false,
+  showAllOption = true, // Default to true to maintain existing behavior
 }: DropdownProps) {
-  const [selectedOptions, setSelectedOptions] = useState<string[]>(
-    multiSelect
-      ? Array.isArray(value)
-        ? value
-        : []
-      : value
-        ? [value as string]
-        : [],
-  );
-
-  useEffect(() => {
-    if (value !== undefined) {
-      setSelectedOptions(
-        multiSelect ? (Array.isArray(value) ? value : []) : [value as string],
-      );
-    }
-  }, [value, multiSelect]);
+  const [selectedOption, setSelectedOption] = useState(defaultOption || "همه");
 
   const handleSelect = (option: string) => {
-    let newSelected: string[];
-
-    if (multiSelect) {
-      if (selectedOptions.includes(option)) {
-        // If already selected, remove it
-        newSelected = selectedOptions.filter((item) => item !== option);
-      } else {
-        // Add to selection
-        newSelected = [...selectedOptions, option].sort((a, b) => {
-          // Sort by the number of days (extract number from "X روز قبل")
-          const daysA = parseInt(a.split(" ")[0]);
-          const daysB = parseInt(b.split(" ")[0]);
-          return daysA - daysB;
-        });
-      }
-    } else {
-      // Single select mode
-      newSelected = [option];
-    }
-
-    setSelectedOptions(newSelected);
+    setSelectedOption(option);
     if (onSelect) {
-      if (multiSelect) {
-        onSelect(newSelected);
-      } else {
-        onSelect(newSelected[0]);
-      }
+      onSelect(option);
     }
-  };
-
-  const getDisplayValue = () => {
-    if (selectedOptions.length === 0) {
-      return defaultOption || "انتخاب کنید";
-    }
-
-    if (multiSelect) {
-      return selectedOptions.join("، ");
-    }
-
-    return selectedOptions[0];
   };
 
   return (
@@ -92,9 +38,7 @@ export default function Dropdown({
       <Menu as="div" className="relative inline-block w-full">
         <div>
           <MenuButton className="inline-flex w-full items-center justify-between rounded-[25px] bg-white px-3 py-2.5 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50">
-            <span className="text-right text-gray-500">
-              {getDisplayValue()}
-            </span>
+            <span className="text-right text-gray-500">{selectedOption}</span>
             <ChevronDownIcon
               aria-hidden="true"
               className="size-5 text-gray-400"
@@ -107,16 +51,29 @@ export default function Dropdown({
           className="absolute right-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-hidden"
         >
           <div className="flex w-full flex-col">
+            {showAllOption && (
+              <MenuItem key="همه">
+                {({ active }) => (
+                  <button
+                    className={`w-full px-4 py-2 text-right text-sm ${
+                      active ? "bg-gray-100 text-gray-900" : "text-gray-700"
+                    }`}
+                    onClick={() => handleSelect("همه")}
+                  >
+                    همه
+                  </button>
+                )}
+              </MenuItem>
+            )}
             {options.map((option) => (
               <MenuItem key={option}>
                 {({ active }) => (
                   <button
                     className={`w-full px-4 py-2 text-right text-sm ${
                       active ? "bg-gray-100 text-gray-900" : "text-gray-700"
-                    } ${selectedOptions.includes(option) ? "bg-blue-50" : ""}`}
+                    }`}
                     onClick={() => handleSelect(option)}
                   >
-                    {selectedOptions.includes(option) && "✓ "}
                     {option}
                   </button>
                 )}

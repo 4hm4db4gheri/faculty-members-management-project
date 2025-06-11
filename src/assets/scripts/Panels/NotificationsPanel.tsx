@@ -4,8 +4,6 @@ import MyNotificationCard, {
   Notification,
 } from "../Elements/MyNotificationCard";
 import { ApiService } from "../Services/ApiService";
-import LoadingSpinner from "../Elements/LoadingSpinner";
-import NotificationDetail from "./NotificationDetail";
 
 interface NotificationsPanelProps {
   onNotificationSelect: (notification: Notification) => void;
@@ -28,19 +26,14 @@ interface notificationResponse {
 export default function NotificationsPanel({
   onNotificationSelect,
 }: NotificationsPanelProps) {
+  const [subject, setSubject] = useState("همه");
   const [importance, setImportance] = useState("همه");
   const [time, setTime] = useState("همه");
-  const [selectedNotification, setSelectedNotification] =
-    useState<Notification | null>(null);
 
-  const importanceOptions = [
-    "همه",
-    "یادآوری",
-    "اخطار",
-    "اخطار نهایی",
-    "پیشنهاد",
-  ] as const;
-  const timeOptions = ["همه", "امروز", "این هفته"] as const;
+  // Remove "همه" from options since it will be the default
+  const subjectOptions = ["مقاله", "قرارداد"] as const;
+  const importanceOptions = ["فوری", "عادی"] as const;
+  const timeOptions = ["امروز", "این هفته"] as const;
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [notification, setnotification] = useState<notificationModel[]>([]);
@@ -68,6 +61,34 @@ export default function NotificationsPanel({
     fetchNotification();
   }, []);
 
+  // const notifications: Notification[] = [
+  //   {
+  //     id: 1,
+  //     title: "دیر شدن تحویل مقاله",
+  //     priority: "اخطار فوری",
+  //     tag: "red",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "تبدیل وضعیت به پیمانی",
+  //     priority: "یادآوری",
+  //     tag: "blue",
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "دیر شدن تحویل مقاله",
+  //     priority: "اخطار",
+  //     tag: "yellow",
+  //   },
+  //   {
+  //     id: 4,
+  //     title: "تمدید قرارداد",
+  //     priority: "پیشنهاد",
+  //     tag: "green",
+  //   },
+  // ];
+
+  // Using template literals instead of clsx
   const labelClasses = `
     absolute
     -top-3.5
@@ -81,46 +102,28 @@ export default function NotificationsPanel({
     .trim()
     .replace(/\s+/g, " ");
 
-  const dropdownContainerClasses = "relative w-5/5";
+  const dropdownContainerClasses = "relative w-1/3";
   const dropdownClasses = "w-full pt-2";
-
-  if (isLoading) {
-    return <LoadingSpinner size="lg" />;
-  }
-
-  if (error) {
-    return (
-      <div className="flex min-h-[200px] flex-col items-center justify-center">
-        <p className="text-lg font-semibold text-red-500">خطا: {error}</p>
-      </div>
-    );
-  }
-
-  const filteredNotifications = notification.filter((notif) => {
-    const importanceMatches =
-      importance === "همه" ||
-      getNotificationType(notif.notificationType) === importance;
-
-    const timeMatches =
-      time === "همه" || matchesTimeFilter(notif.beforeSendDay, time);
-
-    return importanceMatches && timeMatches;
-  });
 
   return (
     <div>
-      {/* Filters */}
-      <div className="mt-4 mb-8 flex justify-center gap-6 px-6">
+      {/* Filters */}{" "}
+      <div className="mt-2 mb-9 flex justify-between gap-6 px-4">
+        <div className={dropdownContainerClasses}>
+          <MyDropdown
+            options={subjectOptions}
+            defaultOption="همه"
+            onSelect={setSubject}
+            className={dropdownClasses}
+          />
+          <span className={labelClasses}>موضوع</span>
+        </div>
+
         <div className={dropdownContainerClasses}>
           <MyDropdown
             options={importanceOptions}
             defaultOption="همه"
-            value={importance}
-            onSelect={(value) => {
-              if (typeof value === "string") {
-                setImportance(value);
-              }
-            }}
+            onSelect={setImportance}
             className={dropdownClasses}
           />
           <span className={labelClasses}>اهمیت</span>
@@ -130,103 +133,22 @@ export default function NotificationsPanel({
           <MyDropdown
             options={timeOptions}
             defaultOption="همه"
-            value={time}
-            onSelect={(value) => {
-              if (typeof value === "string") {
-                setTime(value);
-              }
-            }}
+            onSelect={setTime}
             className={dropdownClasses}
           />
           <span className={labelClasses}>زمان</span>
         </div>
-      </div>
-      {/* Notifications List */}
+      </div>{" "}
+      {/* Notifications List */}{" "}
       <div className="space-y-2.5 px-4">
-        {filteredNotifications.map((notif) => (
+        {notification.map((notification) => (
           <MyNotificationCard
-            key={notif.id}
-            notification={notif}
-            onClick={() => {
-              const notification = {
-                id: notif.id,
-                title: notif.title,
-                priority: (() => {
-                  switch (notif.notificationType) {
-                    case 0:
-                      return "یادآوری";
-                    case 1:
-                      return "اخطار";
-                    case 2:
-                      return "اخطار نهایی";
-                    case 3:
-                      return "پیشنهاد";
-                    default:
-                      return "یادآوری";
-                  }
-                })(),
-                tag: (() => {
-                  switch (notif.notificationType) {
-                    case 0:
-                      return "blue";
-                    case 1:
-                      return "yellow";
-                    case 2:
-                      return "red";
-                    case 3:
-                      return "green";
-                    default:
-                      return "blue";
-                  }
-                })(),
-              };
-              setSelectedNotification(notification);
-              onNotificationSelect(notification);
-            }}
+            key={notification.id}
+            notification={notification}
+            onClick={onNotificationSelect}
           />
         ))}
       </div>
-      {selectedNotification && (
-        <NotificationDetail
-          notificationId={selectedNotification.id}
-          initialTitle={selectedNotification.title}
-        />
-      )}
     </div>
   );
-}
-
-function getNotificationType(notificationType: number): string {
-  switch (notificationType) {
-    case 0:
-      return "یادآوری";
-    case 1:
-      return "اخطار";
-    case 2:
-      return "اخطار نهایی";
-    case 3:
-      return "پیشنهاد";
-    default:
-      return "یادآوری";
-  }
-}
-
-function matchesTimeFilter(dateString: string, timeFilter: string): boolean {
-  const date = new Date(dateString);
-  const now = new Date();
-
-  switch (timeFilter) {
-    case "امروز":
-      return (
-        date.getFullYear() === now.getFullYear() &&
-        date.getMonth() === now.getMonth() &&
-        date.getDate() === now.getDate()
-      );
-    case "این هفته":
-      const startOfWeek = new Date(now);
-      startOfWeek.setDate(now.getDate() - now.getDay());
-      return date >= startOfWeek && date <= now;
-    default:
-      return true;
-  }
 }
