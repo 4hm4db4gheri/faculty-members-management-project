@@ -3,7 +3,8 @@ import MyDropdown from "../Elements/MyDropdown";
 import MyNotificationCard, {
   Notification,
 } from "../Elements/MyNotificationCard";
-import { ApiService } from "../Services/ApiService";
+import LoadingSpinner from "../Elements/LoadingSpinner";
+import { useNavigate } from "react-router-dom";
 
 interface NotificationsPanelProps {
   onNotificationSelect: (notification: Notification) => void;
@@ -26,14 +27,20 @@ interface notificationResponse {
 export default function NotificationsPanel({
   onNotificationSelect,
 }: NotificationsPanelProps) {
-  const [subject, setSubject] = useState("همه");
+  const navigate = useNavigate();
   const [importance, setImportance] = useState("همه");
   const [time, setTime] = useState("همه");
+  const [, setSelectedNotification] =
+    useState<Notification | null>(null);
 
-  // Remove "همه" from options since it will be the default
-  const subjectOptions = ["مقاله", "قرارداد"] as const;
-  const importanceOptions = ["فوری", "عادی"] as const;
-  const timeOptions = ["امروز", "این هفته"] as const;
+  const importanceOptions = [
+    "همه",
+    "یادآوری",
+    "اخطار",
+    "اخطار نهایی",
+    "پیشنهاد",
+  ] as const;
+  const timeOptions = ["همه", "امروز", "این هفته"] as const;
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [notification, setnotification] = useState<notificationModel[]>([]);
@@ -42,14 +49,25 @@ export default function NotificationsPanel({
     const fetchNotification = async () => {
       try {
         setIsLoading(true);
-        const response = await ApiService.get<notificationResponse>(
-          "/panel/v1/notification/list"
+        const response = await fetch(
+          "https://faculty.liara.run/api/panel/v1/notification/list",
+          {
+            headers: {
+              accept: "text/plain",
+            },
+          },
         );
 
-        if (!response.error) {
-          setnotification(response.data);
+        if (!response.ok) {
+          throw new Error("اشکال در دریافت اطلاعات اعلان ها");
+        }
+
+        const data: notificationResponse = await response.json();
+
+        if (!data.error) {
+          setnotification(data.data);
         } else {
-          throw new Error(response.message.join(", "));
+          throw new Error(data.message.join(", "));
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
@@ -61,34 +79,6 @@ export default function NotificationsPanel({
     fetchNotification();
   }, []);
 
-  // const notifications: Notification[] = [
-  //   {
-  //     id: 1,
-  //     title: "دیر شدن تحویل مقاله",
-  //     priority: "اخطار فوری",
-  //     tag: "red",
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "تبدیل وضعیت به پیمانی",
-  //     priority: "یادآوری",
-  //     tag: "blue",
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "دیر شدن تحویل مقاله",
-  //     priority: "اخطار",
-  //     tag: "yellow",
-  //   },
-  //   {
-  //     id: 4,
-  //     title: "تمدید قرارداد",
-  //     priority: "پیشنهاد",
-  //     tag: "green",
-  //   },
-  // ];
-
-  // Using template literals instead of clsx
   const labelClasses = `
     absolute
     -top-3.5
@@ -102,28 +92,46 @@ export default function NotificationsPanel({
     .trim()
     .replace(/\s+/g, " ");
 
-  const dropdownContainerClasses = "relative w-1/3";
+  const dropdownContainerClasses = "relative w-5/5";
   const dropdownClasses = "w-full pt-2";
+
+  if (isLoading) {
+    return <LoadingSpinner size="lg" />;
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-[200px] flex-col items-center justify-center">
+        <p className="text-lg font-semibold text-red-500">خطا: {error}</p>
+      </div>
+    );
+  }
+
+  const filteredNotifications = notification.filter((notif) => {
+    const importanceMatches =
+      importance === "همه" ||
+      getNotificationType(notif.notificationType) === importance;
+
+    const timeMatches =
+      time === "همه" || matchesTimeFilter(notif.beforeSendDay, time);
+
+    return importanceMatches && timeMatches;
+  });
 
   return (
     <div>
-      {/* Filters */}{" "}
-      <div className="mt-2 mb-9 flex justify-between gap-6 px-4">
-        <div className={dropdownContainerClasses}>
-          <MyDropdown
-            options={subjectOptions}
-            defaultOption="همه"
-            onSelect={setSubject}
-            className={dropdownClasses}
-          />
-          <span className={labelClasses}>موضوع</span>
-        </div>
-
+      {/* Filters */}
+      <div className="mt-4 mb-8 flex justify-center gap-6 px-6">
         <div className={dropdownContainerClasses}>
           <MyDropdown
             options={importanceOptions}
             defaultOption="همه"
-            onSelect={setImportance}
+            value={importance}
+            onSelect={(value) => {
+              if (typeof value === "string") {
+                setImportance(value);
+              }
+            }}
             className={dropdownClasses}
           />
           <span className={labelClasses}>اهمیت</span>
@@ -133,22 +141,99 @@ export default function NotificationsPanel({
           <MyDropdown
             options={timeOptions}
             defaultOption="همه"
-            onSelect={setTime}
+            value={time}
+            onSelect={(value) => {
+              if (typeof value === "string") {
+                setTime(value);
+              }
+            }}
             className={dropdownClasses}
           />
           <span className={labelClasses}>زمان</span>
         </div>
-      </div>{" "}
-      {/* Notifications List */}{" "}
+      </div>
+      {/* Notifications List */}
       <div className="space-y-2.5 px-4">
-        {notification.map((notification) => (
+        {filteredNotifications.map((notif) => (
           <MyNotificationCard
-            key={notification.id}
-            notification={notification}
-            onClick={onNotificationSelect}
+            key={notif.id}
+            notification={notif}
+            onClick={() => {
+              const notification = {
+                id: notif.id,
+                title: notif.title,
+                priority: (() => {
+                  switch (notif.notificationType) {
+                    case 0:
+                      return "یادآوری";
+                    case 1:
+                      return "اخطار";
+                    case 2:
+                      return "اخطار نهایی";
+                    case 3:
+                      return "پیشنهاد";
+                    default:
+                      return "یادآوری";
+                  }
+                })(),
+                tag: (() => {
+                  switch (notif.notificationType) {
+                    case 0:
+                      return "blue";
+                    case 1:
+                      return "yellow";
+                    case 2:
+                      return "red";
+                    case 3:
+                      return "green";
+                    default:
+                      return "blue";
+                  }
+                })(),
+              };
+              setSelectedNotification(notification);
+              onNotificationSelect(notification);
+              navigate(`/dashboard/notifications/${notif.id}`);
+            }}
           />
         ))}
       </div>
     </div>
   );
+}
+
+function getNotificationType(notificationType: number): string {
+  switch (notificationType) {
+    case 0:
+      return "یادآوری";
+    case 1:
+      return "اخطار";
+    case 2:
+      return "اخطار نهایی";
+    case 3:
+      return "پیشنهاد";
+    default:
+      return "یادآوری";
+  }
+}
+
+function matchesTimeFilter(dateString: string, timeFilter: string): boolean {
+  const date = new Date(dateString);
+  const now = new Date();
+
+  switch (timeFilter) {
+    case "امروز":
+      return (
+        date.getFullYear() === now.getFullYear() &&
+        date.getMonth() === now.getMonth() &&
+        date.getDate() === now.getDate()
+      );
+    case "این هفته": {
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay());
+      return date >= startOfWeek && date <= now;
+    }
+    default:
+      return true;
+  }
 }

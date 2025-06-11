@@ -19,11 +19,14 @@ export default function MyRoleManagerContainer({
   const [isLoading, setIsLoading] = useState(false);
   const roleOptions = ["ادمین کل", "ادمین"];
 
-  const handleRoleChange = async (newRole: string) => {
+  const handleRoleChange = async (selected: string | string[]) => {
+    // Only proceed if we received a string
+    if (typeof selected !== "string") return;
+
     setIsLoading(true);
     try {
-      await onRoleChange(userId, newRole);
-      toast.success(`نقش ${fullName} با موفقیت به ${newRole} تغییر کرد`, {
+      await onRoleChange(userId, selected);
+      toast.success(`نقش ${fullName} با موفقیت به ${selected} تغییر کرد`, {
         duration: 4000,
         position: "bottom-center",
         style: {
@@ -57,7 +60,6 @@ export default function MyRoleManagerContainer({
           options={roleOptions}
           defaultOption={role}
           onSelect={handleRoleChange}
-          showAllOption={false}
         />
       </div>
       <div className="col-span-1 flex items-center justify-center rounded-[25px]">

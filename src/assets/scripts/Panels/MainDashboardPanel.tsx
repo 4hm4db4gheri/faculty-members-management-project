@@ -35,7 +35,7 @@ export default function MainDashboardPanel() {
 
   const { chartData1, chartData2} = useChartData(); // Use the custom hook
 
-  const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
+  const [selectedTeacher] = useState<Teacher | null>(null);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

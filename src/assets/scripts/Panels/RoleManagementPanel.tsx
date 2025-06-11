@@ -46,7 +46,7 @@ const mapDisplayToRole = (displayRole: string): string => {
 
 export default function RoleManagementPanel() {
   // Define role options without همه
-  const roleOptions = ["ادمین کل", "ادمین"] as const;
+  const roleOptions = ["همه", "ادمین کل", "ادمین"] as const;
   const [searchText, setSearchText] = useState<string>("");
   const [lastnameSearchText, setLastnameSearchText] = useState<string>("");
   const [selectedRole, setSelectedRole] = useState<string>("همه");
@@ -60,7 +60,9 @@ export default function RoleManagementPanel() {
   const fetchUsers = async () => {
     try {
       setIsLoading(true);
-      const response = await ApiService.get<ApiResponse>("/panel/v1/user/GetList");
+      const response = await ApiService.get<ApiResponse>(
+        "/panel/v1/user/GetList",
+      );
 
       if (!response.error) {
         setUsers(response.data);
@@ -84,20 +86,22 @@ export default function RoleManagementPanel() {
     try {
       const apiRole = mapDisplayToRole(newRole); // Convert display role to API role
       const response = await ApiService.put<ApiResponse>(
-        `/panel/v1/user/role/change?UserID=${userId}&RoleName=${apiRole}`
+        `/panel/v1/user/role/change?UserID=${userId}&RoleName=${apiRole}`,
       );
 
       if (response.error) {
-        throw new Error(response.message?.join(", ") || "Failed to update role");
+        throw new Error(
+          response.message?.join(", ") || "Failed to update role",
+        );
       }
 
       // Update local state only after successful API call
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
-          user.id === userId ? { ...user, roles: apiRole } : user
-        )
+          user.id === userId ? { ...user, roles: apiRole } : user,
+        ),
       );
-      
+
       toast.success("نقش کاربر با موفقیت تغییر کرد", {
         position: "bottom-left",
         style: {
@@ -108,14 +112,17 @@ export default function RoleManagementPanel() {
       });
     } catch (error) {
       console.error("Failed to update user role:", error);
-      toast.error(error instanceof Error ? error.message : "خطا در بروزرسانی نقش کاربر", {
-        position: "bottom-left", 
-        style: {
-          background: "#FEF2F2",
-          color: "#991B1B",
-          direction: "rtl",
+      toast.error(
+        error instanceof Error ? error.message : "خطا در بروزرسانی نقش کاربر",
+        {
+          position: "bottom-left",
+          style: {
+            background: "#FEF2F2",
+            color: "#991B1B",
+            direction: "rtl",
+          },
         },
-      });
+      );
     }
   };
 
@@ -199,7 +206,9 @@ export default function RoleManagementPanel() {
           <MyDropdown
             options={roleOptions}
             defaultOption="همه"
-            onSelect={setSelectedRole}
+            onSelect={(selected) => {
+              if (typeof selected === "string") setSelectedRole(selected);
+            }}
             className=""
           />
           <span className={labelClasses}>نقش</span>

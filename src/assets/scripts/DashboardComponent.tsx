@@ -53,8 +53,6 @@ export default function DashboardComponent() {
 
   const handleNavigate = (path: string) => {
     navigate(path);
-    setSelectedTeacher(null);
-    setSelectedNotification(null);
     setIsSidebarOpen(false);
   };
 
@@ -65,13 +63,15 @@ export default function DashboardComponent() {
 
   const handleNotificationSelect = (notification: Notification) => {
     setSelectedNotification(notification);
-    navigate(`/dashboard/notifications/${notification.id}`);
   };
 
   const getActiveClass = (path: string) => {
-    return location.pathname === path
-      ? "bg-[#3388BC]"
-      : "bg-transparent hover:bg-[#3388BC33]";
+    const currentPath = location.pathname;
+    if (path === "/dashboard" && currentPath === "/dashboard")
+      return "bg-[#3388BC]";
+    if (path !== "/dashboard" && currentPath.startsWith(path))
+      return "bg-[#3388BC]";
+    return "bg-transparent hover:bg-[#3388BC33]";
   };
 
   return (
@@ -112,7 +112,7 @@ export default function DashboardComponent() {
             element={
               <UserInfo
                 teacher={selectedTeacher!}
-                onBack={() => navigate("/dashboard/records")}
+                onBack={() => handleNavigate("/dashboard/records")}
               />
             }
           />
@@ -132,8 +132,8 @@ export default function DashboardComponent() {
             path="notifications/:notificationId"
             element={
               <NotificationDetail
-                notification={selectedNotification!}
-                onBack={() => navigate("/dashboard/notifications")}
+                notificationId={selectedNotification?.id}
+                initialTitle={selectedNotification?.title}
               />
             }
           />
@@ -146,7 +146,9 @@ export default function DashboardComponent() {
 
       {/* Sidebar / Navigation Panel */}
       <div
-        className={`fixed inset-y-0 right-0 z-40 flex w-64 flex-col items-stretch justify-start bg-[#1B4965] transition-transform duration-300 ease-in-out lg:w-64 xl:w-72 ${isSidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"} lg:static lg:flex lg:translate-x-0 lg:p-4`}
+        className={`fixed inset-y-0 right-0 z-40 flex w-64 flex-col items-stretch justify-start bg-[#1B4965] transition-transform duration-300 ease-in-out lg:w-64 xl:w-72 ${
+          isSidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
+        } lg:static lg:flex lg:translate-x-0 lg:p-4`}
       >
         {/* Close button for mobile sidebar */}
         <div className="flex justify-end p-4 lg:hidden">
@@ -179,36 +181,52 @@ export default function DashboardComponent() {
         </div>
         <div className="mx-auto my-3 h-[2px] w-[calc(100%-40px)] rounded bg-[#8D8D8D]"></div>
 
-        {/* Navigation Buttons - adjusted font sizes */}
+        {/* Navigation Buttons */}
         <button
-          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass("/dashboard")}`}
-          onClick={() => handleNavigate("/dashboard")}
+          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass(
+            "/dashboard",
+          )}`}
+          onClick={() => {
+            handleNavigate("/dashboard");
+            setSelectedNotification(null);
+          }}
         >
           داشبورد
         </button>
         <button
-          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass("/dashboard/records")}`}
+          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass(
+            "/dashboard/records",
+          )}`}
           onClick={() => handleNavigate("/dashboard/records")}
         >
           سوابق
         </button>
         <button
-          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass("/dashboard/progress")}`}
+          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass(
+            "/dashboard/progress",
+          )}`}
           onClick={() => handleNavigate("/dashboard/progress")}
         >
           نمودار پیشرفت
         </button>
         {hasFullAccess && (
           <button
-            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass("/dashboard/roles")}`}
+            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass(
+              "/dashboard/roles",
+            )}`}
             onClick={() => handleNavigate("/dashboard/roles")}
           >
             مدیریت نقش ها
           </button>
         )}
         <button
-          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass("/dashboard/notifications")}`}
-          onClick={() => handleNavigate("/dashboard/notifications")}
+          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass(
+            "/dashboard/notifications",
+          )}`}
+          onClick={() => {
+            handleNavigate("/dashboard/notifications");
+            setSelectedNotification(null);
+          }}
         >
           اعلان ها
         </button>

@@ -45,7 +45,18 @@ export default function MyNotificationCard({
   return (
     <div
       className="flex cursor-pointer items-center gap-3 rounded-2xl bg-white px-4 py-2.5 transition-colors hover:bg-gray-50"
-      onClick={() => onClick(notification as any)}
+      onClick={() =>
+        onClick({
+          id: notification.id,
+          title: notification.title,
+          priority: "", // Provide appropriate value if available
+          tag: getTypeColor(notification.notificationType),
+          subject: undefined,
+          sendMethod: undefined,
+          sendDate: undefined,
+          description: undefined,
+        })
+      }
     >
       <div className="flex items-center gap-3">
         <span

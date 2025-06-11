@@ -4,6 +4,7 @@ import type { Teacher } from "../types/Teacher";
 
 interface UserInfoProps {
   teacher: Teacher;
+  onBack?: () => void; // Made optional with ?
 }
 
 export default function UserInfo({ teacher }: UserInfoProps) {
@@ -130,9 +131,7 @@ export default function UserInfo({ teacher }: UserInfoProps) {
           <div className="mr-40">
             <h1 className="text-2xl font-bold text-black">{teacher.rank}</h1>
             <h2 className="pt-4 text-3xl font-bold text-black">{`${teacher.firstName} ${teacher.lastName}`}</h2>
-            <p className="pt-4 text-gray-600">
-              دانشکده {teacher.faculty}
-            </p>
+            <p className="pt-4 text-gray-600">دانشکده {teacher.faculty}</p>
           </div>
           {renderTabContent()}
         </div>
