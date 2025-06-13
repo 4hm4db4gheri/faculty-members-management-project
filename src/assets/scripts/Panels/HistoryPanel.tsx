@@ -8,6 +8,8 @@ import UserInfo from "../Panels/UserInfo";
 import type { Teacher } from "../types/Teacher";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import { ApiService } from "../Services/ApiService";
+import { AuthService } from "../Services/AuthService";
+import { toast } from "react-toastify";
 
 interface HistoryPanelProps {
   onTeacherSelect: (teacher: Teacher) => void;
@@ -28,6 +30,12 @@ interface ApiTeacher {
 
 interface ApiResponse {
   data: ApiTeacher[];
+  error: boolean;
+  message: string[];
+}
+
+interface UploadResponse {
+  data: string[];
   error: boolean;
   message: string[];
 }
@@ -56,14 +64,94 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
     console.log(`File was uploaded: ${file.name}`);
   };
 
-  const handleTeachersUpload = (file: File) => {
-    // TODO: Implement API call to upload teachers list
-    console.log(`Teachers list file uploaded: ${file.name}`);
-    // In the future, you would:
-    // 1. Send the file to the server
-    // 2. Process the response
-    // 3. Update the teachers list if successful
-    // 4. Show appropriate toast messages
+  const fetchTeachers = async () => {
+    setIsLoading(true);
+    try {
+      const response = await ApiService.get<ApiResponse>(
+        "/panel/v1/teacher/read-teachers?PageNumber=1&PageSize=1000"
+      );
+
+      if (!response.error) {
+        const convertedTeachers: Teacher[] = response.data.map(
+          (apiTeacher) => ({
+            id: apiTeacher.id,
+            firstName: apiTeacher.firstName,
+            lastName: apiTeacher.lastName,
+            faculty: apiTeacher.facultyNameInPersian,
+            rank: getRankString(apiTeacher.academicRank),
+          })
+        );
+
+        setTeachers(convertedTeachers);
+      } else {
+        throw new Error(response.message.join(", "));
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+      console.error("Failed to fetch teachers:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTeachers();
+  }, []);
+
+  const handleTeachersUpload = async (file: File) => {
+    setIsLoading(true);
+
+    // Check for valid file type
+    const validTypes = [
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      '.xls',
+      '.xlsx'
+    ];
+    
+    if (!validTypes.some(type => file.name.toLowerCase().endsWith(type) || file.type === type)) {
+      toast.error('لطفا فقط فایل اکسل (.xls یا .xlsx) آپلود کنید');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('https://faculty.liara.run/api/panel/v1/teacher/upload-excel', {
+        method: 'POST',
+        headers: {
+          'accept': 'text/plain',
+          'Authorization': `Bearer ${AuthService.getAccessToken()}`
+        },
+        body: formData
+      });
+
+      const result: UploadResponse = await response.json();
+
+      if (response.ok) {
+        if (result.data && result.data.length > 0) {
+          // Show validation errors in a toast
+          result.data.forEach(error => {
+            toast.warn(error, {
+              autoClose: 10000 // Keep error messages visible longer
+            });
+          });
+        } else {
+          toast.success('آپلود با موفقیت انجام شد');
+          await fetchTeachers(); // Refresh the teachers list
+        }
+        // Close the popup immediately after upload attempt
+        setIsTeachersUploadOpen(false);
+      } else {
+        throw new Error(result.message?.join(', ') || 'خطا در آپلود فایل');
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'خطا در آپلود فایل');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleAdvancedSearchResults = (results: Teacher[]) => {
@@ -89,42 +177,6 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
         return "نامشخص";
     }
   };
-
-  // Fetch teachers from API
-  useEffect(() => {
-    const fetchTeachers = async () => {
-      setIsLoading(true);
-      try {
-        const response = await ApiService.get<ApiResponse>(
-          "/panel/v1/teacher/read-teachers?PageNumber=1&PageSize=1000",
-        );
-
-        if (!response.error) {
-          // Convert API data to match your Teacher interface
-          const convertedTeachers: Teacher[] = response.data.map(
-            (apiTeacher) => ({
-              id: apiTeacher.id,
-              firstName: apiTeacher.firstName,
-              lastName: apiTeacher.lastName,
-              faculty: apiTeacher.facultyNameInPersian,
-              rank: getRankString(apiTeacher.academicRank),
-            }),
-          );
-
-          setTeachers(convertedTeachers);
-        } else {
-          throw new Error(response.message.join(", "));
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
-        console.error("Failed to fetch teachers:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchTeachers();
-  }, []);
 
   // Updated filtering logic
   const filteredTeachers = useMemo(() => {
@@ -305,6 +357,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
         type="excel"
         onUpload={handleFileUpload}
       />
+      {/* Update the MyPopup component for teacher upload */}
       <MyPopup
         isOpen={isTeachersUploadOpen}
         onClose={() => setIsTeachersUploadOpen(false)}
