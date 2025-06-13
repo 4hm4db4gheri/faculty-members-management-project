@@ -10,6 +10,8 @@ import LoadingSpinner from "../Elements/LoadingSpinner";
 import { ApiService } from "../Services/ApiService";
 import { AuthService } from "../Services/AuthService";
 import { toast } from "react-toastify";
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
 
 interface HistoryPanelProps {
   onTeacherSelect: (teacher: Teacher) => void;
@@ -46,8 +48,6 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isPdfPopupOpen, setIsPdfPopupOpen] = useState(false);
-  const [isExcelPopupOpen, setIsExcelPopupOpen] = useState(false);
   const [isTeachersUploadOpen, setIsTeachersUploadOpen] = useState(false);
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
   const [advancedSearchResults, setAdvancedSearchResults] = useState<
@@ -59,16 +59,165 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
   const [selectedFaculty, setSelectedFaculty] = useState("همه");
   const [selectedDegree, setSelectedDegree] = useState("همه");
 
-  const handleFileUpload = (file: File) => {
-    // Here you would handle the file upload to backend
-    console.log(`File was uploaded: ${file.name}`);
+  const handleExportPDF = () => {
+    try {
+      // Create PDF with RTL support
+      const doc = new jsPDF({
+        orientation: "p",
+        unit: "mm",
+        format: "a4",
+        putOnlyUsedFonts: true,
+      });
+
+      // Load and add the Vazirmatn font
+      doc.addFileToVFS("Vazirmatn.ttf", "/src/assets/fonts/Vazirmatn.ttf");
+      doc.addFont("Vazirmatn.ttf", "Vazirmatn", "normal");
+      doc.setFont("Vazirmatn");
+
+      // Enable RTL mode
+      doc.setR2L(true);
+
+      // Add title with Persian font
+      doc.setFontSize(18);
+      doc.text(
+        "لیست اساتید دانشگاه شهید بهشتی",
+        doc.internal.pageSize.width / 2,
+        20,
+        {
+          align: "center",
+        },
+      );
+
+      // Add current date in Persian format
+      const date = new Date().toLocaleDateString("fa-IR");
+      doc.setFontSize(12);
+      doc.text(`تاریخ: ${date}`, doc.internal.pageSize.width - 20, 30, {
+        align: "right",
+      });
+
+      // Add headers with proper styling
+      const headers = ["رتبه علمی", "دانشکده", "نام و نام خانوادگی"];
+      let y = 40;
+
+      // Draw header background
+      doc.setFillColor(240, 240, 240);
+      doc.rect(10, y - 5, doc.internal.pageSize.width - 20, 10, "F");
+
+      // Add header texts with consistent styling
+      doc.setFontSize(12);
+      const columnWidths = [40, 60, 70]; // Width for each column
+      let x = doc.internal.pageSize.width - 20; // Start from right
+
+      headers.forEach((header, index) => {
+        x -= columnWidths[index];
+        doc.text(header, x + columnWidths[index] / 2, y, {
+          align: "center",
+        });
+      });
+
+      // Add horizontal line after headers
+      y += 2;
+      doc.line(10, y, doc.internal.pageSize.width - 10, y);
+
+      // Add teacher data with improved formatting
+      y += 8;
+      const lineHeight = 8;
+
+      const filteredTeachers = advancedSearchResults || teachers;
+      filteredTeachers.forEach((teacher, index) => {
+        if (y > 280) {
+          // Add new page if needed
+          doc.addPage();
+          y = 20;
+        }
+
+        // Add zebra striping for better readability
+        if (index % 2 === 0) {
+          doc.setFillColor(250, 250, 250);
+          doc.rect(
+            10,
+            y - 5,
+            doc.internal.pageSize.width - 20,
+            lineHeight,
+            "F",
+          );
+        }
+
+        x = doc.internal.pageSize.width - 20;
+
+        // Write data in columns with consistent alignment
+        x -= columnWidths[0];
+        doc.text(teacher.rank, x + columnWidths[0] / 2, y, { align: "center" });
+
+        x -= columnWidths[1];
+        doc.text(teacher.faculty, x + columnWidths[1] / 2, y, {
+          align: "center",
+        });
+
+        x -= columnWidths[2];
+        doc.text(
+          `${teacher.firstName} ${teacher.lastName}`,
+          x + columnWidths[2] / 2,
+          y,
+          { align: "center" },
+        );
+
+        y += lineHeight;
+      });
+
+      // Save the PDF with proper filename
+      const filename = `teachers-list-${new Date().toLocaleDateString("fa-IR").replace(/\//g, "-")}.pdf`;
+      doc.save(filename);
+      toast.success("فایل PDF با موفقیت دانلود شد");
+    } catch (err) {
+      toast.error("خطا در ایجاد فایل PDF");
+      console.error("PDF Export Error:", err);
+    }
+  };
+
+  const handleExportExcel = () => {
+    try {
+      // Prepare data for Excel
+      const excelData = teachers.map((teacher) => ({
+        نام: teacher.firstName,
+        "نام خانوادگی": teacher.lastName,
+        دانشکده: teacher.faculty,
+        "رتبه علمی": teacher.rank,
+      }));
+
+      // Create workbook and worksheet
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(excelData);
+
+      // Adjust column widths
+      const columnWidths = [
+        { wch: 15 }, // نام
+        { wch: 20 }, // نام خانوادگی
+        { wch: 25 }, // دانشکده
+        { wch: 15 }, // رتبه علمی
+      ];
+      ws["!cols"] = columnWidths;
+
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(wb, ws, "لیست اساتید");
+
+      // Save the file
+      XLSX.writeFile(
+        wb,
+        `teachers-list-${new Date().toISOString().split("T")[0]}.xlsx`,
+      );
+      toast.success("فایل Excel با موفقیت دانلود شد");
+    } catch (err) {
+      toast.error("خطا در ایجاد فایل Excel");
+      console.error("Excel Export Error:", err);
+    }
   };
 
   const fetchTeachers = async () => {
     setIsLoading(true);
     try {
       const response = await ApiService.get<ApiResponse>(
-        "/panel/v1/teacher/read-teachers?PageNumber=1&PageSize=1000"
+        "/panel/v1/teacher/read-teachers?PageNumber=1&PageSize=1000",
       );
 
       if (!response.error) {
@@ -79,7 +228,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
             lastName: apiTeacher.lastName,
             faculty: apiTeacher.facultyNameInPersian,
             rank: getRankString(apiTeacher.academicRank),
-          })
+          }),
         );
 
         setTeachers(convertedTeachers);
@@ -103,52 +252,59 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
 
     // Check for valid file type
     const validTypes = [
-      'application/vnd.ms-excel',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      '.xls',
-      '.xlsx'
+      "application/vnd.ms-excel",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      ".xls",
+      ".xlsx",
     ];
-    
-    if (!validTypes.some(type => file.name.toLowerCase().endsWith(type) || file.type === type)) {
-      toast.error('لطفا فقط فایل اکسل (.xls یا .xlsx) آپلود کنید');
+
+    if (
+      !validTypes.some(
+        (type) => file.name.toLowerCase().endsWith(type) || file.type === type,
+      )
+    ) {
+      toast.error("لطفا فقط فایل اکسل (.xls یا .xlsx) آپلود کنید");
       setIsLoading(false);
       return;
     }
 
     try {
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append("file", file);
 
-      const response = await fetch('https://faculty.liara.run/api/panel/v1/teacher/upload-excel', {
-        method: 'POST',
-        headers: {
-          'accept': 'text/plain',
-          'Authorization': `Bearer ${AuthService.getAccessToken()}`
+      const response = await fetch(
+        "https://faculty.liara.run/api/panel/v1/teacher/upload-excel",
+        {
+          method: "POST",
+          headers: {
+            accept: "text/plain",
+            Authorization: `Bearer ${AuthService.getAccessToken()}`,
+          },
+          body: formData,
         },
-        body: formData
-      });
+      );
 
       const result: UploadResponse = await response.json();
 
       if (response.ok) {
         if (result.data && result.data.length > 0) {
           // Show validation errors in a toast
-          result.data.forEach(error => {
+          result.data.forEach((error) => {
             toast.warn(error, {
-              autoClose: 10000 // Keep error messages visible longer
+              autoClose: 10000, // Keep error messages visible longer
             });
           });
         } else {
-          toast.success('آپلود با موفقیت انجام شد');
+          toast.success("آپلود با موفقیت انجام شد");
           await fetchTeachers(); // Refresh the teachers list
         }
         // Close the popup immediately after upload attempt
         setIsTeachersUploadOpen(false);
       } else {
-        throw new Error(result.message?.join(', ') || 'خطا در آپلود فایل');
+        throw new Error(result.message?.join(", ") || "خطا در آپلود فایل");
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'خطا در آپلود فایل');
+      toast.error(err instanceof Error ? err.message : "خطا در آپلود فایل");
     } finally {
       setIsLoading(false);
     }
@@ -275,26 +431,36 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
             />
           </button>
 
-          <button
-            onClick={() => setIsPdfPopupOpen(true)}
-            className="col-span-1 my-2 mr-20 flex h-10 w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]"
-          >
-            PDF
-          </button>
-          <button
-            onClick={() => setIsExcelPopupOpen(true)}
-            className="col-span-1 my-2 mr-20 flex h-10 w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]"
-          >
-            Excel
-          </button>
-        </div>
-        <div className="justify-end text-end">
-          <button
-            onClick={() => setIsTeachersUploadOpen(true)}
-            className="rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-          >
-            آپلود لیست اساتید
-          </button>
+          <div className="col-span-2 content-center pr-4">
+            <button
+              onClick={() => setIsTeachersUploadOpen(true)}
+              className="rounded-lg bg-blue-500 px-4 py-2  text-white hover:bg-blue-600"
+            >
+              آپلود لیست اساتید
+            </button>
+          </div>
+          <div className="col-span-1 content-center pl-4">
+            <button
+              onClick={handleExportExcel}
+              className="flex w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white px-15 py-2 text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]"
+            >
+              <span className="flex items-center">
+                <span className="mr-2">Excel</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -344,20 +510,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
         )}
       </div>
 
-      {/* Popups */}
-      <MyPopup
-        isOpen={isPdfPopupOpen}
-        onClose={() => setIsPdfPopupOpen(false)}
-        type="pdf"
-        onUpload={handleFileUpload}
-      />
-      <MyPopup
-        isOpen={isExcelPopupOpen}
-        onClose={() => setIsExcelPopupOpen(false)}
-        type="excel"
-        onUpload={handleFileUpload}
-      />
-      {/* Update the MyPopup component for teacher upload */}
+      {/* Upload Teachers Popup */}
       <MyPopup
         isOpen={isTeachersUploadOpen}
         onClose={() => setIsTeachersUploadOpen(false)}
