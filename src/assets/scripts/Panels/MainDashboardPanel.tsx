@@ -60,6 +60,14 @@ export default function MainDashboardPanel() {
             lastName: apiTeacher.lastName,
             faculty: apiTeacher.facultyNameInPersian,
             rank: getRankString(apiTeacher.academicRank),
+            phoneNumber: "",
+            email: "",
+            group: "",
+            lastDegree: "",
+            employmentStatus: "",
+            isTeaching: false,
+            nationalCode: "",
+            points: 0,
           }),
         );
 

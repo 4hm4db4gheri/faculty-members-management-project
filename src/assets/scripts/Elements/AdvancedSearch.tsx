@@ -2,7 +2,7 @@ import React from "react";
 import MyInput from "./MyInput";
 import MyDropdown from "./MyDropdown";
 import type { Teacher } from "../types/Teacher";
-import { toast } from "react-toastify"; // Import toast
+import { toast } from "react-toastify";
 
 interface AdvancedSearchProps {
   isOpen: boolean;
@@ -17,6 +17,75 @@ interface AdvancedSearchProps {
   setSelectedDegree: (value: string) => void;
 }
 
+const facultyOptions = [
+  "همه",
+  "علوم و فناوري زيستي",
+  "علوم زمين",
+  "علوم رياضي",
+  "فيزيك",
+  "علوم شيمي و نفت",
+  "معماري و شهرسازي",
+  "فناوري‌هاي نوين و مهندسي هوا فضا",
+  "مهندسي مكانيك و انرژي",
+  "انرژي",
+  "مهندسي برق (الكترونيك و مخابرات)",
+  "مهندسي و علوم كامپيوتر",
+  "مهندسي عمران، آب و محيط زيست",
+  "مهندسي مواد",
+  "مهندسي برق (كنترل و قدرت)",
+  "ادبيات و علوم انساني",
+  "الهيات و اديان",
+  "حقوق",
+  "علوم اقتصادي و سياسي",
+  "مديريت و حسابداري",
+  "علوم تربيتي و روان‌شناسي",
+  "علوم ورزشي و تندرستي",
+];
+
+const groupOptions = [
+  "همه",
+  "معماري كامپيوتر و شبكه",
+  "نرم‌افزار و سيستم‌هاي اطلاعاتي",
+  "هوش مصنوعي، رباتيك و رايانش شناختي",
+  "علوم تربيتي",
+  "روان‌شناسي",
+  "علم اطلاعات و دانش‌شناسي",
+  "مشاوره",
+  "فلسفه و كلام اسلامي",
+  "اديان و عرفان",
+  "حقوق خصوصي",
+  "حقوق عمومي",
+  "حقوق بين‌الملل",
+  "زبان و ادبيات فارسي",
+  "زبان و ادبيات انگليسي",
+  "زبان و ادبيات عربي",
+  "زبان و ادبيات فرانسه",
+  "زبان و ادبيات روسي",
+  "زبان و ادبيات آلماني",
+  "زبان و ادبيات چيني",
+  "تاريخ",
+  "باستان‌شناسي",
+  "علوم اجتماعي",
+  "مديريت",
+  "حسابداري",
+  "اقتصاد",
+  "علوم سياسي",
+  "شيمي",
+  "فيزيك",
+  "رياضي",
+  "زيست‌شناسي",
+  "زمين‌شناسي",
+  "تربيت بدني و علوم ورزشي",
+  "معماري و شهرسازي",
+  "مهندسي عمران، آب و محيط زيست",
+  "مهندسي برق (الكترونيك و مخابرات)",
+  "مهندسي برق (كنترل و قدرت)",
+  "مهندسي مكانيك و انرژي",
+  "فناوري‌هاي نوين و مهندسي هوا فضا",
+  "مهندسي مواد",
+  "انرژي",
+];
+
 const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   isOpen,
   onClose,
@@ -29,9 +98,11 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   selectedDegree,
   setSelectedDegree,
 }) => {
-  const facultyOptions = ["کامپیوتر", "برق", "مکانیک", "عمران"] as const;
-  const groupOptions = ["گروه ۱", "گروه ۲", "گروه ۳"] as const;
-  const statusOptions = ["استاد", "استادیار", "دانشیار"] as const;
+  const [points, setPoints] = React.useState("");
+  const [selectedGroup, setSelectedGroup] = React.useState("همه");
+  const [nationalCode, setNationalCode] = React.useState("");
+
+  const statusOptions = ["همه", "استاد", "استادیار", "دانشیار"];
 
   const handleSearch = () => {
     const results = teachers.filter((teacher) => {
@@ -41,20 +112,43 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
         teacher.lastName.toLowerCase().includes(searchName.toLowerCase());
 
       const facultyMatch =
-        selectedFaculty === "همه" || teacher.faculty === selectedFaculty;
+        selectedFaculty === "همه" ||
+        teacher.faculty.toLowerCase().includes(selectedFaculty.toLowerCase());
 
       const degreeMatch =
         selectedDegree === "همه" || teacher.rank === selectedDegree;
 
-      return nameMatch && facultyMatch && degreeMatch;
+      const groupMatch =
+        selectedGroup === "همه" || teacher.group === selectedGroup;
+
+      const nationalCodeMatch =
+        !nationalCode || teacher.nationalCode.includes(nationalCode);
+
+      const pointsMatch = !points || teacher.points === parseInt(points);
+
+      return (
+        nameMatch &&
+        facultyMatch &&
+        degreeMatch &&
+        groupMatch &&
+        nationalCodeMatch &&
+        pointsMatch
+      );
     });
 
     if (results.length === 0) {
-      toast.info("هیچ استادی یافت نشد."); // Replaced alert
+      toast.info("هیچ استادی یافت نشد.");
     } else {
       onSearchResults(results);
       onClose();
     }
+  };
+
+  const handleClose = () => {
+    setPoints("");
+    setSelectedGroup("همه");
+    setNationalCode("");
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -63,7 +157,7 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
     <>
       <div
         className="fixed inset-0 z-40 bg-[#282828] opacity-50"
-        onClick={onClose}
+        onClick={handleClose}
       />
       <div className="fixed inset-x-0 top-1/2 z-50 mx-auto grid w-full max-w-4xl -translate-y-1/2 transform grid-rows-6 rounded-[25px] bg-white p-6 shadow-xl">
         <div className="row-span-1 content-center py-4 text-center text-xl font-bold text-black">
@@ -97,6 +191,9 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                       <MyInput
                         placeholder="امتیازات"
                         className="w-full text-black"
+                        value={points}
+                        onChange={setPoints}
+                        type="number"
                       />
                     </div>
                   </div>
@@ -109,7 +206,12 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                     <div className="col-span-2 w-full content-center">
                       <MyDropdown
                         options={groupOptions}
-                        defaultOption="همه" // Use selectedGroup instead of "همه"
+                        defaultOption={selectedGroup}
+                        onSelect={(selected) => {
+                          if (typeof selected === "string") {
+                            setSelectedGroup(selected);
+                          }
+                        }}
                       />
                     </div>
                   </div>
@@ -127,6 +229,9 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                       <MyInput
                         placeholder="کد ملی"
                         className="w-full text-black"
+                        value={nationalCode}
+                        onChange={setNationalCode}
+                        type="text"
                       />
                     </div>
                   </div>

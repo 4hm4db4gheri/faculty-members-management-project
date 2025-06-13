@@ -5,6 +5,7 @@ interface MyInputProps {
   value?: string;
   onChange?: (value: string) => void;
   className?: string;
+  type?: string;
 }
 
 export default function MyInput({
@@ -12,6 +13,7 @@ export default function MyInput({
   value = "",
   onChange,
   className = "",
+  type = "text",
 }: MyInputProps) {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (onChange) {
@@ -22,7 +24,7 @@ export default function MyInput({
   return (
     <div className="relative inline-block w-full">
       <input
-        type="text"
+        type={type}
         value={value}
         onChange={handleChange}
         placeholder={placeholder}

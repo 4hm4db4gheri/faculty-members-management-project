@@ -178,14 +178,15 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
             lastName: apiTeacher.lastName,
             faculty: apiTeacher.facultyNameInPersian,
             rank: getRankString(apiTeacher.academicRank),
-            // Add any additional fields you want to display
-            phoneNumber: apiTeacher.phoneNumber,
-            email: apiTeacher.emailAddress,
-            group: apiTeacher.groupNameInPersian,
-            lastDegree: apiTeacher.lastDegree,
+            phoneNumber: apiTeacher.phoneNumber || "",
+            email: apiTeacher.emailAddress || "",
+            group: apiTeacher.groupNameInPersian || "",
+            lastDegree: apiTeacher.lastDegree || "",
             employmentStatus:
               apiTeacher.employmentStatus === 1 ? "شاغل" : "بازنشسته",
-            isTeaching: apiTeacher.isTeaching,
+            isTeaching: apiTeacher.isTeaching ?? false,
+            nationalCode: apiTeacher.nationalCode || "",
+            points: 0,
           }),
         );
 

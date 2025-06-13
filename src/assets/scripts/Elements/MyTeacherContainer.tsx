@@ -1,10 +1,4 @@
-interface Teacher {
-  id: number;
-  firstName: string;
-  lastName: string;
-  faculty: string;
-  rank: string;
-}
+import type { Teacher } from "../types/Teacher";
 
 interface MyTeacherContainerProps {
   teacher: Teacher;
