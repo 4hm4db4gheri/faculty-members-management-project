@@ -33,7 +33,7 @@ export default function MainDashboardPanel() {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const { chartData1, chartData2} = useChartData(); // Use the custom hook
+  const { chartData1, chartData2 } = useChartData(); // Use the custom hook
 
   const [selectedTeacher] = useState<Teacher | null>(null);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
@@ -46,20 +46,30 @@ export default function MainDashboardPanel() {
       setIsLoading(true);
       try {
         const response = await ApiService.get<ApiResponse>(
-          "/panel/v1/teacher/read-teachers?PageNumber=1&PageSize=1000"
+          "/panel/v1/teacher/read-teachers?PageNumber=1&PageSize=1000",
         );
 
         if (response.error) {
           throw new Error(response.message[0] || "Failed to fetch teachers");
         }
 
-        const convertedTeachers: Teacher[] = response.data.map((apiTeacher) => ({
-          id: apiTeacher.id,
-          firstName: apiTeacher.firstName,
-          lastName: apiTeacher.lastName,
-          faculty: apiTeacher.facultyNameInPersian,
-          rank: getRankString(apiTeacher.academicRank),
-        }));
+        const convertedTeachers: Teacher[] = response.data.map(
+          (apiTeacher) => ({
+            id: apiTeacher.id,
+            firstName: apiTeacher.firstName,
+            lastName: apiTeacher.lastName,
+            faculty: apiTeacher.facultyNameInPersian,
+            rank: getRankString(apiTeacher.academicRank),
+            phoneNumber: "",
+            email: "",
+            group: "",
+            lastDegree: "",
+            employmentStatus: "",
+            isTeaching: false,
+            nationalCode: "",
+            points: 0,
+          }),
+        );
 
         setTeachers(convertedTeachers);
       } catch (err) {
@@ -208,53 +218,70 @@ export default function MainDashboardPanel() {
       </div>
       <div className="col-span-1 flex h-full flex-col items-center justify-center rounded-[25px] bg-white pt-[10px]">
         <div className="flex h-[150px] w-[150px] items-center justify-center rounded-full bg-[#8D8D8D]">
-          Pic
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="white"
+            className="h-24 w-24"
+          >
+            <path
+              fillRule="evenodd"
+              d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
+              clipRule="evenodd"
+            />
+          </svg>
         </div>
         <div className="flex content-center items-center justify-center pt-[30px] text-5xl text-black">
           اسم کاربر
         </div>
-        
+
         {/* New notifications section */}
         <div className="mt-8 flex w-full flex-col gap-4 p-5">
-          <button 
+          <button
             onClick={() => navigate("/dashboard/sent-notifications")}
             className="w-full rounded-[25px] bg-[#1B4965] px-6 py-3 text-xl font-semibold text-white transition-colors hover:bg-[#3388BC]"
           >
             اعلان‌های ارسال شده
           </button>
-          
+
           <div className="flex flex-col gap-2 rounded-[25px] bg-gray-50 p-4">
-            <h3 className="mb-2 text-lg font-semibold text-gray-800">آخرین اعلان‌ها</h3>
+            <h3 className="mb-2 text-lg font-semibold text-gray-800">
+              آخرین اعلان‌ها
+            </h3>
             {[
               {
                 title: "یادآوری مهلت ارسال مقاله",
                 date: "۱۴۰۴/۰۳/۱۲",
-                importance: "فوری"
+                importance: "فوری",
               },
               {
                 title: "تمدید قرارداد پژوهشی",
                 date: "۱۴۰۴/۰۳/۱۰",
-                importance: "عادی"
+                importance: "عادی",
               },
               {
                 title: "درخواست اصلاح مقاله",
                 date: "۱۴۰۴/۰۳/۰۸",
-                importance: "فوری"
-              }
+                importance: "فوری",
+              },
             ].map((notification, index) => (
               <div
                 key={index}
                 className="flex items-center justify-between rounded-lg bg-white p-3 shadow-sm"
               >
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-800">{notification.title}</p>
+                  <p className="text-sm font-medium text-gray-800">
+                    {notification.title}
+                  </p>
                   <p className="text-xs text-gray-500">{notification.date}</p>
                 </div>
-                <span className={`rounded-full px-2 py-1 text-xs ${
-                  notification.importance === "فوری" 
-                    ? "bg-red-100 text-red-800" 
-                    : "bg-blue-100 text-blue-800"
-                }`}>
+                <span
+                  className={`rounded-full px-2 py-1 text-xs ${
+                    notification.importance === "فوری"
+                      ? "bg-red-100 text-red-800"
+                      : "bg-blue-100 text-blue-800"
+                  }`}
+                >
                   {notification.importance}
                 </span>
               </div>

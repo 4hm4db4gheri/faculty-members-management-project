@@ -8,12 +8,22 @@ import UserInfo from "../Panels/UserInfo";
 import type { Teacher } from "../types/Teacher";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import { ApiService } from "../Services/ApiService";
+import { AuthService } from "../Services/AuthService";
+import { toast } from "react-toastify";
+import * as XLSX from "xlsx";
+import AdvancedSearchIcon from "../../images/AdvancedSearch.svg";
 
 interface HistoryPanelProps {
   onTeacherSelect: (teacher: Teacher) => void;
 }
 
-// Update Teacher interface to match API response
+interface Record {
+  id: number;
+  title: string;
+  date: string;
+  description: string;
+}
+
 interface ApiTeacher {
   id: number;
   firstName: string;
@@ -23,11 +33,71 @@ interface ApiTeacher {
   academicRank: number;
   tId: string;
   createTime: string;
-  // ...other fields can be added as needed
+  gender: number;
+  fatherName: string;
+  maritalStatus: number;
+  birthDate: string;
+  nationality: string;
+  birthPlace: string;
+  birthCertificateNumber: string;
+  birthCertificateSerialAndSerie: string;
+  birthCertificateIssuingPlace: string;
+  nationalCode: string;
+  religion: string;
+  firstNameInEnglish: string;
+  lastNameInEnglish: string;
+  gregorianBirthDate: string;
+  groupNameInPersian: string;
+  groupNameInEnglish: string;
+  personalNumber: string;
+  emailAddress: string;
+  websiteAddress: string;
+  address: string;
+  officeNumber: string;
+  phoneNumber: string;
+  homeTelephoneNumber: string;
+  userNumber: string;
+  employeeNumber: string;
+  employmentEndDate: string;
+  lastDegree: string;
+  degreeObtainingDate: string;
+  degreeObtainingDateGregorian: string;
+  universityOfStudy: string;
+  studyField: string;
+  educationalOrientation: string;
+  paye: number;
+  academicPromotionDate: string;
+  halatOstad: string;
+  employmentDate: string;
+  employmentStatus: number;
+  insuranceTypeAndNumber: string;
+  bankAndAccountNumber: string;
+  shebaNumber: string;
+  mablaghAkharinHokmEstekhdami: string;
+  lastStatus: string;
+  lastStatusDate: string;
+  isTeaching: boolean;
+  facultyOfMission: string;
+  lastPromotionDate: string;
+  payeType: string;
+  bandeAyeenName: string;
+  universityEmail: string;
+  educationalRecords: Record[] | null;
+  industrialRecords: Record[] | null;
+  executiveRecords: Record[] | null;
+  researchRecords: Record[] | null;
+  promotionRecords: Record[] | null;
+  statusChangeRecords: Record[] | null;
 }
 
 interface ApiResponse {
   data: ApiTeacher[];
+  error: boolean;
+  message: string[];
+}
+
+interface UploadResponse {
+  data: string[];
   error: boolean;
   message: string[];
 }
@@ -38,8 +108,6 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isPdfPopupOpen, setIsPdfPopupOpen] = useState(false);
-  const [isExcelPopupOpen, setIsExcelPopupOpen] = useState(false);
   const [isTeachersUploadOpen, setIsTeachersUploadOpen] = useState(false);
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
   const [advancedSearchResults, setAdvancedSearchResults] = useState<
@@ -51,19 +119,154 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
   const [selectedFaculty, setSelectedFaculty] = useState("همه");
   const [selectedDegree, setSelectedDegree] = useState("همه");
 
-  const handleFileUpload = (file: File) => {
-    // Here you would handle the file upload to backend
-    console.log(`File was uploaded: ${file.name}`);
+  const resetSearchFields = () => {
+    setSearchName("");
+    setSelectedFaculty("همه");
+    setSelectedDegree("همه");
   };
 
-  const handleTeachersUpload = (file: File) => {
-    // TODO: Implement API call to upload teachers list
-    console.log(`Teachers list file uploaded: ${file.name}`);
-    // In the future, you would:
-    // 1. Send the file to the server
-    // 2. Process the response
-    // 3. Update the teachers list if successful
-    // 4. Show appropriate toast messages
+  const handleExportExcel = () => {
+    try {
+      // Prepare data for Excel
+      const excelData = teachers.map((teacher) => ({
+        نام: teacher.firstName,
+        "نام خانوادگی": teacher.lastName,
+        دانشکده: teacher.faculty,
+        "رتبه علمی": teacher.rank,
+      }));
+
+      // Create workbook and worksheet
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(excelData);
+
+      // Adjust column widths
+      const columnWidths = [
+        { wch: 15 }, // نام
+        { wch: 20 }, // نام خانوادگی
+        { wch: 25 }, // دانشکده
+        { wch: 15 }, // رتبه علمی
+      ];
+      ws["!cols"] = columnWidths;
+
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(wb, ws, "لیست اساتید");
+
+      // Save the file
+      XLSX.writeFile(
+        wb,
+        `teachers-list-${new Date().toISOString().split("T")[0]}.xlsx`,
+      );
+      toast.success("فایل Excel با موفقیت دانلود شد");
+    } catch (err) {
+      toast.error("خطا در ایجاد فایل Excel");
+      console.error("Excel Export Error:", err);
+    }
+  };
+
+  const fetchTeachers = async () => {
+    setIsLoading(true);
+    try {
+      const response = await ApiService.get<ApiResponse>(
+        "/panel/v1/teacher/read-teachers?PageNumber=1&PageSize=1000",
+      );
+
+      if (!response.error) {
+        const convertedTeachers: Teacher[] = response.data.map(
+          (apiTeacher) => ({
+            id: apiTeacher.id,
+            firstName: apiTeacher.firstName,
+            lastName: apiTeacher.lastName,
+            faculty: apiTeacher.facultyNameInPersian,
+            rank: getRankString(apiTeacher.academicRank),
+            phoneNumber: apiTeacher.phoneNumber || "",
+            email: apiTeacher.emailAddress || "",
+            group: apiTeacher.groupNameInPersian || "",
+            lastDegree: apiTeacher.lastDegree || "",
+            employmentStatus:
+              apiTeacher.employmentStatus === 1 ? "شاغل" : "بازنشسته",
+            isTeaching: apiTeacher.isTeaching ?? false,
+            nationalCode: apiTeacher.nationalCode || "",
+            points: 0,
+          }),
+        );
+
+        setTeachers(convertedTeachers);
+      } else {
+        throw new Error(response.message.join(", "));
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+      console.error("Failed to fetch teachers:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTeachers();
+  }, []);
+
+  const handleTeachersUpload = async (file: File) => {
+    setIsLoading(true);
+
+    // Check for valid file type
+    const validTypes = [
+      "application/vnd.ms-excel",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      ".xls",
+      ".xlsx",
+    ];
+
+    if (
+      !validTypes.some(
+        (type) => file.name.toLowerCase().endsWith(type) || file.type === type,
+      )
+    ) {
+      toast.error("لطفا فقط فایل اکسل (.xls یا .xlsx) آپلود کنید");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch(
+        "https://faculty.liara.run/api/panel/v1/teacher/upload-excel",
+        {
+          method: "POST",
+          headers: {
+            accept: "text/plain",
+            Authorization: `Bearer ${AuthService.getAccessToken()}`,
+          },
+          body: formData,
+        },
+      );
+
+      const result: UploadResponse = await response.json();
+
+      if (response.ok) {
+        if (result.data && result.data.length > 0) {
+          // Show validation errors in a toast
+          result.data.forEach((error) => {
+            toast.warn(error, {
+              autoClose: 10000, // Keep error messages visible longer
+            });
+          });
+        } else {
+          toast.success("آپلود با موفقیت انجام شد");
+          await fetchTeachers(); // Refresh the teachers list
+        }
+        // Close the popup immediately after upload attempt
+        setIsTeachersUploadOpen(false);
+      } else {
+        throw new Error(result.message?.join(", ") || "خطا در آپلود فایل");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "خطا در آپلود فایل");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleAdvancedSearchResults = (results: Teacher[]) => {
@@ -89,42 +292,6 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
         return "نامشخص";
     }
   };
-
-  // Fetch teachers from API
-  useEffect(() => {
-    const fetchTeachers = async () => {
-      setIsLoading(true);
-      try {
-        const response = await ApiService.get<ApiResponse>(
-          "/panel/v1/teacher/read-teachers?PageNumber=1&PageSize=1000",
-        );
-
-        if (!response.error) {
-          // Convert API data to match your Teacher interface
-          const convertedTeachers: Teacher[] = response.data.map(
-            (apiTeacher) => ({
-              id: apiTeacher.id,
-              firstName: apiTeacher.firstName,
-              lastName: apiTeacher.lastName,
-              faculty: apiTeacher.facultyNameInPersian,
-              rank: getRankString(apiTeacher.academicRank),
-            }),
-          );
-
-          setTeachers(convertedTeachers);
-        } else {
-          throw new Error(response.message.join(", "));
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
-        console.error("Failed to fetch teachers:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchTeachers();
-  }, []);
 
   // Updated filtering logic
   const filteredTeachers = useMemo(() => {
@@ -211,38 +378,50 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
           </div>
 
           {/* Update the advanced search button */}
-          <button
-            onClick={() => setIsAdvancedSearchOpen(true)}
-            className="col-span-1 flex h-10 w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white px-4 py-4 text-xl text-black shadow-xs ring-1 ring-gray-300 transition-colors duration-300 ring-inset hover:bg-gray-50"
-            title="جستجوی پیشرفته"
-          >
-            <img
-              src="./src/assets/images/AdvancedSearch.svg"
-              alt="جستجوی پیشرفته"
-              className="h-6 w-6"
-            />
-          </button>
+          <div className="col-span-1 content-center">
+            <button
+              onClick={() => setIsAdvancedSearchOpen(true)}
+              className="flex h-10 w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white px-4 py-4 text-xl text-black shadow-xs ring-1 ring-gray-300 transition-colors duration-300 ring-inset hover:bg-gray-50"
+              title="جستجوی پیشرفته"
+            >
+              <img
+                src={AdvancedSearchIcon}
+                alt="جستجوی پیشرفته"
+                className="h-6 w-6"
+              />
+            </button>
+          </div>
 
-          <button
-            onClick={() => setIsPdfPopupOpen(true)}
-            className="col-span-1 my-2 mr-20 flex h-10 w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]"
-          >
-            PDF
-          </button>
-          <button
-            onClick={() => setIsExcelPopupOpen(true)}
-            className="col-span-1 my-2 mr-20 flex h-10 w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]"
-          >
-            Excel
-          </button>
-        </div>
-        <div className="justify-end text-end">
-          <button
-            onClick={() => setIsTeachersUploadOpen(true)}
-            className="rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-          >
-            آپلود لیست اساتید
-          </button>
+          <div className="col-span-2 flex items-center justify-center">
+            <button
+              onClick={() => setIsTeachersUploadOpen(true)}
+              className="rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+            >
+              آپلود لیست اساتید
+            </button>
+          </div>
+          <div className="col-span-1 content-center">
+            <button
+              onClick={handleExportExcel}
+              className="flex w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white px-4 py-2 text-xl text-black shadow-xs ring-1 ring-gray-300 transition-colors duration-300 hover:bg-gray-50"
+            >
+              <span className="flex items-center">
+                <span className="mr-2">Excel</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -292,19 +471,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
         )}
       </div>
 
-      {/* Popups */}
-      <MyPopup
-        isOpen={isPdfPopupOpen}
-        onClose={() => setIsPdfPopupOpen(false)}
-        type="pdf"
-        onUpload={handleFileUpload}
-      />
-      <MyPopup
-        isOpen={isExcelPopupOpen}
-        onClose={() => setIsExcelPopupOpen(false)}
-        type="excel"
-        onUpload={handleFileUpload}
-      />
+      {/* Upload Teachers Popup */}
       <MyPopup
         isOpen={isTeachersUploadOpen}
         onClose={() => setIsTeachersUploadOpen(false)}
@@ -316,7 +483,10 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
       {/* Add AdvancedSearch component */}
       <AdvancedSearch
         isOpen={isAdvancedSearchOpen}
-        onClose={() => setIsAdvancedSearchOpen(false)}
+        onClose={() => {
+          setIsAdvancedSearchOpen(false);
+          resetSearchFields();
+        }}
         onSearchResults={handleAdvancedSearchResults}
         teachers={teachers}
         searchName={searchName}

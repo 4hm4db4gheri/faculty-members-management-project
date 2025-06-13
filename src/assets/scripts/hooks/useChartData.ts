@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ChartDataItem1, ChartDataItem2 } from '../types/chart.types';
-import { chartData1, chartData2, facultyChartOptions } from '../data/chartData';
+import { chartData1, chartData2, facultyChartOptions } from '../data/chardData';
 import { ApiService } from '../Services/ApiService';
 
 interface UseChartDataReturn {

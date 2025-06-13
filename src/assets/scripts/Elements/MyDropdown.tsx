@@ -106,7 +106,7 @@ export default function Dropdown({
           transition
           className="absolute right-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-hidden"
         >
-          <div className="flex w-full flex-col">
+          <div className="flex max-h-48 w-full flex-col overflow-y-auto">
             {options.map((option) => (
               <MenuItem key={option}>
                 {({ active }) => (

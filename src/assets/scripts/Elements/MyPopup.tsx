@@ -7,6 +7,8 @@ interface PopupProps {
   type: "pdf" | "excel";
   onUpload: (file: File) => void;
   title?: string;
+  errorMessage?: string;
+  successMessage?: string;
 }
 
 export default function MyPopup({
@@ -14,6 +16,9 @@ export default function MyPopup({
   onClose,
   type,
   onUpload,
+  title,
+  errorMessage,
+  successMessage
 }: PopupProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -70,8 +75,22 @@ export default function MyPopup({
       <div className="fixed top-1/2 left-1/2 z-50 w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-[25px] bg-[#EBF2FA] p-6 text-black shadow-lg">
         {/* Row 1 - Title */}
         <div className="mb-6 text-center text-lg">
-          {type === "pdf" ? "محل آپلود پی دی اف" : "محل آپلود اکسل"}
+          {title || (type === "pdf" ? "محل آپلود پی دی اف" : "محل آپلود اکسل")}
         </div>
+
+        {/* Error Message */}
+        {errorMessage && (
+          <div className="mb-4 rounded bg-red-100 p-3 text-red-700 text-sm">
+            {errorMessage}
+          </div>
+        )}
+
+        {/* Success Message */}
+        {successMessage && (
+          <div className="mb-4 rounded bg-green-100 p-3 text-green-700 text-sm">
+            {successMessage}
+          </div>
+        )}
 
         {/* Row 2 - Upload Controls */}
         <div className="grid grid-cols-3 gap-4">
