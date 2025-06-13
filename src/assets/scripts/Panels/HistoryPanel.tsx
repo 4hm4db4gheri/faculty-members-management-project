@@ -11,7 +11,6 @@ import { ApiService } from "../Services/ApiService";
 import { AuthService } from "../Services/AuthService";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
-import jsPDF from "jspdf";
 import AdvancedSearchIcon from "../../images/AdvancedSearch.svg";
 
 interface HistoryPanelProps {
@@ -59,122 +58,6 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
   const [searchName, setSearchName] = useState("");
   const [selectedFaculty, setSelectedFaculty] = useState("همه");
   const [selectedDegree, setSelectedDegree] = useState("همه");
-
-  const handleExportPDF = () => {
-    try {
-      // Create PDF with RTL support
-      const doc = new jsPDF({
-        orientation: "p",
-        unit: "mm",
-        format: "a4",
-        putOnlyUsedFonts: true,
-      });
-
-      // Load and add the Vazirmatn font
-      doc.addFileToVFS("Vazirmatn.ttf", "/src/assets/fonts/Vazirmatn.ttf");
-      doc.addFont("Vazirmatn.ttf", "Vazirmatn", "normal");
-      doc.setFont("Vazirmatn");
-
-      // Enable RTL mode
-      doc.setR2L(true);
-
-      // Add title with Persian font
-      doc.setFontSize(18);
-      doc.text(
-        "لیست اساتید دانشگاه شهید بهشتی",
-        doc.internal.pageSize.width / 2,
-        20,
-        {
-          align: "center",
-        },
-      );
-
-      // Add current date in Persian format
-      const date = new Date().toLocaleDateString("fa-IR");
-      doc.setFontSize(12);
-      doc.text(`تاریخ: ${date}`, doc.internal.pageSize.width - 20, 30, {
-        align: "right",
-      });
-
-      // Add headers with proper styling
-      const headers = ["رتبه علمی", "دانشکده", "نام و نام خانوادگی"];
-      let y = 40;
-
-      // Draw header background
-      doc.setFillColor(240, 240, 240);
-      doc.rect(10, y - 5, doc.internal.pageSize.width - 20, 10, "F");
-
-      // Add header texts with consistent styling
-      doc.setFontSize(12);
-      const columnWidths = [40, 60, 70]; // Width for each column
-      let x = doc.internal.pageSize.width - 20; // Start from right
-
-      headers.forEach((header, index) => {
-        x -= columnWidths[index];
-        doc.text(header, x + columnWidths[index] / 2, y, {
-          align: "center",
-        });
-      });
-
-      // Add horizontal line after headers
-      y += 2;
-      doc.line(10, y, doc.internal.pageSize.width - 10, y);
-
-      // Add teacher data with improved formatting
-      y += 8;
-      const lineHeight = 8;
-
-      const filteredTeachers = advancedSearchResults || teachers;
-      filteredTeachers.forEach((teacher, index) => {
-        if (y > 280) {
-          // Add new page if needed
-          doc.addPage();
-          y = 20;
-        }
-
-        // Add zebra striping for better readability
-        if (index % 2 === 0) {
-          doc.setFillColor(250, 250, 250);
-          doc.rect(
-            10,
-            y - 5,
-            doc.internal.pageSize.width - 20,
-            lineHeight,
-            "F",
-          );
-        }
-
-        x = doc.internal.pageSize.width - 20;
-
-        // Write data in columns with consistent alignment
-        x -= columnWidths[0];
-        doc.text(teacher.rank, x + columnWidths[0] / 2, y, { align: "center" });
-
-        x -= columnWidths[1];
-        doc.text(teacher.faculty, x + columnWidths[1] / 2, y, {
-          align: "center",
-        });
-
-        x -= columnWidths[2];
-        doc.text(
-          `${teacher.firstName} ${teacher.lastName}`,
-          x + columnWidths[2] / 2,
-          y,
-          { align: "center" },
-        );
-
-        y += lineHeight;
-      });
-
-      // Save the PDF with proper filename
-      const filename = `teachers-list-${new Date().toLocaleDateString("fa-IR").replace(/\//g, "-")}.pdf`;
-      doc.save(filename);
-      toast.success("فایل PDF با موفقیت دانلود شد");
-    } catch (err) {
-      toast.error("خطا در ایجاد فایل PDF");
-      console.error("PDF Export Error:", err);
-    }
-  };
 
   const handleExportExcel = () => {
     try {
