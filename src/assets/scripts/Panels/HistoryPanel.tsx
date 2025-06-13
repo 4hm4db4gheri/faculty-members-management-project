@@ -12,6 +12,7 @@ import { AuthService } from "../Services/AuthService";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
+import AdvancedSearchIcon from '../../images/AdvancedSearch.svg';
 
 interface HistoryPanelProps {
   onTeacherSelect: (teacher: Teacher) => void;
@@ -425,7 +426,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
             title="جستجوی پیشرفته"
           >
             <img
-              src="./src/assets/images/AdvancedSearch.svg"
+              src={AdvancedSearchIcon}
               alt="جستجوی پیشرفته"
               className="h-6 w-6"
             />
