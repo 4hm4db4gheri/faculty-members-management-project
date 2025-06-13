@@ -12,7 +12,7 @@ import { AuthService } from "../Services/AuthService";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
-import AdvancedSearchIcon from '../../images/AdvancedSearch.svg';
+import AdvancedSearchIcon from "../../images/AdvancedSearch.svg";
 
 interface HistoryPanelProps {
   onTeacherSelect: (teacher: Teacher) => void;
@@ -420,30 +420,32 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
           </div>
 
           {/* Update the advanced search button */}
-          <button
-            onClick={() => setIsAdvancedSearchOpen(true)}
-            className="col-span-1 flex h-10 w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white px-4 py-4 text-xl text-black shadow-xs ring-1 ring-gray-300 transition-colors duration-300 ring-inset hover:bg-gray-50"
-            title="جستجوی پیشرفته"
-          >
-            <img
-              src={AdvancedSearchIcon}
-              alt="جستجوی پیشرفته"
-              className="h-6 w-6"
-            />
-          </button>
+          <div className="col-span-1 content-center">
+            <button
+              onClick={() => setIsAdvancedSearchOpen(true)}
+              className="flex h-10 w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white px-4 py-4 text-xl text-black shadow-xs ring-1 ring-gray-300 transition-colors duration-300 ring-inset hover:bg-gray-50"
+              title="جستجوی پیشرفته"
+            >
+              <img
+                src={AdvancedSearchIcon}
+                alt="جستجوی پیشرفته"
+                className="h-6 w-6"
+              />
+            </button>
+          </div>
 
-          <div className="col-span-2 content-center pr-4">
+          <div className="col-span-2 flex items-center justify-center">
             <button
               onClick={() => setIsTeachersUploadOpen(true)}
-              className="rounded-lg bg-blue-500 px-4 py-2  text-white hover:bg-blue-600"
+              className="rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
             >
               آپلود لیست اساتید
             </button>
           </div>
-          <div className="col-span-1 content-center pl-4">
+          <div className="col-span-1 content-center">
             <button
               onClick={handleExportExcel}
-              className="flex w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white px-15 py-2 text-xl text-black transition-colors duration-300 hover:bg-[#f0f0f0] active:bg-[#dcdcdc]"
+              className="flex w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white px-4 py-2 text-xl text-black shadow-xs ring-1 ring-gray-300 transition-colors duration-300 hover:bg-gray-50"
             >
               <span className="flex items-center">
                 <span className="mr-2">Excel</span>
