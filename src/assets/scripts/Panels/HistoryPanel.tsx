@@ -17,7 +17,13 @@ interface HistoryPanelProps {
   onTeacherSelect: (teacher: Teacher) => void;
 }
 
-// Update Teacher interface to match API response
+interface Record {
+  id: number;
+  title: string;
+  date: string;
+  description: string;
+}
+
 interface ApiTeacher {
   id: number;
   firstName: string;
@@ -27,7 +33,61 @@ interface ApiTeacher {
   academicRank: number;
   tId: string;
   createTime: string;
-  // ...other fields can be added as needed
+  gender: number;
+  fatherName: string;
+  maritalStatus: number;
+  birthDate: string;
+  nationality: string;
+  birthPlace: string;
+  birthCertificateNumber: string;
+  birthCertificateSerialAndSerie: string;
+  birthCertificateIssuingPlace: string;
+  nationalCode: string;
+  religion: string;
+  firstNameInEnglish: string;
+  lastNameInEnglish: string;
+  gregorianBirthDate: string;
+  groupNameInPersian: string;
+  groupNameInEnglish: string;
+  personalNumber: string;
+  emailAddress: string;
+  websiteAddress: string;
+  address: string;
+  officeNumber: string;
+  phoneNumber: string;
+  homeTelephoneNumber: string;
+  userNumber: string;
+  employeeNumber: string;
+  employmentEndDate: string;
+  lastDegree: string;
+  degreeObtainingDate: string;
+  degreeObtainingDateGregorian: string;
+  universityOfStudy: string;
+  studyField: string;
+  educationalOrientation: string;
+  paye: number;
+  academicPromotionDate: string;
+  halatOstad: string;
+  employmentDate: string;
+  employmentStatus: number;
+  insuranceTypeAndNumber: string;
+  bankAndAccountNumber: string;
+  shebaNumber: string;
+  mablaghAkharinHokmEstekhdami: string;
+  lastStatus: string;
+  lastStatusDate: string;
+  isTeaching: boolean;
+  facultyOfMission: string;
+  lastPromotionDate: string;
+  payeType: string;
+  bandeAyeenName: string;
+  universityEmail: string;
+  educationalRecords: Record[] | null;
+  industrialRecords: Record[] | null;
+  executiveRecords: Record[] | null;
+  researchRecords: Record[] | null;
+  promotionRecords: Record[] | null;
+  statusChangeRecords: Record[] | null;
 }
 
 interface ApiResponse {
@@ -58,6 +118,12 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
   const [searchName, setSearchName] = useState("");
   const [selectedFaculty, setSelectedFaculty] = useState("همه");
   const [selectedDegree, setSelectedDegree] = useState("همه");
+
+  const resetSearchFields = () => {
+    setSearchName("");
+    setSelectedFaculty("همه");
+    setSelectedDegree("همه");
+  };
 
   const handleExportExcel = () => {
     try {
@@ -112,6 +178,14 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
             lastName: apiTeacher.lastName,
             faculty: apiTeacher.facultyNameInPersian,
             rank: getRankString(apiTeacher.academicRank),
+            // Add any additional fields you want to display
+            phoneNumber: apiTeacher.phoneNumber,
+            email: apiTeacher.emailAddress,
+            group: apiTeacher.groupNameInPersian,
+            lastDegree: apiTeacher.lastDegree,
+            employmentStatus:
+              apiTeacher.employmentStatus === 1 ? "شاغل" : "بازنشسته",
+            isTeaching: apiTeacher.isTeaching,
           }),
         );
 
@@ -408,7 +482,10 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
       {/* Add AdvancedSearch component */}
       <AdvancedSearch
         isOpen={isAdvancedSearchOpen}
-        onClose={() => setIsAdvancedSearchOpen(false)}
+        onClose={() => {
+          setIsAdvancedSearchOpen(false);
+          resetSearchFields();
+        }}
         onSearchResults={handleAdvancedSearchResults}
         teachers={teachers}
         searchName={searchName}

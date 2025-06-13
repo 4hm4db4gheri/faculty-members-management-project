@@ -4,5 +4,4 @@ export interface Teacher {
   lastName: string;
   faculty: string;
   rank: string;
-  
 }
