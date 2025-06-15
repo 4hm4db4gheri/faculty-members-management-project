@@ -106,7 +106,14 @@ export default function UserInfo({ teacher }: UserInfoProps) {
     <div className="flex h-screen flex-col overflow-hidden">
       {/* Profile photo section */}
       <div className="flex h-[220px] items-start px-4">
-        <div className="relative z-30 mt-4 h-[260px] w-[170px] rounded-2xl bg-gray-200" />
+        <div className="relative z-30 mt-4 h-[260px] w-[170px] overflow-hidden rounded-2xl shadow-lg">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+            alt="تصویر استاد"
+            className="h-full w-full scale-120 object-cover object-center"
+            style={{ objectPosition: "top center" }}
+          />
+        </div>
       </div>
 
       {/* Content wrapper with tabs and white container */}

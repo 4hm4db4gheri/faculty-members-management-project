@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { ChartDataItem1, ChartDataItem2 } from '../types/chart.types';
-import { chartData1, chartData2, facultyChartOptions } from '../data/chardData';
-import { ApiService } from '../Services/ApiService';
+import { ChartDataItem1, ChartDataItem2 } from '../types/chart.types'; // Import interfaces
+import { chartData1, chartData2, facultyChartOptions } from '../data/chartData'; // Import hardcoded data
 
 interface UseChartDataReturn {
   chartData1: ChartDataItem1[] | null;
@@ -19,25 +18,22 @@ export const useChartData = (): UseChartDataReturn => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Simulate API call
     const fetchData = async () => {
       try {
         setIsLoading(true);
         setError(null);
 
-        // For now, use hardcoded data, but prepared for API integration
-        // try {
-        //   const response1 = await ApiService.get('/chart/chart1data');
-        //   const response2 = await ApiService.get('/chart/chart2data');
-        //   const optionsResponse = await ApiService.get('/chart/facultyoptions');
-        //   setData1(response1.data);
-        //   setData2(response2.data);
-        //   setOptions(optionsResponse.data);
-        // } catch (apiError) {
-        //   console.error("API call failed, falling back to mock data:", apiError);
-        // }
+        // In a real application, you would make API calls here:
+        // const response1 = await ApiService.get('/api/chart1data');
+        // const response2 = await ApiService.get('/api/chart2data');
+        // const optionsResponse = await ApiService.get('/api/facultyoptions');
+        // setData1(response1.data);
+        // setData2(response2.data);
+        // setOptions(optionsResponse.data);
 
-        // Fallback to mock data
-        await new Promise(resolve => setTimeout(resolve, 300));
+        // For now, use hardcoded data
+        await new Promise(resolve => setTimeout(resolve, 300)); // Simulate network delay
         setData1(chartData1);
         setData2(chartData2);
         setOptions(facultyChartOptions);
