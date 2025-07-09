@@ -106,12 +106,19 @@ export default function UserInfo({ teacher }: UserInfoProps) {
     <div className="flex h-screen flex-col overflow-hidden">
       {/* Profile photo section */}
       <div className="flex h-[220px] items-start px-4">
-        <div className="relative z-30 mt-4 h-[260px] w-[170px] rounded-2xl bg-gray-200" />
+        <div className="relative z-30 mt-6 h-[220px] w-[150px] overflow-hidden rounded-2xl shadow-lg">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+            alt="تصویر استاد"
+            className="h-full w-full scale-120 object-cover object-center"
+            style={{ objectPosition: "top center" }}
+          />
+        </div>
       </div>
 
       {/* Content wrapper with tabs and white container */}
       <div className="relative -mt-36 flex-1">
-        <div className="relative z-10 mb-1.5 flex items-center gap-3 pr-50">
+        <div className="relative z-10 pb-1.5 flex items-center gap-3 pr-46">
           {tabs.map((tab) => (
             <button
               key={tab}
@@ -127,11 +134,11 @@ export default function UserInfo({ teacher }: UserInfoProps) {
           ))}
         </div>
 
-        <div className="relative z-20 -mt-4 h-full w-full flex-1 rounded-2xl bg-white p-10">
-          <div className="mr-40">
-            <h1 className="text-2xl font-bold text-black">{teacher.rank}</h1>
-            <h2 className="pt-4 text-3xl font-bold text-black">{`${teacher.firstName} ${teacher.lastName}`}</h2>
-            <p className="pt-4 text-gray-600">دانشکده {teacher.faculty}</p>
+        <div className="relative z-20 -mt-4 h-full w-full flex-1 rounded-2xl bg-white p-8">
+          <div className="mr-36">
+            <h1 className="text-2xl pr-5 font-bold text-black">{teacher.rank}</h1>
+            <h2 className="pt-1 pr-5 text-3xl font-bold text-black">{`${teacher.firstName} ${teacher.lastName}`}</h2>
+            <p className="pt-2 pr-5 text-gray-600">دانشکده {teacher.faculty}</p>
           </div>
           {renderTabContent()}
         </div>
