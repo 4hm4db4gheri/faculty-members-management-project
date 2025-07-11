@@ -7,8 +7,6 @@ import { toast } from "react-toastify";
 interface SentNotification {
   id: number;
   title: string;
-  createTime: string;
-  recipientCount: number;
   sendType: number;
   notificationType: number;
 }
@@ -30,7 +28,7 @@ export default function SentNotificationsPanel() {
       try {
         setIsLoading(true);
         const response = await ApiService.get<ApiResponse>(
-          "/panel/v1/notification/list"
+          "/panel/v1/notification/list",
         );
 
         if (!response.error) {
@@ -39,7 +37,8 @@ export default function SentNotificationsPanel() {
           throw new Error(response.message.join(", "));
         }
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "خطا در دریافت اطلاعات";
+        const errorMessage =
+          err instanceof Error ? err.message : "خطا در دریافت اطلاعات";
         setError(errorMessage);
         toast.error(errorMessage);
       } finally {
@@ -54,13 +53,16 @@ export default function SentNotificationsPanel() {
     return notificationType === 1 ? "فوری" : "عادی";
   };
 
-  const formatDate = (createTime: string): string => {
-    try {
-      const date = new Date(createTime);
-      // Convert to Persian date format (you might want to use a proper date formatter library)
-      return date.toLocaleDateString('fa-IR');
-    } catch {
-      return createTime;
+  const mapSendType = (sendType: number): string => {
+    switch (sendType) {
+      case 0:
+        return "سیستمی";
+      case 1:
+        return "دستی";
+      case 2:
+        return "زمان‌بندی‌شده";
+      default:
+        return "نامشخص";
     }
   };
 
@@ -68,7 +70,7 @@ export default function SentNotificationsPanel() {
   const totalPages = Math.ceil(notifications.length / ITEMS_PER_PAGE);
   const currentNotifications = notifications.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    currentPage * ITEMS_PER_PAGE,
   );
 
   if (isLoading) {
@@ -95,33 +97,32 @@ export default function SentNotificationsPanel() {
           {currentNotifications.map((notification) => (
             <div
               key={notification.id}
-              className="grid grid-cols-[2fr_1fr_1fr_1fr] items-center gap-4 rounded-[15px] bg-white p-4 shadow"
+              className="grid grid-cols-[2fr_1fr_1fr] items-center gap-4 rounded-[15px] bg-white p-4 shadow"
             >
               <div className="text-right">
-                <h3 className="font-semibold text-gray-800">{notification.title}</h3>
-              </div>
-              <div className="text-center text-gray-600">
-                {formatDate(notification.createTime)}
+                <h3 className="font-semibold text-gray-800">
+                  {notification.title}
+                </h3>
               </div>
               <div className="text-center">
-                <span className={`rounded-full px-3 py-1 text-sm ${
-                  mapImportance(notification.notificationType) === "فوری" 
-                    ? "bg-red-100 text-red-800" 
-                    : "bg-blue-100 text-blue-800"
-                }`}>
+                <span
+                  className={`rounded-full px-3 py-1 text-sm ${
+                    mapImportance(notification.notificationType) === "فوری"
+                      ? "bg-red-100 text-red-800"
+                      : "bg-blue-100 text-blue-800"
+                  }`}
+                >
                   {mapImportance(notification.notificationType)}
                 </span>
               </div>
               <div className="text-center text-gray-600">
-                {notification.recipientCount} دریافت‌کننده
+                {mapSendType(notification.sendType)}
               </div>
             </div>
           ))}
 
           {currentNotifications.length === 0 && (
-            <div className="text-center text-gray-500">
-              هیچ اعلانی یافت نشد
-            </div>
+            <div className="text-center text-gray-500">هیچ اعلانی یافت نشد</div>
           )}
         </div>
       </div>
