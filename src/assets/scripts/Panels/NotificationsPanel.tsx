@@ -16,6 +16,7 @@ interface notificationModel {
   sendType: number;
   notificationType: number;
   beforeSendDay: string;
+  enabled: boolean;
 }
 
 interface notificationResponse {
@@ -30,8 +31,7 @@ export default function NotificationsPanel({
   const navigate = useNavigate();
   const [importance, setImportance] = useState("همه");
   const [time, setTime] = useState("همه");
-  const [, setSelectedNotification] =
-    useState<Notification | null>(null);
+  const [, setSelectedNotification] = useState<Notification | null>(null);
 
   const importanceOptions = [
     "همه",
@@ -44,6 +44,50 @@ export default function NotificationsPanel({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [notification, setnotification] = useState<notificationModel[]>([]);
+  const [enabledNotifications, setEnabledNotifications] = useState<Set<number>>(
+    () => {
+      const saved = localStorage.getItem("enabledNotifications");
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    },
+  );
+
+  // لغو ارسال نوتیف
+  const handleToggleNotification = async (id: number, enabled: boolean) => {
+    try {
+      const response = await fetch(
+        `https://faculty.liara.run/api/panel/v1/notification/change-status?id=${id}&enabled=${enabled}`,
+        {
+          method: "GET",
+          headers: {
+            accept: "text/plain",
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          enabled ? "خطا در فعال‌سازی نوتیف" : "خطا در غیرفعال‌سازی نوتیف",
+        );
+      }
+
+      setEnabledNotifications((prev) => {
+        const newSet = new Set(prev);
+        if (enabled) {
+          newSet.add(id);
+        } else {
+          newSet.delete(id);
+        }
+        // ذخیره در localStorage
+        localStorage.setItem(
+          "enabledNotifications",
+          JSON.stringify([...newSet]),
+        );
+        return newSet;
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "خطا در تغییر وضعیت نوتیف");
+    }
+  };
 
   useEffect(() => {
     const fetchNotification = async () => {
@@ -158,6 +202,8 @@ export default function NotificationsPanel({
           <MyNotificationCard
             key={notif.id}
             notification={notif}
+            isEnabled={enabledNotifications.has(notif.id)}
+            onToggleEnabled={handleToggleNotification}
             onClick={() => {
               const notification = {
                 id: notif.id,

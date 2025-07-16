@@ -24,11 +24,15 @@ interface notificationModel {
 interface MyNotificationCardProps {
   notification: notificationModel;
   onClick: (notification: Notification) => void;
+  isEnabled: boolean;
+  onToggleEnabled: (id: number, enabled: boolean) => void;
 }
 
 export default function MyNotificationCard({
   notification,
   onClick,
+  isEnabled,
+  onToggleEnabled,
 }: MyNotificationCardProps) {
   const getTagStyles = (tag: string) => {
     const styles =
@@ -43,31 +47,40 @@ export default function MyNotificationCard({
   };
 
   return (
-    <div
-      className="flex cursor-pointer items-center gap-3 rounded-2xl bg-white px-4 py-2.5 transition-colors hover:bg-gray-50"
-      onClick={() =>
-        onClick({
-          id: notification.id,
-          title: notification.title,
-          priority: "", // Provide appropriate value if available
-          tag: getTypeColor(notification.notificationType),
-          subject: undefined,
-          sendMethod: undefined,
-          sendDate: undefined,
-          description: undefined,
-        })
-      }
-    >
-      <div className="flex items-center gap-3">
-        <span
-          className={`rounded-full px-2 py-0.5 text-xs ${getTagStyles(
-            getTypeColor(notification.notificationType),
-          )}`}
-        >
-          {getTypeName(notification.notificationType)}
-        </span>
+    <div className="flex items-center gap-3 rounded-2xl bg-white px-4 py-2.5 transition-colors hover:bg-gray-50">
+      <input
+        type="checkbox"
+        checked={isEnabled}
+        onChange={(e) => onToggleEnabled(notification.id, e.target.checked)}
+        className="h-4 w-4 cursor-pointer rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+        onClick={(e) => e.stopPropagation()}
+      />
+      <div
+        className="flex flex-1 cursor-pointer items-center gap-3"
+        onClick={() =>
+          onClick({
+            id: notification.id,
+            title: notification.title,
+            priority: "", // Provide appropriate value if available
+            tag: getTypeColor(notification.notificationType),
+            subject: undefined,
+            sendMethod: undefined,
+            sendDate: undefined,
+            description: undefined,
+          })
+        }
+      >
+        <div className="flex items-center gap-3">
+          <span
+            className={`rounded-full px-2 py-0.5 text-xs ${getTagStyles(
+              getTypeColor(notification.notificationType),
+            )}`}
+          >
+            {getTypeName(notification.notificationType)}
+          </span>
+        </div>
+        <span className="text-sm text-gray-800">{notification.title}</span>
       </div>
-      <span className="text-sm text-gray-800">{notification.title}</span>
     </div>
   );
 }
