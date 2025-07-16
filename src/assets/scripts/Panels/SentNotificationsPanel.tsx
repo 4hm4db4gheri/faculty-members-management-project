@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import MyPagination from "../Elements/MyPagination";
 import LoadingSpinner from "../Elements/LoadingSpinner";
-import { ApiService } from "../Services/ApiService";
+import { getNotifications } from "../Services/apiEndpoints";
 import { toast } from "react-toastify";
 
 interface SentNotification {
@@ -9,12 +9,6 @@ interface SentNotification {
   title: string;
   sendType: number;
   notificationType: number;
-}
-
-interface ApiResponse {
-  data: SentNotification[];
-  error: boolean;
-  message: string[];
 }
 
 export default function SentNotificationsPanel() {
@@ -27,9 +21,11 @@ export default function SentNotificationsPanel() {
     const fetchNotifications = async () => {
       try {
         setIsLoading(true);
-        const response = await ApiService.get<ApiResponse>(
-          "/panel/v1/notification/list",
-        );
+        const response = (await getNotifications()) as {
+          data: SentNotification[];
+          error: boolean;
+          message: string[];
+        };
 
         if (!response.error) {
           setNotifications(response.data);

@@ -7,7 +7,7 @@ import UserInfo from "./UserInfo";
 import { useNavigate } from "react-router-dom";
 import { useChartData } from "../hooks/useChartData";
 import LoadingSpinner from "../Elements/LoadingSpinner";
-import { ApiService } from "../Services/ApiService";
+import { getTeachers } from "../Services/apiEndpoints";
 
 interface ApiTeacher {
   id: number;
@@ -45,16 +45,14 @@ export default function MainDashboardPanel() {
     const fetchTeachers = async () => {
       setIsLoading(true);
       try {
-        const response = await ApiService.get<ApiResponse>(
-          "/panel/v1/teacher/read-teachers?PageNumber=1&PageSize=1000",
-        );
+        const response = (await getTeachers()) as ApiResponse;
 
         if (response.error) {
           throw new Error(response.message[0] || "Failed to fetch teachers");
         }
 
         const convertedTeachers: Teacher[] = response.data.map(
-          (apiTeacher) => ({
+          (apiTeacher: ApiTeacher) => ({
             id: apiTeacher.id,
             firstName: apiTeacher.firstName,
             lastName: apiTeacher.lastName,

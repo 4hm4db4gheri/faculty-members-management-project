@@ -5,6 +5,7 @@ import MyNotificationCard, {
 } from "../Elements/MyNotificationCard";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import { useNavigate } from "react-router-dom";
+import { getNotifications } from "../Services/apiEndpoints";
 
 interface NotificationsPanelProps {
   onNotificationSelect: (notification: Notification) => void;
@@ -30,8 +31,7 @@ export default function NotificationsPanel({
   const navigate = useNavigate();
   const [importance, setImportance] = useState("همه");
   const [time, setTime] = useState("همه");
-  const [, setSelectedNotification] =
-    useState<Notification | null>(null);
+  const [, setSelectedNotification] = useState<Notification | null>(null);
 
   const importanceOptions = [
     "همه",
@@ -49,20 +49,7 @@ export default function NotificationsPanel({
     const fetchNotification = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(
-          "https://faculty.liara.run/api/panel/v1/notification/list",
-          {
-            headers: {
-              accept: "text/plain",
-            },
-          },
-        );
-
-        if (!response.ok) {
-          throw new Error("اشکال در دریافت اطلاعات اعلان ها");
-        }
-
-        const data: notificationResponse = await response.json();
+        const data: notificationResponse = await getNotifications();
 
         if (!data.error) {
           setnotification(data.data);

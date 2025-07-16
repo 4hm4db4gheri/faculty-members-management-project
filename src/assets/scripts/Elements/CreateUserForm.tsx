@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import LoadingSpinner from "./LoadingSpinner";
 import MyInput from "./MyInput";
+import { createUser } from "../Services/apiEndpoints";
 
 interface CreateUserFormProps {
   isOpen: boolean;
@@ -83,26 +84,14 @@ export default function CreateUserForm({
 
     setIsLoading(true);
     try {
-      const response = await fetch(
-        "https://faculty.liara.run/api/panel/v1/user/create",
-        {
-          method: "POST",
-          headers: {
-            accept: "text/plain",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            username: formData.username,
-            password: formData.password,
-            phoneNumber: formData.phoneNumber,
-            hasFullAccess: formData.hasFullAccess,
-          }),
-        },
-      );
-
-      const data: ApiResponse = await response.json();
+      const data: ApiResponse = await createUser({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        username: formData.username,
+        password: formData.password,
+        phoneNumber: formData.phoneNumber,
+        hasFullAccess: formData.hasFullAccess,
+      });
 
       if (!data.error) {
         toast.success("کاربر با موفقیت ایجاد شد", {
