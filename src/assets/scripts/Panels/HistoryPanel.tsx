@@ -443,15 +443,22 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
         {/* Scrollable List */}
         <div className="flex-1 overflow-y-auto">
           <div className="grid gap-5 pb-4">
-            {currentTeachers.map((teacher) => (
-              <MyTeacherContainer
-                key={teacher.id}
-                teacher={teacher}
-                onClick={onTeacherSelect}
-              />
-            ))}
+            {currentTeachers &&
+              currentTeachers.map(
+                (teacher) =>
+                  teacher && (
+                    <MyTeacherContainer
+                      key={teacher.id}
+                      teacher={teacher}
+                      onClick={() => {
+                        setSelectedTeacher(teacher);
+                        onTeacherSelect(teacher);
+                      }}
+                    />
+                  ),
+              )}
 
-            {currentTeachers.length === 0 && (
+            {(!currentTeachers || currentTeachers.length === 0) && (
               <div className="text-center text-gray-500">
                 هیچ نتیجه‌ای یافت نشد
               </div>
