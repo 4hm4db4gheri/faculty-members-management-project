@@ -110,10 +110,7 @@ export default function DashboardComponent() {
           <Route
             path="records/:teacherId"
             element={
-              <UserInfo
-                teacher={selectedTeacher!}
-                onBack={() => handleNavigate("/dashboard/records")}
-              />
+              <UserInfo onBack={() => handleNavigate("/dashboard/records")} />
             }
           />
           <Route path="progress" element={<ImprovementChartPanel />} />
