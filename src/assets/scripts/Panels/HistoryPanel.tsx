@@ -28,6 +28,7 @@ interface ApiTeacher {
   id: number;
   firstName: string;
   lastName: string;
+  facultyName?: string;
   facultyNameInPersian: string;
   facultyNameInEnglish: string;
   academicRank: number;
@@ -176,7 +177,8 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
             id: apiTeacher.id,
             firstName: apiTeacher.firstName,
             lastName: apiTeacher.lastName,
-            faculty: apiTeacher.facultyNameInPersian,
+            faculty:
+              apiTeacher.facultyName || apiTeacher.facultyNameInPersian || "",
             rank: getRankString(apiTeacher.academicRank),
             phoneNumber: apiTeacher.phoneNumber || "",
             email: apiTeacher.emailAddress || "",
@@ -279,6 +281,11 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
     }
   };
 
+  const handleTeacherSelect = (teacher: Teacher) => {
+    setSelectedTeacher(teacher);
+    setShowUserInfo(true);
+  };
+
   // Function to convert academicRank number to string
   const getRankString = (rank: number): string => {
     switch (rank) {
@@ -342,7 +349,15 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
   }, [filteredTeachers.length]); // Reset page when number of results changes
 
   if (showUserInfo && selectedTeacher) {
-    return <UserInfo teacher={selectedTeacher} />;
+    return (
+      <UserInfo
+        teacher={selectedTeacher}
+        onBack={() => {
+          setShowUserInfo(false);
+          setSelectedTeacher(null);
+        }}
+      />
+    );
   }
 
   // Show loading state
@@ -447,7 +462,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
               <MyTeacherContainer
                 key={teacher.id}
                 teacher={teacher}
-                onClick={onTeacherSelect}
+                onClick={handleTeacherSelect}
               />
             ))}
 

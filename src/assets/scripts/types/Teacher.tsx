@@ -3,6 +3,74 @@ export interface Teacher {
   firstName: string;
   lastName: string;
   faculty: string;
+  facultyName?: string;
   rank: string;
-  
+  phoneNumber: string;
+  email: string;
+  group: string;
+  lastDegree: string;
+  employmentStatus: string;
+  isTeaching: boolean;
+  nationalCode: string;
+  points: number;
+  // Additional detailed fields
+  facultyNameInEnglish?: string;
+  tId?: string;
+  createTime?: string;
+  gender?: number;
+  fatherName?: string;
+  maritalStatus?: number;
+  birthDate?: string;
+  nationality?: string;
+  birthPlace?: string;
+  birthCertificateNumber?: string;
+  birthCertificateSerialAndSerie?: string;
+  birthCertificateIssuingPlace?: string;
+  religion?: string;
+  firstNameInEnglish?: string;
+  lastNameInEnglish?: string;
+  gregorianBirthDate?: string;
+  groupNameInEnglish?: string;
+  personalNumber?: string;
+  emailAddress?: string;
+  websiteAddress?: string;
+  address?: string;
+  officeNumber?: string;
+  homeTelephoneNumber?: string;
+  userNumber?: string;
+  employeeNumber?: string;
+  employmentEndDate?: string;
+  degreeObtainingDate?: string;
+  degreeObtainingDateGregorian?: string;
+  universityOfStudy?: string;
+  studyField?: string;
+  educationalOrientation?: string;
+  paye?: number;
+  academicPromotionDate?: string;
+  halatOstad?: string;
+  employmentDate?: string;
+  insuranceTypeAndNumber?: string;
+  bankAndAccountNumber?: string;
+  shebaNumber?: string;
+  mablaghAkharinHokmEstekhdami?: string;
+  lastStatus?: string;
+  lastStatusDate?: string;
+  facultyOfMission?: string;
+  lastPromotionDate?: string;
+  payeType?: string;
+  bandeAyeenName?: string;
+  universityEmail?: string;
+  educationalRecords?: Record[] | null;
+  industrialRecords?: Record[] | null;
+  executiveRecords?: Record[] | null;
+  researchRecords?: Record[] | null;
+  promotionRecords?: Record[] | null;
+  statusChangeRecords?: Record[] | null;
+}
+
+export interface Record {
+  id: number;
+  title: string;
+  date: string;
+  description: string;
 }
