@@ -4,6 +4,7 @@ import type { Teacher, Record } from "../types/Teacher";
 import { ApiService } from "../Services/ApiService";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import { toast } from "react-toastify";
+import FemaleProfessorAvatar from "../../images/arab-woman-face-covered-with-hijab-muslim-woman-muslim-girl-avatar-avatar-icon-in-flat-style-smiling-girl-in-a-scarf-isolated-illustration-vector.jpg";
 
 interface UserInfoProps {
   teacher: Teacher;
@@ -359,10 +360,19 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
       <div className="flex h-[220px] items-start px-4">
         <div className="relative z-30 mt-6 h-[220px] w-[150px] overflow-hidden rounded-2xl shadow-lg">
           <img
-            src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+            src={
+              detailedTeacher?.gender === 1
+                ? FemaleProfessorAvatar
+                : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+            }
             alt="تصویر استاد"
             className="h-full w-full scale-120 object-cover object-center"
             style={{ objectPosition: "top center" }}
+            onError={(e) => {
+              // Fallback to default avatar if image fails to load
+              e.currentTarget.src =
+                "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+            }}
           />
         </div>
       </div>
