@@ -1,11 +1,7 @@
 import { AuthService } from "./AuthService";
 
 export class ApiService {
-  private static readonly BASE_URLS = [
-    "https://faculty.liara.run/api",
-    "https://api.faculty.liara.run",
-    "http://localhost:3000/api", // برای تست محلی
-  ];
+  private static readonly BASE_URLS = ["https://faculty.liara.run/api"];
 
   private static currentBaseUrlIndex = 0;
 
