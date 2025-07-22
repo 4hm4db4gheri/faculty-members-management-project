@@ -9,7 +9,7 @@ import { useChartData } from "../hooks/useChartData";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import {
   getTeachers,
-  getSentTeacherNotifications,
+  getSentTeacherNotificationsV2,
 } from "../Services/apiEndpoints";
 
 interface ApiTeacher {
@@ -30,10 +30,9 @@ interface ApiResponse {
 }
 
 interface SentNotification {
-  id: number;
   title: string;
-  sendType: number;
-  notificationType: number;
+  teacherName: string;
+  status: string;
 }
 
 export default function MainDashboardPanel() {
@@ -102,7 +101,7 @@ export default function MainDashboardPanel() {
     const fetchLatestNotifications = async () => {
       setNotifLoading(true);
       try {
-        const response = await getSentTeacherNotifications(1, 3);
+        const response = await getSentTeacherNotificationsV2(1, 3);
         if (!response.error) {
           setLatestNotifications(response.data);
         } else {
@@ -278,7 +277,7 @@ export default function MainDashboardPanel() {
             onClick={() => navigate("/dashboard/sent-notifications")}
             className="w-full rounded-[25px] bg-[#1B4965] px-6 py-3 text-xl font-semibold text-white transition-colors hover:bg-[#3388BC]"
           >
-            اعلان‌های ارسال شده
+            بررسی وضعیت اعلان‌ها
           </button>
           <div className="flex flex-col gap-2 rounded-[25px] bg-gray-50 p-4">
             <h3 className="mb-2 text-lg font-semibold text-gray-800">
@@ -293,27 +292,30 @@ export default function MainDashboardPanel() {
             ) : latestNotifications.length === 0 ? (
               <div className="text-center text-gray-500">اعلانی وجود ندارد</div>
             ) : (
-              latestNotifications.map((notification, index) => (
+              latestNotifications.map((notification) => (
                 <div
-                  key={notification.id}
-                  className="flex items-center justify-between rounded-lg bg-white p-3 shadow-sm"
+                  key={
+                    notification.title +
+                    notification.teacherName +
+                    notification.status
+                  }
+                  className="flex flex-col gap-1 rounded-lg bg-white p-3 shadow-sm"
                 >
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-800">
+                  <div className="flex flex-row items-center justify-between">
+                    <span className="text-sm font-medium text-gray-800">
                       {notification.title}
-                    </p>
-                    {/* If you have a date field, show it here. Otherwise, remove this line. */}
-                    {/* <p className="text-xs text-gray-500">{notification.date}</p> */}
+                    </span>
+                    <span
+                      className={`rounded-full px-2 py-1 text-xs ${notification.status.trim() === "Sent" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+                    >
+                      {notification.status.trim() === "Sent"
+                        ? "ارسال شد"
+                        : "ناموفق"}
+                    </span>
                   </div>
-                  <span
-                    className={`rounded-full px-2 py-1 text-xs ${
-                      notification.notificationType === 1
-                        ? "bg-red-100 text-red-800"
-                        : "bg-blue-100 text-blue-800"
-                    }`}
-                  >
-                    {notification.notificationType === 1 ? "فوری" : "عادی"}
-                  </span>
+                  <div className="text-xs text-black">
+                    {notification.teacherName}
+                  </div>
                 </div>
               ))
             )}

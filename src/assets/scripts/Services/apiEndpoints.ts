@@ -98,4 +98,14 @@ export const getSentTeacherNotifications = (pageNumber: number, pageSize: number
             headers: { accept: "text/plain" },
             body: ""
         }
+    ).then((res) => res.json());
+
+// TEACHER NOTIFICATIONS (V2, POST, for SentNotificationsPanel)
+export const getSentTeacherNotificationsV2 = (pageNumber: number, pageSize: number) =>
+    fetch(`https://faculty.liara.run/api/panel/v1/teacher-notification/teacher-notifications?PageNumber=${pageNumber}&PageSize=${pageSize}`,
+        {
+            method: "POST",
+            headers: { accept: "text/plain", "Content-Type": "application/json" },
+            body: ""
+        }
     ).then((res) => res.json()); 
