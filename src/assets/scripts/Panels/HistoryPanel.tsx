@@ -27,11 +27,11 @@ interface ApiTeacher {
   id: number;
   firstName: string;
   lastName: string;
-  facultyName: string; // <-- updated to match API
+  facultyName: string; 
   academicRank: number;
   employmentStatus: number;
   nationalCode: string;
-  group: string; // <-- add group to match API
+  group: string; 
   tId: string;
   createTime: string;
   gender: number;
@@ -171,7 +171,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
             id: apiTeacher.id,
             firstName: apiTeacher.firstName,
             lastName: apiTeacher.lastName,
-            faculty: apiTeacher.facultyName, // <-- use correct field
+            faculty: apiTeacher.facultyName,
             rank: getRankString(apiTeacher.academicRank),
             phoneNumber: apiTeacher.phoneNumber || "",
             email: apiTeacher.emailAddress || "",
@@ -259,6 +259,11 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
     }
   };
 
+  const handleTeacherSelect = (teacher: Teacher) => {
+    setSelectedTeacher(teacher);
+    setShowUserInfo(true);
+  };
+
   // Function to convert academicRank number to string
   const getRankString = (rank: number): string => {
     switch (rank) {
@@ -322,7 +327,15 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
   }, [filteredTeachers.length]); // Reset page when number of results changes
 
   if (showUserInfo && selectedTeacher) {
-    return <UserInfo teacher={selectedTeacher} />;
+    return (
+      <UserInfo
+        teacher={selectedTeacher}
+        onBack={() => {
+          setShowUserInfo(false);
+          setSelectedTeacher(null);
+        }}
+      />
+    );
   }
 
   // Show loading state
@@ -427,7 +440,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
               <MyTeacherContainer
                 key={teacher.id}
                 teacher={teacher}
-                onClick={onTeacherSelect}
+                onClick={handleTeacherSelect}
               />
             ))}
 

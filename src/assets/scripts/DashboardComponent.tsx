@@ -173,8 +173,12 @@ export default function DashboardComponent() {
           </button>
         </div>
 
-        <div className="m-5 mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-[#8D8D8D] text-sm font-bold text-white sm:h-32 sm:w-32 md:text-lg lg:text-xl">
-          Pic
+        <div className="m-5 mx-auto mb-4 flex items-center justify-center bg-white w-32 h-32">
+          <img
+            src="src/assets/images/Sbu-logo.svg.png"
+            alt="لوگو"
+            className="h-full w-full bg-white object-contain"
+          />
         </div>
         <div className="mb-4 flex items-center justify-center px-2 text-3xl sm:text-4xl">
           اسم سامانه
