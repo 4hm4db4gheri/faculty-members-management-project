@@ -264,19 +264,17 @@ export default function MainDashboardPanel() {
         </div>
       </div>
       <div className="col-span-1 flex h-full flex-col items-center justify-center rounded-[25px] bg-white pt-[10px]">
-        <div className="flex h-[130px] w-[130px] items-center justify-center rounded-full bg-[#8D8D8D]">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="white"
-            className="h-24 w-24"
-          >
-            <path
-              fillRule="evenodd"
-              d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
-              clipRule="evenodd"
-            />
-          </svg>
+        <div className="flex h-[130px] w-[130px] items-center justify-center overflow-hidden rounded-full bg-[#8D8D8D]">
+          <img
+            src="/user-avatar.png"
+            alt="User Avatar"
+            className="h-full w-full object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = "none";
+              (e.target as HTMLImageElement).parentElement!.innerHTML =
+                `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' class='h-24 w-24'><path fill-rule='evenodd' d='M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z' clip-rule='evenodd'/></svg>`;
+            }}
+          />
         </div>
         <div className="flex content-center items-center justify-center pt-[30px] text-5xl text-black">
           اسم کاربر

@@ -181,7 +181,7 @@ export default function DashboardComponent() {
           />
         </div>
         <div className="mb-4 flex items-center justify-center px-2 text-3xl sm:text-4xl">
-          اسم سامانه
+          سماه
         </div>
         <div className="mx-auto my-3 h-[2px] w-[calc(100%-40px)] rounded bg-[#8D8D8D]"></div>
 
