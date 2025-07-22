@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ChartDataItem1, ChartDataItem2 } from '../types/chart.types'; // Import interfaces
-import { chartData1, chartData2, facultyChartOptions } from '../data/chardData'; // Import hardcoded data
+import { chartData1, chartData2, facultyChartOptions } from '../data/chartData'; // Import hardcoded data
 
 interface UseChartDataReturn {
   chartData1: ChartDataItem1[] | null;
