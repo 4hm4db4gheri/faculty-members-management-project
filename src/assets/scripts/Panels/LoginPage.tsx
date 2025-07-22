@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ApiService } from "../Services/ApiService";
+import { login } from "../Services/apiEndpoints";
 import { AuthService } from "../Services/AuthService";
 import { LoginResponse } from "../types/auth.types";
 import LoadingSpinner from "../Elements/LoadingSpinner";
@@ -48,10 +48,7 @@ const LoginPage: React.FC = () => {
   const handleLogin = async () => {
     setIsLoading("login");
     try {
-      const response = await ApiService.post<LoginResponse>(
-        "/panel/v1/user/log-in",
-        { userName, password },
-      );
+      const response = await login({ userName, password });
 
       if (response.error) {
         toast.error(response.message[0] || "خطا در ورود."); // Display error using toast

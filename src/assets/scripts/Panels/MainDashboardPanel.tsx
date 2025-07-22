@@ -7,7 +7,10 @@ import UserInfo from "./UserInfo";
 import { useNavigate } from "react-router-dom";
 import { useChartData } from "../hooks/useChartData";
 import LoadingSpinner from "../Elements/LoadingSpinner";
-import { ApiService } from "../Services/ApiService";
+import {
+  getTeachers,
+  getSentTeacherNotificationsV2,
+} from "../Services/apiEndpoints";
 
 interface ApiTeacher {
   id: number;
@@ -24,6 +27,12 @@ interface ApiResponse {
   data: ApiTeacher[];
   error: boolean;
   message: string[];
+}
+
+interface SentNotification {
+  title: string;
+  teacherName: string;
+  status: string;
 }
 
 export default function MainDashboardPanel() {
@@ -51,21 +60,26 @@ export default function MainDashboardPanel() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Add state for latest notifications
+  const [latestNotifications, setLatestNotifications] = useState<
+    SentNotification[]
+  >([]);
+  const [notifLoading, setNotifLoading] = useState(true);
+  const [notifError, setNotifError] = useState<string | null>(null);
+
   // Fetch teachers from API
   useEffect(() => {
     const fetchTeachers = async () => {
       setIsLoading(true);
       try {
-        const response = await ApiService.get<ApiResponse>(
-          "/panel/v1/teacher/read-teachers?PageNumber=1&PageSize=1000",
-        );
+        const response = (await getTeachers()) as ApiResponse;
 
         if (response.error) {
           throw new Error(response.message[0] || "Failed to fetch teachers");
         }
 
         const convertedTeachers: Teacher[] = response.data.map(
-          (apiTeacher) => ({
+          (apiTeacher: ApiTeacher) => ({
             id: apiTeacher.id,
             firstName: apiTeacher.firstName,
             lastName: apiTeacher.lastName,
@@ -91,6 +105,28 @@ export default function MainDashboardPanel() {
     };
 
     fetchTeachers();
+  }, []);
+
+  // Add state for latest notifications
+  useEffect(() => {
+    const fetchLatestNotifications = async () => {
+      setNotifLoading(true);
+      try {
+        const response = await getSentTeacherNotificationsV2(1, 3);
+        if (!response.error) {
+          setLatestNotifications(response.data);
+        } else {
+          throw new Error(response.message.join(", "));
+        }
+      } catch (err) {
+        setNotifError(
+          err instanceof Error ? err.message : "خطا در دریافت اعلان‌ها",
+        );
+      } finally {
+        setNotifLoading(false);
+      }
+    };
+    fetchLatestNotifications();
   }, []);
 
   // Helper function to convert rank number to string
@@ -252,51 +288,48 @@ export default function MainDashboardPanel() {
             onClick={() => navigate("/dashboard/sent-notifications")}
             className="w-full rounded-[25px] bg-[#1B4965] px-6 py-3 text-xl font-semibold text-white transition-colors hover:bg-[#3388BC]"
           >
-            اعلان‌های ارسال شده
+            بررسی وضعیت اعلان‌ها
           </button>
-
           <div className="flex flex-col gap-2 rounded-[25px] bg-gray-50 p-4">
             <h3 className="mb-2 text-lg font-semibold text-gray-800">
               آخرین اعلان‌ها
             </h3>
-            {[
-              {
-                title: "یادآوری مهلت ارسال مقاله",
-                date: "۱۴۰۴/۰۳/۱۲",
-                importance: "فوری",
-              },
-              {
-                title: "تمدید قرارداد پژوهشی",
-                date: "۱۴۰۴/۰۳/۱۰",
-                importance: "عادی",
-              },
-              {
-                title: "درخواست اصلاح مقاله",
-                date: "۱۴۰۴/۰۳/۰۸",
-                importance: "فوری",
-              },
-            ].map((notification, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between rounded-lg bg-white p-3 shadow-sm"
-              >
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-800">
-                    {notification.title}
-                  </p>
-                  <p className="text-xs text-gray-500">{notification.date}</p>
-                </div>
-                <span
-                  className={`rounded-full px-2 py-1 text-xs ${
-                    notification.importance === "فوری"
-                      ? "bg-red-100 text-red-800"
-                      : "bg-blue-100 text-blue-800"
-                  }`}
-                >
-                  {notification.importance}
-                </span>
+            {notifLoading ? (
+              <div className="text-center text-gray-500">
+                در حال بارگذاری...
               </div>
-            ))}
+            ) : notifError ? (
+              <div className="text-center text-red-500">{notifError}</div>
+            ) : latestNotifications.length === 0 ? (
+              <div className="text-center text-gray-500">اعلانی وجود ندارد</div>
+            ) : (
+              latestNotifications.map((notification) => (
+                <div
+                  key={
+                    notification.title +
+                    notification.teacherName +
+                    notification.status
+                  }
+                  className="flex flex-col gap-1 rounded-lg bg-white p-3 shadow-sm"
+                >
+                  <div className="flex flex-row items-center justify-between">
+                    <span className="text-sm font-medium text-gray-800">
+                      {notification.title}
+                    </span>
+                    <span
+                      className={`rounded-full px-2 py-1 text-xs ${notification.status.trim() === "Sent" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+                    >
+                      {notification.status.trim() === "Sent"
+                        ? "ارسال شد"
+                        : "ناموفق"}
+                    </span>
+                  </div>
+                  <div className="text-xs text-black">
+                    {notification.teacherName}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

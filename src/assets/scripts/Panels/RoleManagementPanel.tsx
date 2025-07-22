@@ -6,7 +6,10 @@ import MyRoleManagerContainer from "../Elements/MyRoleManagerContainer";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import CreateUserForm from "../Elements/CreateUserForm";
 import { toast } from "react-toastify";
-import { ApiService } from "../Services/ApiService";
+import {
+  getUsers,
+  updateUserRole as apiUpdateUserRole,
+} from "../Services/apiEndpoints";
 
 // Update interface to match API response
 interface User {
@@ -60,9 +63,7 @@ export default function RoleManagementPanel() {
   const fetchUsers = async () => {
     try {
       setIsLoading(true);
-      const response = await ApiService.get<ApiResponse>(
-        "/panel/v1/user/GetList",
-      );
+      const response = await getUsers();
 
       if (!response.error) {
         setUsers(response.data);
@@ -85,9 +86,7 @@ export default function RoleManagementPanel() {
   const updateUserRole = async (userId: string, newRole: string) => {
     try {
       const apiRole = mapDisplayToRole(newRole); // Convert display role to API role
-      const response = await ApiService.put<ApiResponse>(
-        `/panel/v1/user/role/change?UserID=${userId}&RoleName=${apiRole}`,
-      );
+      const response = await apiUpdateUserRole(userId, apiRole);
 
       if (response.error) {
         throw new Error(

@@ -7,8 +7,7 @@ import AdvancedSearch from "../Elements/AdvancedSearch";
 import UserInfo from "../Panels/UserInfo";
 import type { Teacher } from "../types/Teacher";
 import LoadingSpinner from "../Elements/LoadingSpinner";
-import { ApiService } from "../Services/ApiService";
-import { AuthService } from "../Services/AuthService";
+import { getTeachers, uploadTeachersExcel } from "../Services/apiEndpoints";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import AdvancedSearchIcon from "../../images/AdvancedSearch.svg";
@@ -28,10 +27,11 @@ interface ApiTeacher {
   id: number;
   firstName: string;
   lastName: string;
-  facultyName?: string;
-  facultyNameInPersian: string;
-  facultyNameInEnglish: string;
+  facultyName: string; 
   academicRank: number;
+  employmentStatus: number;
+  nationalCode: string;
+  group: string; 
   tId: string;
   createTime: string;
   gender: number;
@@ -43,8 +43,6 @@ interface ApiTeacher {
   birthCertificateNumber: string;
   birthCertificateSerialAndSerie: string;
   birthCertificateIssuingPlace: string;
-  nationalCode: string;
-  religion: string;
   firstNameInEnglish: string;
   lastNameInEnglish: string;
   gregorianBirthDate: string;
@@ -70,7 +68,6 @@ interface ApiTeacher {
   academicPromotionDate: string;
   halatOstad: string;
   employmentDate: string;
-  employmentStatus: number;
   insuranceTypeAndNumber: string;
   bankAndAccountNumber: string;
   shebaNumber: string;
@@ -167,22 +164,18 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
   const fetchTeachers = async () => {
     setIsLoading(true);
     try {
-      const response = await ApiService.get<ApiResponse>(
-        "/panel/v1/teacher/read-teachers?PageNumber=1&PageSize=1000",
-      );
-
+      const response = (await getTeachers()) as ApiResponse;
       if (!response.error) {
         const convertedTeachers: Teacher[] = response.data.map(
-          (apiTeacher) => ({
+          (apiTeacher: ApiTeacher) => ({
             id: apiTeacher.id,
             firstName: apiTeacher.firstName,
             lastName: apiTeacher.lastName,
-            faculty:
-              apiTeacher.facultyName || apiTeacher.facultyNameInPersian || "",
+            faculty: apiTeacher.facultyName,
             rank: getRankString(apiTeacher.academicRank),
             phoneNumber: apiTeacher.phoneNumber || "",
             email: apiTeacher.emailAddress || "",
-            group: apiTeacher.groupNameInPersian || "",
+            group: apiTeacher.group || "",
             lastDegree: apiTeacher.lastDegree || "",
             employmentStatus:
               apiTeacher.employmentStatus === 1 ? "شاغل" : "بازنشسته",
@@ -191,7 +184,6 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
             points: 0,
           }),
         );
-
         setTeachers(convertedTeachers);
       } else {
         throw new Error(response.message.join(", "));
@@ -230,40 +222,26 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
     }
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
+      const result = (await uploadTeachersExcel(file)) as UploadResponse;
 
-      const response = await fetch(
-        "https://faculty.liara.run/api/panel/v1/teacher/upload-excel",
-        {
-          method: "POST",
-          headers: {
-            accept: "text/plain",
-            Authorization: `Bearer ${AuthService.getAccessToken()}`,
-          },
-          body: formData,
-        },
-      );
-
-      const result: UploadResponse = await response.json();
-
-      if (response.ok) {
-        if (result.data && result.data.length > 0) {
-          // Show validation errors in a toast
-          result.data.forEach((error) => {
-            toast.warn(error, {
-              autoClose: 10000, // Keep error messages visible longer
-            });
+      if (result.error) {
+        result.message.forEach((error: string) => {
+          toast.warn(error, {
+            autoClose: 10000, // Keep error messages visible longer
           });
-        } else {
-          toast.success("آپلود با موفقیت انجام شد");
-          await fetchTeachers(); // Refresh the teachers list
-        }
-        // Close the popup immediately after upload attempt
-        setIsTeachersUploadOpen(false);
+        });
+      } else if (result.data && result.data.length > 0) {
+        result.data.forEach((error: string) => {
+          toast.warn(error, {
+            autoClose: 10000,
+          });
+        });
       } else {
-        throw new Error(result.message?.join(", ") || "خطا در آپلود فایل");
+        toast.success("آپلود با موفقیت انجام شد");
+        await fetchTeachers(); // Refresh the teachers list
       }
+      // Close the popup immediately after upload attempt
+      setIsTeachersUploadOpen(false);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "خطا در آپلود فایل");
     } finally {
