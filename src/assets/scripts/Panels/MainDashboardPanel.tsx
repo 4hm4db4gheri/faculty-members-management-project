@@ -217,7 +217,7 @@ export default function MainDashboardPanel() {
         </div>
       </div>
       <div className="col-span-1 flex h-full flex-col items-center justify-center rounded-[25px] bg-white pt-[10px]">
-        <div className="flex h-[150px] w-[150px] items-center justify-center rounded-full bg-[#8D8D8D]">
+        <div className="flex h-[130px] w-[130px] items-center justify-center rounded-full bg-[#8D8D8D]">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
