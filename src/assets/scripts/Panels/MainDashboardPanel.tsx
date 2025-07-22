@@ -27,13 +27,24 @@ interface ApiResponse {
 }
 
 export default function MainDashboardPanel() {
+  // Static faculties to show in charts
+  const staticFaculties = [
+    "هسته‌ای",
+    "علوم و فناوري زيستي",
+    "مدیریت و حسابداری",
+  ];
+
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState<Teacher[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const { chartData1, chartData2 } = useChartData(); // Use the custom hook
+  // Use static faculties for both charts
+  const { chartData1, chartData2 } = useChartData(
+    staticFaculties,
+    staticFaculties,
+  );
 
   const [selectedTeacher] = useState<Teacher | null>(null);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
