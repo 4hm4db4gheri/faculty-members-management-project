@@ -7,7 +7,10 @@ import UserInfo from "./UserInfo";
 import { useNavigate } from "react-router-dom";
 import { useChartData } from "../hooks/useChartData";
 import LoadingSpinner from "../Elements/LoadingSpinner";
-import { getTeachers } from "../Services/apiEndpoints";
+import {
+  getTeachers,
+  getSentTeacherNotifications,
+} from "../Services/apiEndpoints";
 
 interface ApiTeacher {
   id: number;
@@ -26,6 +29,13 @@ interface ApiResponse {
   message: string[];
 }
 
+interface SentNotification {
+  id: number;
+  title: string;
+  sendType: number;
+  notificationType: number;
+}
+
 export default function MainDashboardPanel() {
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
@@ -39,6 +49,13 @@ export default function MainDashboardPanel() {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Add state for latest notifications
+  const [latestNotifications, setLatestNotifications] = useState<
+    SentNotification[]
+  >([]);
+  const [notifLoading, setNotifLoading] = useState(true);
+  const [notifError, setNotifError] = useState<string | null>(null);
 
   // Fetch teachers from API
   useEffect(() => {
@@ -78,6 +95,28 @@ export default function MainDashboardPanel() {
     };
 
     fetchTeachers();
+  }, []);
+
+  // Add state for latest notifications
+  useEffect(() => {
+    const fetchLatestNotifications = async () => {
+      setNotifLoading(true);
+      try {
+        const response = await getSentTeacherNotifications(1, 3);
+        if (!response.error) {
+          setLatestNotifications(response.data);
+        } else {
+          throw new Error(response.message.join(", "));
+        }
+      } catch (err) {
+        setNotifError(
+          err instanceof Error ? err.message : "خطا در دریافت اعلان‌ها",
+        );
+      } finally {
+        setNotifLoading(false);
+      }
+    };
+    fetchLatestNotifications();
   }, []);
 
   // Helper function to convert rank number to string
@@ -241,49 +280,43 @@ export default function MainDashboardPanel() {
           >
             اعلان‌های ارسال شده
           </button>
-
           <div className="flex flex-col gap-2 rounded-[25px] bg-gray-50 p-4">
             <h3 className="mb-2 text-lg font-semibold text-gray-800">
               آخرین اعلان‌ها
             </h3>
-            {[
-              {
-                title: "یادآوری مهلت ارسال مقاله",
-                date: "۱۴۰۴/۰۳/۱۲",
-                importance: "فوری",
-              },
-              {
-                title: "تمدید قرارداد پژوهشی",
-                date: "۱۴۰۴/۰۳/۱۰",
-                importance: "عادی",
-              },
-              {
-                title: "درخواست اصلاح مقاله",
-                date: "۱۴۰۴/۰۳/۰۸",
-                importance: "فوری",
-              },
-            ].map((notification, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between rounded-lg bg-white p-3 shadow-sm"
-              >
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-800">
-                    {notification.title}
-                  </p>
-                  <p className="text-xs text-gray-500">{notification.date}</p>
-                </div>
-                <span
-                  className={`rounded-full px-2 py-1 text-xs ${
-                    notification.importance === "فوری"
-                      ? "bg-red-100 text-red-800"
-                      : "bg-blue-100 text-blue-800"
-                  }`}
-                >
-                  {notification.importance}
-                </span>
+            {notifLoading ? (
+              <div className="text-center text-gray-500">
+                در حال بارگذاری...
               </div>
-            ))}
+            ) : notifError ? (
+              <div className="text-center text-red-500">{notifError}</div>
+            ) : latestNotifications.length === 0 ? (
+              <div className="text-center text-gray-500">اعلانی وجود ندارد</div>
+            ) : (
+              latestNotifications.map((notification, index) => (
+                <div
+                  key={notification.id}
+                  className="flex items-center justify-between rounded-lg bg-white p-3 shadow-sm"
+                >
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-800">
+                      {notification.title}
+                    </p>
+                    {/* If you have a date field, show it here. Otherwise, remove this line. */}
+                    {/* <p className="text-xs text-gray-500">{notification.date}</p> */}
+                  </div>
+                  <span
+                    className={`rounded-full px-2 py-1 text-xs ${
+                      notification.notificationType === 1
+                        ? "bg-red-100 text-red-800"
+                        : "bg-blue-100 text-blue-800"
+                    }`}
+                  >
+                    {notification.notificationType === 1 ? "فوری" : "عادی"}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

@@ -82,6 +82,40 @@ export default function CreateUserForm({
       return;
     }
 
+    // Phone number validation
+    let phone = formData.phoneNumber.trim();
+
+    if (/^\d{10}$/.test(phone)) {
+      // Valid: 10 digits, do nothing
+    } else if (/^\d{11}$/.test(phone)) {
+      if (phone[0] === "0") {
+        phone = phone.slice(1); // Remove leading zero
+      } else {
+        toast.error("شماره تلفن ۱۱ رقمی باید با 0 شروع شود.", {
+          position: "bottom-left",
+          style: {
+            background: "#FEF2F2",
+            color: "#991B1B",
+            direction: "rtl",
+          },
+        });
+        return;
+      }
+    } else {
+      toast.error(
+        "شماره تلفن باید ۱۰ رقم (بدون صفر) یا ۱۱ رقم (با صفر) باشد.",
+        {
+          position: "bottom-left",
+          style: {
+            background: "#FEF2F2",
+            color: "#991B1B",
+            direction: "rtl",
+          },
+        },
+      );
+      return;
+    }
+
     setIsLoading(true);
     try {
       const data: ApiResponse = await createUser({
@@ -89,7 +123,7 @@ export default function CreateUserForm({
         lastName: formData.lastName,
         username: formData.username,
         password: formData.password,
-        phoneNumber: formData.phoneNumber,
+        phoneNumber: phone, // Use the validated/processed phone number
         hasFullAccess: formData.hasFullAccess,
       });
 
@@ -174,7 +208,7 @@ export default function CreateUserForm({
             className="[-webkit-text-security:disc] [text-security:disc]"
           />
           <MyInput
-            placeholder="شماره تلفن (مثال: 09123456789)"
+            placeholder="شماره تلفن (مثال: 9123456789)"
             value={formData.phoneNumber}
             onChange={handlePhoneInput}
           />

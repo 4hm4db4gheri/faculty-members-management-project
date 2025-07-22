@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import MyPagination from "../Elements/MyPagination";
 import LoadingSpinner from "../Elements/LoadingSpinner";
-import { getNotifications } from "../Services/apiEndpoints";
+import { getSentTeacherNotifications } from "../Services/apiEndpoints";
 import { toast } from "react-toastify";
 
 interface SentNotification {
@@ -11,8 +10,14 @@ interface SentNotification {
   notificationType: number;
 }
 
+interface SentNotificationsApiResponse {
+  data: SentNotification[];
+  totalCount: number;
+  error: boolean;
+  message: string[];
+}
+
 export default function SentNotificationsPanel() {
-  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<SentNotification[]>([]);
@@ -21,12 +26,10 @@ export default function SentNotificationsPanel() {
     const fetchNotifications = async () => {
       try {
         setIsLoading(true);
-        const response = (await getNotifications()) as {
-          data: SentNotification[];
-          error: boolean;
-          message: string[];
-        };
-
+        const response = (await getSentTeacherNotifications(
+          1,
+          1000,
+        )) as SentNotificationsApiResponse;
         if (!response.error) {
           setNotifications(response.data);
         } else {
@@ -43,7 +46,7 @@ export default function SentNotificationsPanel() {
     };
 
     fetchNotifications();
-  }, [currentPage]);
+  }, []);
 
   const mapImportance = (notificationType: number): string => {
     return notificationType === 1 ? "فوری" : "عادی";
@@ -62,12 +65,7 @@ export default function SentNotificationsPanel() {
     }
   };
 
-  const ITEMS_PER_PAGE = 5;
-  const totalPages = Math.ceil(notifications.length / ITEMS_PER_PAGE);
-  const currentNotifications = notifications.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE,
-  );
+  const currentNotifications = notifications;
 
   if (isLoading) {
     return (
@@ -122,16 +120,6 @@ export default function SentNotificationsPanel() {
           )}
         </div>
       </div>
-
-      {totalPages > 1 && (
-        <div className="mt-auto">
-          <MyPagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
-          />
-        </div>
-      )}
     </div>
   );
 }

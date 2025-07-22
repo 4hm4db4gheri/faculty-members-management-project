@@ -88,4 +88,14 @@ interface CreateNotificationResponse {
     [key: string]: unknown;
 }
 export const createNotification = (data: CreateNotificationRequest): Promise<CreateNotificationResponse> =>
-    ApiService.post("/panel/v1/notification/create", data); 
+    ApiService.post("/panel/v1/notification/create", data);
+
+// TEACHER NOTIFICATIONS
+export const getSentTeacherNotifications = (pageNumber: number, pageSize: number) =>
+    fetch(`https://faculty.liara.run/api/panel/v1/teacher-notification/teacher-notifications?PageNumber=${pageNumber}&PageSize=${pageSize}`,
+        {
+            method: "POST",
+            headers: { accept: "text/plain" },
+            body: ""
+        }
+    ).then((res) => res.json()); 
