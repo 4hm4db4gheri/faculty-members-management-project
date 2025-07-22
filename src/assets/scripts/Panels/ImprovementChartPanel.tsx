@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ChartComponent1 from "../../components/ChartComponent1";
 import ChartComponent2 from "../../components/ChartComponent2";
 import MultiSelectFilter from "../Elements/MultiSelectFilter";
@@ -6,51 +6,30 @@ import { useChartData } from "../hooks/useChartData";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 
 export default function ImprovementChartPanel() {
+  // مقداردهی اولیه با ۳ دانشکده پیش‌فرض
+  const defaultFaculties = [
+    "هسته‌ای",
+    "علوم و فناوري زيستي",
+    "مدیریت و حسابداری",
+  ];
+
+  const [selectedChart1Faculties, setSelectedChart1Faculties] =
+    useState<string[]>(defaultFaculties); // مقداردهی اولیه برای نمودار ۱
+  const [selectedChart2Faculties, setSelectedChart2Faculties] =
+    useState<string[]>(defaultFaculties); // مقداردهی اولیه برای نمودار ۲
+
+  // دو لیست مجزا از دانشکده‌های انتخاب شده را به هوک ارسال می‌کنیم
   const { chartData1, chartData2, facultyOptions, isLoading, error } =
-    useChartData();
+    useChartData(selectedChart1Faculties, selectedChart2Faculties);
 
-  const [selectedChart1Faculties, setSelectedChart1Faculties] = useState<
-    string[]
-  >([]);
-  const [selectedChart2Faculties, setSelectedChart2Faculties] = useState<
-    string[]
-  >([]);
-
-  // Move useMemo declarations BEFORE useEffect
-  const filteredData1 = useMemo(() => {
-    if (!chartData1) return []; // Return empty if data is not loaded yet
-    // If no faculty is selected, show all data (common UX pattern)
-    if (selectedChart1Faculties.length === 0 && facultyOptions.length > 0) {
-      return chartData1;
-    }
-    return chartData1.filter((item) =>
-      selectedChart1Faculties.includes(item.name),
-    );
-  }, [selectedChart1Faculties, chartData1, facultyOptions]);
-
-  const filteredData2 = useMemo(() => {
-    if (!chartData2) return []; // Return empty if data is not loaded yet
-    // If no faculty is selected, show all data (common UX pattern)
-    if (selectedChart2Faculties.length === 0 && facultyOptions.length > 0) {
-      return chartData2;
-    }
-    return chartData2.filter((item) =>
-      selectedChart2Faculties.includes(item.name),
-    );
-  }, [selectedChart2Faculties, chartData2, facultyOptions]);
-
-  // Update selected faculties when facultyOptions are loaded
+  // این useEffect فقط برای اطمینان از مقداردهی اولیه facultyOptions است
+  // و دیگر به صورت خودکار فیلترها را به همه دانشکده‌ها گسترش نمی‌دهد.
   useEffect(() => {
-    if (facultyOptions.length > 0) {
-      // Only set if currently empty, meaning it's the initial load or "Deselect All" resulted in empty
-      if (selectedChart1Faculties.length === 0) {
-        setSelectedChart1Faculties([...facultyOptions]);
-      }
-      if (selectedChart2Faculties.length === 0) {
-        setSelectedChart2Faculties([...facultyOptions]);
-      }
-    }
-  }, [facultyOptions]); // Dependencies are now just facultyOptions, as selectedChartXFaculties change internally
+    // اگر لیست دانشکده‌ها هنوز بارگذاری نشده و لیست‌های انتخاب شده با دیفالت فرق می‌کنند، اینجا دستکاری نکن.
+    // اگر facultyOptions بارگذاری شده و selectedChart1Faculties همچنان دیفالت است، آن را با تمام گزینه‌های ممکن (از API) جایگزین کن.
+    // اما در این مورد، ما میخواهیم که به صورت خودکار جایگزین نشود. پس نیازی به این منطق نیست.
+    // منطق قبلی که باعث می‌شد اگر دیفالت بود، همه دانشکده‌ها انتخاب شوند را حذف می‌کنیم.
+  }, [facultyOptions]); // این Effect فقط به facultyOptions واکنش نشان می‌دهد.
 
   return (
     <div className="flex h-full flex-col overflow-y-auto rounded-[25px] p-4">
@@ -66,7 +45,7 @@ export default function ImprovementChartPanel() {
         </div>
       ) : (
         <>
-          {/* Chart 1 Section */}
+          {/* بخش نمودار ۱ */}
           <div className="relative mb-8 rounded-[25px] bg-white p-4 shadow">
             <h2 className="mb-4 text-center text-xl font-bold text-gray-800 sm:text-2xl">
               مرتبۀ علمی
@@ -81,8 +60,9 @@ export default function ImprovementChartPanel() {
               />
             </div>
 
-            {filteredData1.length > 0 ? (
-              <ChartComponent1 data={filteredData1} />
+            {/* داده‌های نمودار ۱ که از هوک دریافت شده و فیلتر شده‌اند */}
+            {chartData1 && chartData1.length > 0 ? (
+              <ChartComponent1 data={chartData1} />
             ) : (
               <p className="py-8 text-center text-gray-500">
                 هیچ داده‌ای برای نمایش وجود ندارد. حداقل یک دانشکده را انتخاب
@@ -91,7 +71,7 @@ export default function ImprovementChartPanel() {
             )}
           </div>
 
-          {/* Chart 2 Section */}
+          {/* بخش نمودار ۲ */}
           <div className="relative mb-8 rounded-[25px] bg-white p-4 shadow">
             <h2 className="mb-4 text-center text-xl font-bold text-gray-800 sm:text-2xl">
               آمار تفکیکی اعضای هیئت علمی
@@ -106,8 +86,9 @@ export default function ImprovementChartPanel() {
               />
             </div>
 
-            {filteredData2.length > 0 ? (
-              <ChartComponent2 data={filteredData2} />
+            {/* داده‌های نمودار ۲ که از هوک دریافت شده و فیلتر شده‌اند */}
+            {chartData2 && chartData2.length > 0 ? (
+              <ChartComponent2 data={chartData2} />
             ) : (
               <p className="py-8 text-center text-gray-500">
                 هیچ داده‌ای برای نمایش وجود ندارد. حداقل یک دانشکده را انتخاب

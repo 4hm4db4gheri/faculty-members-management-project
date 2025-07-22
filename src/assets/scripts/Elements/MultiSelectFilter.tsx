@@ -86,7 +86,9 @@ export default function MultiSelectFilter({
           aria-labelledby="menu-button"
           tabIndex={-1}
         >
-          <div className="py-1" role="none">
+          <div className="max-h-48 overflow-y-auto py-1" role="none">
+            {" "}
+            {/* Make options scrollable */}
             {/* Select All/Deselect All option */}
             {options.length > 0 && (
               <label
@@ -105,7 +107,6 @@ export default function MultiSelectFilter({
                 </span>
               </label>
             )}
-
             {/* Individual options */}
             {options.map((option) => (
               <label
