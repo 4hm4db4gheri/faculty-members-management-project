@@ -8,7 +8,6 @@ import UserInfo from "../Panels/UserInfo";
 import type { Teacher } from "../types/Teacher";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import { getTeachers, uploadTeachersExcel } from "../Services/apiEndpoints";
-import { AuthService } from "../Services/AuthService";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import AdvancedSearchIcon from "../../images/AdvancedSearch.svg";
@@ -28,9 +27,11 @@ interface ApiTeacher {
   id: number;
   firstName: string;
   lastName: string;
-  facultyNameInPersian: string;
-  facultyNameInEnglish: string;
+  facultyName: string; // <-- updated to match API
   academicRank: number;
+  employmentStatus: number;
+  nationalCode: string;
+  group: string; // <-- add group to match API
   tId: string;
   createTime: string;
   gender: number;
@@ -42,8 +43,6 @@ interface ApiTeacher {
   birthCertificateNumber: string;
   birthCertificateSerialAndSerie: string;
   birthCertificateIssuingPlace: string;
-  nationalCode: string;
-  religion: string;
   firstNameInEnglish: string;
   lastNameInEnglish: string;
   gregorianBirthDate: string;
@@ -69,7 +68,6 @@ interface ApiTeacher {
   academicPromotionDate: string;
   halatOstad: string;
   employmentDate: string;
-  employmentStatus: number;
   insuranceTypeAndNumber: string;
   bankAndAccountNumber: string;
   shebaNumber: string;
@@ -173,11 +171,11 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
             id: apiTeacher.id,
             firstName: apiTeacher.firstName,
             lastName: apiTeacher.lastName,
-            faculty: apiTeacher.facultyNameInPersian,
+            faculty: apiTeacher.facultyName, // <-- use correct field
             rank: getRankString(apiTeacher.academicRank),
             phoneNumber: apiTeacher.phoneNumber || "",
             email: apiTeacher.emailAddress || "",
-            group: apiTeacher.groupNameInPersian || "",
+            group: apiTeacher.group || "",
             lastDegree: apiTeacher.lastDegree || "",
             employmentStatus:
               apiTeacher.employmentStatus === 1 ? "شاغل" : "بازنشسته",
