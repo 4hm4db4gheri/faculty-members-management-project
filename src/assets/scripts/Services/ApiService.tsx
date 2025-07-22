@@ -1,35 +1,18 @@
 import { AuthService } from "./AuthService";
 
 export class ApiService {
-  private static readonly BASE_URL = "https://faculty.liara.run/api";
+  private static readonly BASE_URLS = ["https://faculty.liara.run/api"];
 
-  private static async parseResponse<T>(response: Response): Promise<T> {
-    if (response.status === 401) {
-      AuthService.clearAuth();
-      window.location.href = "/";
-      throw new Error("Unauthorized");
-    }
+  private static currentBaseUrlIndex = 0;
 
-    // Try to get content length; if 0, assume empty body and return empty array/object
-    const contentLength = response.headers.get("Content-Length");
-    if (contentLength === "0") {
-      // If content length is 0, return an empty array as a default for chart data APIs
-      // This assumes ChartDataItem1[] and ChartDataItem2[] are array types
-      return [] as T;
-    }
+  private static getCurrentBaseUrl(): string {
+    return this.BASE_URLS[this.currentBaseUrlIndex];
+  }
 
-    try {
-      const text = await response.text();
-      // If the text is empty, return an empty array or object based on expected type
-      if (!text.trim()) {
-        return [] as T; // Default to empty array for chart data
-      }
-      return JSON.parse(text) as T;
-    } catch (error) {
-      // If JSON parsing fails, log the error and return an empty array
-      console.error("Error parsing JSON response:", error);
-      return [] as T; // Default to empty array
-    }
+  private static async tryNextUrl(): Promise<void> {
+    this.currentBaseUrlIndex =
+      (this.currentBaseUrlIndex + 1) % this.BASE_URLS.length;
+    console.log(`Trying next URL: ${this.getCurrentBaseUrl()}`);
   }
 
   static async post<T>(endpoint: string, data: unknown): Promise<T> {
@@ -44,13 +27,45 @@ export class ApiService {
       headers["Authorization"] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${this.BASE_URL}${endpoint}`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(data),
-    });
+    const maxRetries = this.BASE_URLS.length;
+    let lastError: Error | null = null;
 
-    return this.parseResponse<T>(response);
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        const response = await fetch(`${this.getCurrentBaseUrl()}${endpoint}`, {
+          method: "POST",
+          headers,
+          body: JSON.stringify(data),
+        });
+
+        if (response.status === 401) {
+          AuthService.clearAuth();
+          window.location.href = "/";
+          throw new Error("Unauthorized");
+        }
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return response.json();
+      } catch (error) {
+        console.error(
+          `API Error for ${endpoint} (attempt ${attempt + 1}):`,
+          error,
+        );
+        lastError = error as Error;
+
+        if (attempt < maxRetries - 1) {
+          await this.tryNextUrl();
+          // Wait a bit before retrying
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      }
+    }
+
+    // If all attempts failed, throw the last error
+    throw lastError || new Error("All API endpoints failed");
   }
 
   static async put<T>(endpoint: string): Promise<T> {
@@ -64,13 +79,18 @@ export class ApiService {
       headers["Authorization"] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${this.BASE_URL}${endpoint}`, {
+    const response = await fetch(`${this.getCurrentBaseUrl()}${endpoint}`, {
       method: "PUT",
       headers,
     });
 
+    if (response.status === 401) {
+      AuthService.clearAuth();
+      window.location.href = "/";
+      throw new Error("Unauthorized");
+    }
+
     // For empty responses, return a default response that matches the expected type
-    // This part of `put` already handles empty text, so we'll keep it similar.
     const text = await response.text();
     return text
       ? JSON.parse(text)
@@ -82,17 +102,67 @@ export class ApiService {
 
     const headers: HeadersInit = {
       accept: "text/plain",
+      "Content-Type": "application/json",
     };
 
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${this.BASE_URL}${endpoint}`, {
-      method: "GET",
-      headers,
-    });
+    const maxRetries = this.BASE_URLS.length;
+    let lastError: Error | null = null;
 
-    return this.parseResponse<T>(response);
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        const currentUrl = `${this.getCurrentBaseUrl()}${endpoint}`;
+        console.log(
+          `Attempting API call (${attempt + 1}/${maxRetries}): ${currentUrl}`,
+        );
+
+        const response = await fetch(currentUrl, {
+          method: "GET",
+          headers,
+          signal: AbortSignal.timeout(10000), // 10 second timeout
+        });
+
+        console.log(
+          `Response status: ${response.status} ${response.statusText}`,
+        );
+
+        if (response.status === 401) {
+          AuthService.clearAuth();
+          window.location.href = "/";
+          throw new Error("Unauthorized");
+        }
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`HTTP Error ${response.status}: ${errorText}`);
+          throw new Error(
+            `HTTP error! status: ${response.status} - ${errorText}`,
+          );
+        }
+
+        const responseText = await response.text();
+        console.log(`Response body: ${responseText}`);
+
+        return responseText ? JSON.parse(responseText) : ({} as T);
+      } catch (error) {
+        console.error(
+          `API Error for ${endpoint} (attempt ${attempt + 1}):`,
+          error,
+        );
+        lastError = error as Error;
+
+        if (attempt < maxRetries - 1) {
+          await this.tryNextUrl();
+          // Wait a bit before retrying
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      }
+    }
+
+    // If all attempts failed, throw the last error
+    throw lastError || new Error("All API endpoints failed");
   }
 }

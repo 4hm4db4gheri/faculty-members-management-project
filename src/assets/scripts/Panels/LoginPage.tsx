@@ -10,12 +10,43 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  // const [errorMessage, setErrorMessage] = useState(""); // No longer needed directly for toast
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<
+    false | "login" | "forgotPassword"
+  >(false);
+
+  // تغییر فرآیند به ارسال کد تایید پیامکی
+  const handleForgotPassword = async () => {
+    if (!userName) {
+      toast.error("لطفا نام کاربری خود را وارد کنید.");
+      return;
+    }
+    setIsLoading("forgotPassword");
+    try {
+      const response: any = await ApiService.get(
+        `/panel/v1/user/forget-password?username=${encodeURIComponent(userName)}`,
+      );
+      if (response.error) {
+        toast.error(
+          response.message?.[0] || "خطا در ارسال پیام بازیابی رمز عبور.",
+        );
+      } else {
+        toast.success("پیام بازیابی رمز عبور برای شما ارسال شد.");
+        navigate("/verify-code", { state: { phoneNumber: userName } });
+      }
+    } catch (error: any) {
+      console.error("[ForgetPassword Error]", error);
+      if (error instanceof Error) {
+        toast.error(`خطا در ارتباط با سرور: ${error.message}`);
+      } else {
+        toast.error("ارتباط با سرور برقرار نشد.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleLogin = async () => {
-    // setErrorMessage(""); // No longer needed
-    setIsLoading(true);
+    setIsLoading("login");
     try {
       const response = await ApiService.post<LoginResponse>(
         "/panel/v1/user/log-in",
@@ -51,7 +82,14 @@ const LoginPage: React.FC = () => {
           </p>
           <div className="space-y-6">
             {isLoading ? (
-              <LoadingSpinner size="md" text="در حال ورود..." />
+              <LoadingSpinner
+                size="md"
+                text={
+                  isLoading === "forgotPassword"
+                    ? "در حال پردازش..."
+                    : "در حال ورود..."
+                }
+              />
             ) : (
               <>
                 <input
@@ -70,9 +108,16 @@ const LoginPage: React.FC = () => {
                   className="focus:ring-primary-400 w-full rounded-[15px] border border-gray-300 bg-white px-4 py-2 focus:outline-none"
                   disabled={isLoading}
                 />
-                {/* {errorMessage && ( // Remove this part
-                  <p className="text-sm text-red-500">{errorMessage}</p>
-                )} */}
+                <div className="mt-2 flex justify-start">
+                  <button
+                    type="button"
+                    className="text-right text-sm text-blue-600 hover:underline focus:outline-none"
+                    onClick={handleForgotPassword}
+                    disabled={isLoading}
+                  >
+                    رمز عبور را فراموش کرده‌ام
+                  </button>
+                </div>
                 <button
                   onClick={handleLogin}
                   disabled={isLoading}
