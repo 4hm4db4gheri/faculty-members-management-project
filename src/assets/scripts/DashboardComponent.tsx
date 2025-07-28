@@ -10,6 +10,14 @@ import NotificationDetail from "./Panels/NotificationDetail";
 import SentNotificationsPanel from "./Panels/SentNotificationsPanel";
 import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
 
+// Import SVG icons
+import DashboardIcon from "../elements/dashboard (1).svg";
+import HistoryIcon from "../elements/history.svg";
+import ChartIcon from "../elements/chart.svg";
+import RoleIcon from "../elements/role.svg";
+import NotificationIcon from "../elements/notification.svg";
+import ExitIcon from "../elements/exit.svg";
+
 interface Teacher {
   id: number;
   firstName: string;
@@ -146,30 +154,120 @@ export default function DashboardComponent() {
 
       {/* Sidebar / Navigation Panel */}
       <div
-        className={`fixed inset-y-0 right-0 z-40 flex w-64 flex-col items-stretch justify-start bg-[#1B4965] transition-transform duration-300 ease-in-out lg:w-64 xl:w-72 ${
+        className={`fixed inset-y-0 right-0 z-40 flex w-64 flex-col items-stretch justify-between bg-[#1B4965] transition-transform duration-300 ease-in-out lg:w-64 xl:w-72 ${
           isSidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
         } lg:static lg:flex lg:translate-x-0 lg:p-4`}
       >
-        {/* Close button for mobile sidebar */}
-        <div className="flex justify-end p-4 lg:hidden">
-          <button
-            onClick={() => setIsSidebarOpen(false)}
-            className="rounded-md p-2 focus:ring-2 focus:ring-white focus:outline-none"
-          >
-            <svg
-              className="h-8 w-8 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
+        {/* Top section */}
+        <div className="flex flex-col">
+          {/* Close button for mobile sidebar */}
+          <div className="flex justify-end p-4 lg:hidden">
+            <button
+              onClick={() => setIsSidebarOpen(false)}
+              className="rounded-md p-2 focus:ring-2 focus:ring-white focus:outline-none"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
+              <svg
+                className="h-8 w-8 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
+              </svg>
+            </button>
+          </div>
+
+          <div className="m-5 mx-auto mb-4 flex h-32 w-32 items-center justify-center bg-white">
+            <img
+              src="src/assets/images/Sbu-logo.svg.png"
+              alt="لوگو"
+              className="h-full w-full bg-white object-contain"
+            />
+          </div>
+          <div className="mb-4 flex items-center justify-center px-2 text-3xl sm:text-4xl">
+            اسم سامانه
+          </div>
+          <div className="mx-auto my-3 h-[2px] w-[calc(100%-40px)] rounded bg-[#8D8D8D]"></div>
+
+          {/* Navigation Buttons */}
+          <button
+            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl ${getActiveClass(
+              "/dashboard",
+            )}`}
+            onClick={() => {
+              handleNavigate("/dashboard");
+              setSelectedNotification(null);
+            }}
+          >
+            <img
+              src={DashboardIcon}
+              alt="Dashboard"
+              className="mr-2 h-6 w-6 brightness-0 invert filter"
+            />
+            داشبورد
+          </button>
+          <button
+            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl ${getActiveClass(
+              "/dashboard/records",
+            )}`}
+            onClick={() => handleNavigate("/dashboard/records")}
+          >
+            <img
+              src={HistoryIcon}
+              alt="History"
+              className="mr-2 h-6 w-6 brightness-0 invert filter"
+            />
+            سوابق
+          </button>
+          <button
+            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl ${getActiveClass(
+              "/dashboard/progress",
+            )}`}
+            onClick={() => handleNavigate("/dashboard/progress")}
+          >
+            <img
+              src={ChartIcon}
+              alt="Chart"
+              className="mr-2 h-6 w-6 brightness-0 invert filter"
+            />
+            نمودار پیشرفت
+          </button>
+          {hasFullAccess && (
+            <button
+              className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl ${getActiveClass(
+                "/dashboard/roles",
+              )}`}
+              onClick={() => handleNavigate("/dashboard/roles")}
+            >
+              <img
+                src={RoleIcon}
+                alt="Role"
+                className="mr-2 h-6 w-6 brightness-0 invert filter"
+              />
+              مدیریت نقش ها
+            </button>
+          )}
+          <button
+            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl ${getActiveClass(
+              "/dashboard/notifications",
+            )}`}
+            onClick={() => {
+              handleNavigate("/dashboard/notifications");
+              setSelectedNotification(null);
+            }}
+          >
+            <img
+              src={NotificationIcon}
+              alt="Notifications"
+              className="mr-2 h-6 w-6 brightness-0 invert filter"
+            />
+            اعلان ها
           </button>
         </div>
 
@@ -215,25 +313,23 @@ export default function DashboardComponent() {
         </button>
         {hasFullAccess && (
           <button
-            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass(
-              "/dashboard/roles",
-            )}`}
-            onClick={() => handleNavigate("/dashboard/roles")}
+            className={`m-1 inline-flex h-auto w-full cursor-pointer items-center justify-start rounded-[20px] border-none bg-transparent p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none hover:bg-[#3388BC33] sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl`}
+            onClick={() => {
+              // Clear any stored authentication data
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              // Navigate to login page
+              navigate("/login");
+            }}
           >
-            مدیریت نقش ها
+            <img
+              src={ExitIcon}
+              alt="Exit"
+              className="mr-2 h-6 w-6 brightness-0 invert filter"
+            />
+            خروج
           </button>
-        )}
-        <button
-          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass(
-            "/dashboard/notifications",
-          )}`}
-          onClick={() => {
-            handleNavigate("/dashboard/notifications");
-            setSelectedNotification(null);
-          }}
-        >
-          اعلان ها
-        </button>
+        </div>
       </div>
 
       {/* Overlay for mobile sidebar */}
