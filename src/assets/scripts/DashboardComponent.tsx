@@ -9,6 +9,7 @@ import UserInfo from "./Panels/UserInfo";
 import NotificationDetail from "./Panels/NotificationDetail";
 import SentNotificationsPanel from "./Panels/SentNotificationsPanel";
 import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
+import { Teacher } from "./types/Teacher";
 
 // Import SVG icons
 import DashboardIcon from "../elements/dashboard (1).svg";
@@ -17,14 +18,6 @@ import ChartIcon from "../elements/chart.svg";
 import RoleIcon from "../elements/role.svg";
 import NotificationIcon from "../elements/notification.svg";
 import ExitIcon from "../elements/exit.svg";
-
-interface Teacher {
-  id: number;
-  firstName: string;
-  lastName: string;
-  faculty: string;
-  rank: string;
-}
 
 interface Notification {
   id: number;
@@ -153,13 +146,14 @@ export default function DashboardComponent() {
       </div>
 
       {/* Sidebar / Navigation Panel */}
+
       <div
         className={`fixed inset-y-0 right-0 z-40 flex w-64 flex-col items-stretch justify-between bg-[#1B4965] transition-transform duration-300 ease-in-out lg:w-64 xl:w-72 ${
           isSidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
         } lg:static lg:flex lg:translate-x-0 lg:p-4`}
       >
         {/* Top section */}
-        <div className="flex flex-col">
+        <div className="flex flex-1 flex-col">
           {/* Close button for mobile sidebar */}
           <div className="flex justify-end p-4 lg:hidden">
             <button
@@ -182,19 +176,17 @@ export default function DashboardComponent() {
               </svg>
             </button>
           </div>
-
-        <div className="m-5 mx-auto mb-4 flex items-center justify-center bg-white w-32 h-32">
-          <img
-            src="src/assets/images/Sbu-logo.svg.png"
-            alt="لوگو"
-            className="h-full w-full bg-white object-contain"
-          />
-        </div>
-        <div className="mb-4 flex items-center justify-center px-2 text-3xl sm:text-4xl">
-          سماه
-        </div>
-        <div className="mx-auto my-3 h-[2px] w-[calc(100%-40px)] rounded bg-[#8D8D8D]"></div>
-
+          <div className="m-5 mx-auto mb-4 flex h-32 w-32 items-center justify-center bg-white">
+            <img
+              src="src/assets/images/Sbu-logo.svg.png"
+              alt="لوگو"
+              className="h-full w-full bg-white object-contain"
+            />
+          </div>
+          <div className="mb-4 flex items-center justify-center px-2 text-3xl sm:text-4xl">
+            سماه
+          </div>
+          <div className="mx-auto my-3 h-[2px] w-[calc(100%-40px)] rounded bg-[#8D8D8D]"></div>
           {/* Navigation Buttons */}
           <button
             className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl ${getActiveClass(
@@ -208,7 +200,7 @@ export default function DashboardComponent() {
             <img
               src={DashboardIcon}
               alt="Dashboard"
-              className="mr-2 h-6 w-6 brightness-0 invert filter"
+              className="mr-2 pl-2 h-8 w-8 brightness-0 invert filter"
             />
             داشبورد
           </button>
@@ -221,7 +213,7 @@ export default function DashboardComponent() {
             <img
               src={HistoryIcon}
               alt="History"
-              className="mr-2 h-6 w-6 brightness-0 invert filter"
+              className="mr-2 pl-2 h-8 w-8 brightness-0 invert filter"
             />
             سوابق
           </button>
@@ -234,7 +226,7 @@ export default function DashboardComponent() {
             <img
               src={ChartIcon}
               alt="Chart"
-              className="mr-2 h-6 w-6 brightness-0 invert filter"
+              className="mr-2 pl-2 h-8 w-8 brightness-0 invert filter"
             />
             نمودار پیشرفت
           </button>
@@ -248,7 +240,7 @@ export default function DashboardComponent() {
               <img
                 src={RoleIcon}
                 alt="Role"
-                className="mr-2 h-6 w-6 brightness-0 invert filter"
+                className="mr-2 pl-2 h-8 w-8 brightness-0 invert filter"
               />
               مدیریت نقش ها
             </button>
@@ -265,55 +257,18 @@ export default function DashboardComponent() {
             <img
               src={NotificationIcon}
               alt="Notifications"
-              className="mr-2 h-6 w-6 brightness-0 invert filter"
+              className="mr-2 pl-2 h-8 w-8 brightness-0 invert filter"
             />
             اعلان ها
           </button>
         </div>
-
-        <div className="m-5 mx-auto mb-4 flex items-center justify-center bg-white w-32 h-32">
-          <img
-            src="src/assets/images/Sbu-logo.svg.png"
-            alt="لوگو"
-            className="h-full w-full bg-white object-contain"
-          />
-        </div>
-        <div className="mb-4 flex items-center justify-center px-2 text-3xl sm:text-4xl">
-          سماه
-        </div>
-        <div className="mx-auto my-3 h-[2px] w-[calc(100%-40px)] rounded bg-[#8D8D8D]"></div>
-
-        {/* Navigation Buttons */}
-        <button
-          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass(
-            "/dashboard",
-          )}`}
-          onClick={() => {
-            handleNavigate("/dashboard");
-            setSelectedNotification(null);
-          }}
-        >
-          داشبورد
-        </button>
-        <button
-          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass(
-            "/dashboard/records",
-          )}`}
-          onClick={() => handleNavigate("/dashboard/records")}
-        >
-          سوابق
-        </button>
-        <button
-          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass(
-            "/dashboard/progress",
-          )}`}
-          onClick={() => handleNavigate("/dashboard/progress")}
-        >
-          نمودار پیشرفت
-        </button>
+        {/* Bottom section: Exit button */}
         {hasFullAccess && (
           <button
-            className={`m-1 inline-flex h-auto w-full cursor-pointer items-center justify-start rounded-[20px] border-none bg-transparent p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none hover:bg-[#3388BC33] sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl`}
+            className={
+              `m-1 inline-flex h-auto w-full cursor-pointer items-center justify-start rounded-[20px] border-none bg-transparent p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none hover:bg-[#3388BC33] sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl` // w-full for alignment
+            }
+            style={{ marginTop: "auto" }}
             onClick={() => {
               // Clear any stored authentication data
               localStorage.removeItem("token");
@@ -325,11 +280,11 @@ export default function DashboardComponent() {
             <img
               src={ExitIcon}
               alt="Exit"
-              className="mr-2 h-6 w-6 brightness-0 invert filter"
+              className="mr-2 pl-2 h-8 w-8 brightness-0 invert filter"
             />
             خروج
           </button>
-        </div>
+        )}
       </div>
 
       {/* Overlay for mobile sidebar */}
