@@ -10,6 +10,13 @@ import NotificationDetail from "./Panels/NotificationDetail";
 import SentNotificationsPanel from "./Panels/SentNotificationsPanel";
 import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
 
+// Import SVG icons
+import DashboardIcon from "../elements/dashboard (1).svg";
+import HistoryIcon from "../elements/history.svg";
+import ChartIcon from "../elements/chart.svg";
+import RoleIcon from "../elements/role.svg";
+import NotificationIcon from "../elements/notification.svg";
+import ExitIcon from "../elements/exit.svg";
 
 interface Teacher {
   id: number;
@@ -190,7 +197,7 @@ export default function DashboardComponent() {
 
           {/* Navigation Buttons */}
           <button
-            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[20px] border-none p-2.5 text-center text-base text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl ${getActiveClass(
+            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl ${getActiveClass(
               "/dashboard",
             )}`}
             onClick={() => {
@@ -198,36 +205,56 @@ export default function DashboardComponent() {
               setSelectedNotification(null);
             }}
           >
+            <img
+              src={DashboardIcon}
+              alt="Dashboard"
+              className="mr-2 h-6 w-6 brightness-0 invert filter"
+            />
             داشبورد
           </button>
           <button
-            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[20px] border-none p-2.5 text-center text-base text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl ${getActiveClass(
+            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl ${getActiveClass(
               "/dashboard/records",
             )}`}
             onClick={() => handleNavigate("/dashboard/records")}
           >
+            <img
+              src={HistoryIcon}
+              alt="History"
+              className="mr-2 h-6 w-6 brightness-0 invert filter"
+            />
             سوابق
           </button>
           <button
-            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[20px] border-none p-2.5 text-center text-base text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl ${getActiveClass(
+            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl ${getActiveClass(
               "/dashboard/progress",
             )}`}
             onClick={() => handleNavigate("/dashboard/progress")}
           >
+            <img
+              src={ChartIcon}
+              alt="Chart"
+              className="mr-2 h-6 w-6 brightness-0 invert filter"
+            />
             نمودار پیشرفت
           </button>
           {hasFullAccess && (
             <button
-              className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[20px] border-none p-2.5 text-center text-base text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl ${getActiveClass(
+              className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl ${getActiveClass(
                 "/dashboard/roles",
               )}`}
               onClick={() => handleNavigate("/dashboard/roles")}
             >
+              <img
+                src={RoleIcon}
+                alt="Role"
+                className="mr-2 h-6 w-6 brightness-0 invert filter"
+              />
               مدیریت نقش ها
             </button>
           )}
           <button
-            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[20px] border-none p-2.5 text-center text-base text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl ${getActiveClass(
+            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl ${getActiveClass(
               "/dashboard/notifications",
             )}`}
             onClick={() => {
@@ -235,14 +262,58 @@ export default function DashboardComponent() {
               setSelectedNotification(null);
             }}
           >
+            <img
+              src={NotificationIcon}
+              alt="Notifications"
+              className="mr-2 h-6 w-6 brightness-0 invert filter"
+            />
             اعلان ها
           </button>
         </div>
 
-        {/* Exit Button - positioned at bottom */}
-        <div>
+        <div className="m-5 mx-auto mb-4 flex items-center justify-center bg-white w-32 h-32">
+          <img
+            src="src/assets/images/Sbu-logo.svg.png"
+            alt="لوگو"
+            className="h-full w-full bg-white object-contain"
+          />
+        </div>
+        <div className="mb-4 flex items-center justify-center px-2 text-3xl sm:text-4xl">
+          سماه
+        </div>
+        <div className="mx-auto my-3 h-[2px] w-[calc(100%-40px)] rounded bg-[#8D8D8D]"></div>
+
+        {/* Navigation Buttons */}
+        <button
+          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass(
+            "/dashboard",
+          )}`}
+          onClick={() => {
+            handleNavigate("/dashboard");
+            setSelectedNotification(null);
+          }}
+        >
+          داشبورد
+        </button>
+        <button
+          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass(
+            "/dashboard/records",
+          )}`}
+          onClick={() => handleNavigate("/dashboard/records")}
+        >
+          سوابق
+        </button>
+        <button
+          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass(
+            "/dashboard/progress",
+          )}`}
+          onClick={() => handleNavigate("/dashboard/progress")}
+        >
+          نمودار پیشرفت
+        </button>
+        {hasFullAccess && (
           <button
-            className={`m-1 inline-flex h-auto w-full cursor-pointer items-center justify-center rounded-[20px] border-none bg-transparent p-2.5 text-center text-base text-white transition-colors duration-300 ease-in-out outline-none hover:bg-[#3388BC33] sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl`}
+            className={`m-1 inline-flex h-auto w-full cursor-pointer items-center justify-start rounded-[20px] border-none bg-transparent p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none hover:bg-[#3388BC33] sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl`}
             onClick={() => {
               // Clear any stored authentication data
               localStorage.removeItem("token");
@@ -251,6 +322,11 @@ export default function DashboardComponent() {
               navigate("/login");
             }}
           >
+            <img
+              src={ExitIcon}
+              alt="Exit"
+              className="mr-2 h-6 w-6 brightness-0 invert filter"
+            />
             خروج
           </button>
         </div>
