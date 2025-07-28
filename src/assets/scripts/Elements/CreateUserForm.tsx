@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import LoadingSpinner from "./LoadingSpinner";
 import MyInput from "./MyInput";
+import { createUser } from "../Services/apiEndpoints";
 
 interface CreateUserFormProps {
   isOpen: boolean;
@@ -81,28 +82,50 @@ export default function CreateUserForm({
       return;
     }
 
-    setIsLoading(true);
-    try {
-      const response = await fetch(
-        "https://faculty.liara.run/api/panel/v1/user/create",
-        {
-          method: "POST",
-          headers: {
-            accept: "text/plain",
-            "Content-Type": "application/json",
+    // Phone number validation
+    let phone = formData.phoneNumber.trim();
+
+    if (/^\d{10}$/.test(phone)) {
+      // Valid: 10 digits, do nothing
+    } else if (/^\d{11}$/.test(phone)) {
+      if (phone[0] === "0") {
+        phone = phone.slice(1); // Remove leading zero
+      } else {
+        toast.error("شماره تلفن ۱۱ رقمی باید با 0 شروع شود.", {
+          position: "bottom-left",
+          style: {
+            background: "#FEF2F2",
+            color: "#991B1B",
+            direction: "rtl",
           },
-          body: JSON.stringify({
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            username: formData.username,
-            password: formData.password,
-            phoneNumber: formData.phoneNumber,
-            hasFullAccess: formData.hasFullAccess,
-          }),
+        });
+        return;
+      }
+    } else {
+      toast.error(
+        "شماره تلفن باید ۱۰ رقم (بدون صفر) یا ۱۱ رقم (با صفر) باشد.",
+        {
+          position: "bottom-left",
+          style: {
+            background: "#FEF2F2",
+            color: "#991B1B",
+            direction: "rtl",
+          },
         },
       );
+      return;
+    }
 
-      const data: ApiResponse = await response.json();
+    setIsLoading(true);
+    try {
+      const data: ApiResponse = await createUser({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        username: formData.username,
+        password: formData.password,
+        phoneNumber: phone, // Use the validated/processed phone number
+        hasFullAccess: formData.hasFullAccess,
+      });
 
       if (!data.error) {
         toast.success("کاربر با موفقیت ایجاد شد", {
@@ -185,7 +208,7 @@ export default function CreateUserForm({
             className="[-webkit-text-security:disc] [text-security:disc]"
           />
           <MyInput
-            placeholder="شماره تلفن (مثال: 09123456789)"
+            placeholder="شماره تلفن (مثال: 9123456789)"
             value={formData.phoneNumber}
             onChange={handlePhoneInput}
           />

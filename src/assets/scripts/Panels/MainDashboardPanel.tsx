@@ -7,7 +7,10 @@ import UserInfo from "./UserInfo";
 import { useNavigate } from "react-router-dom";
 import { useChartData } from "../hooks/useChartData";
 import LoadingSpinner from "../Elements/LoadingSpinner";
-import { ApiService } from "../Services/ApiService";
+import {
+  getTeachers,
+  getSentTeacherNotificationsV2,
+} from "../Services/apiEndpoints";
 
 interface ApiTeacher {
   id: number;
@@ -24,6 +27,12 @@ interface ApiResponse {
   data: ApiTeacher[];
   error: boolean;
   message: string[];
+}
+
+interface SentNotification {
+  title: string;
+  teacherName: string;
+  status: string;
 }
 
 export default function MainDashboardPanel() {
@@ -51,21 +60,26 @@ export default function MainDashboardPanel() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Add state for latest notifications
+  const [latestNotifications, setLatestNotifications] = useState<
+    SentNotification[]
+  >([]);
+  const [notifLoading, setNotifLoading] = useState(true);
+  const [notifError, setNotifError] = useState<string | null>(null);
+
   // Fetch teachers from API
   useEffect(() => {
     const fetchTeachers = async () => {
       setIsLoading(true);
       try {
-        const response = await ApiService.get<ApiResponse>(
-          "/panel/v1/teacher/read-teachers?PageNumber=1&PageSize=1000",
-        );
+        const response = (await getTeachers()) as ApiResponse;
 
         if (response.error) {
           throw new Error(response.message[0] || "Failed to fetch teachers");
         }
 
         const convertedTeachers: Teacher[] = response.data.map(
-          (apiTeacher) => ({
+          (apiTeacher: ApiTeacher) => ({
             id: apiTeacher.id,
             firstName: apiTeacher.firstName,
             lastName: apiTeacher.lastName,
@@ -91,6 +105,28 @@ export default function MainDashboardPanel() {
     };
 
     fetchTeachers();
+  }, []);
+
+  // Add state for latest notifications
+  useEffect(() => {
+    const fetchLatestNotifications = async () => {
+      setNotifLoading(true);
+      try {
+        const response = await getSentTeacherNotificationsV2(1, 3);
+        if (!response.error) {
+          setLatestNotifications(response.data);
+        } else {
+          throw new Error(response.message.join(", "));
+        }
+      } catch (err) {
+        setNotifError(
+          err instanceof Error ? err.message : "خطا در دریافت اعلان‌ها",
+        );
+      } finally {
+        setNotifLoading(false);
+      }
+    };
+    fetchLatestNotifications();
   }, []);
 
   // Helper function to convert rank number to string
@@ -228,19 +264,17 @@ export default function MainDashboardPanel() {
         </div>
       </div>
       <div className="col-span-1 flex h-full flex-col items-center justify-center rounded-[25px] bg-white pt-[10px]">
-        <div className="flex h-[130px] w-[130px] items-center justify-center rounded-full bg-[#8D8D8D]">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="white"
-            className="h-24 w-24"
-          >
-            <path
-              fillRule="evenodd"
-              d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
-              clipRule="evenodd"
-            />
-          </svg>
+        <div className="flex h-[130px] w-[130px] items-center justify-center overflow-hidden rounded-full bg-[#8D8D8D]">
+          <img
+            src="/user-avatar.png"
+            alt="User Avatar"
+            className="h-full w-full object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = "none";
+              (e.target as HTMLImageElement).parentElement!.innerHTML =
+                `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' class='h-24 w-24'><path fill-rule='evenodd' d='M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z' clip-rule='evenodd'/></svg>`;
+            }}
+          />
         </div>
         <div className="flex content-center items-center justify-center pt-[30px] text-5xl text-black">
           اسم کاربر
@@ -252,51 +286,48 @@ export default function MainDashboardPanel() {
             onClick={() => navigate("/dashboard/sent-notifications")}
             className="w-full rounded-[25px] bg-[#1B4965] px-6 py-3 text-xl font-semibold text-white transition-colors hover:bg-[#3388BC]"
           >
-            اعلان‌های ارسال شده
+            بررسی وضعیت اعلان‌ها
           </button>
-
           <div className="flex flex-col gap-2 rounded-[25px] bg-gray-50 p-4">
             <h3 className="mb-2 text-lg font-semibold text-gray-800">
               آخرین اعلان‌ها
             </h3>
-            {[
-              {
-                title: "یادآوری مهلت ارسال مقاله",
-                date: "۱۴۰۴/۰۳/۱۲",
-                importance: "فوری",
-              },
-              {
-                title: "تمدید قرارداد پژوهشی",
-                date: "۱۴۰۴/۰۳/۱۰",
-                importance: "عادی",
-              },
-              {
-                title: "درخواست اصلاح مقاله",
-                date: "۱۴۰۴/۰۳/۰۸",
-                importance: "فوری",
-              },
-            ].map((notification, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between rounded-lg bg-white p-3 shadow-sm"
-              >
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-800">
-                    {notification.title}
-                  </p>
-                  <p className="text-xs text-gray-500">{notification.date}</p>
-                </div>
-                <span
-                  className={`rounded-full px-2 py-1 text-xs ${
-                    notification.importance === "فوری"
-                      ? "bg-red-100 text-red-800"
-                      : "bg-blue-100 text-blue-800"
-                  }`}
-                >
-                  {notification.importance}
-                </span>
+            {notifLoading ? (
+              <div className="text-center text-gray-500">
+                در حال بارگذاری...
               </div>
-            ))}
+            ) : notifError ? (
+              <div className="text-center text-red-500">{notifError}</div>
+            ) : latestNotifications.length === 0 ? (
+              <div className="text-center text-gray-500">اعلانی وجود ندارد</div>
+            ) : (
+              latestNotifications.map((notification) => (
+                <div
+                  key={
+                    notification.title +
+                    notification.teacherName +
+                    notification.status
+                  }
+                  className="flex flex-col gap-1 rounded-lg bg-white p-3 shadow-sm"
+                >
+                  <div className="flex flex-row items-center justify-between">
+                    <span className="text-sm font-medium text-gray-800">
+                      {notification.title}
+                    </span>
+                    <span
+                      className={`rounded-full px-2 py-1 text-xs ${notification.status.trim() === "Sent" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+                    >
+                      {notification.status.trim() === "Sent"
+                        ? "ارسال شد"
+                        : "ناموفق"}
+                    </span>
+                  </div>
+                  <div className="text-xs text-black">
+                    {notification.teacherName}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
