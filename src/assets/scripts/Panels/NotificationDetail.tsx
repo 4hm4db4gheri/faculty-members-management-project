@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import MyDropdown from "../Elements/MyDropdown";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import { toast } from "react-toastify";
+import {
+  getNotificationDetail,
+  updateNotification,
+} from "../Services/apiEndpoints";
 
 interface NotificationDetailProps {
   notificationId: number | undefined;
@@ -73,20 +77,8 @@ export default function NotificationDetail({
       setError(null);
 
       try {
-        const response = await fetch(
-          `https://faculty.liara.run/api/panel/v1/notification/get?Id=${notificationId}`,
-          {
-            headers: {
-              accept: "text/plain",
-            },
-          },
-        );
-        const data: NotificationResponse = await response.json();
+        const data = await getNotificationDetail(notificationId);
         console.log("Response Data:", data); // برای دیباگ
-
-        if (!response.ok) {
-          throw new Error("خطا در دریافت اطلاعات اعلان");
-        }
 
         if (!data.error && data.data) {
           setFormData({
@@ -195,15 +187,7 @@ export default function NotificationDetail({
         BeforeSendDay: JSON.stringify(sendDays),
       });
 
-      const response = await fetch(
-        `https://faculty.liara.run/api/panel/v1/notification/update?${queryParams.toString()}`,
-        {
-          method: "PUT",
-          headers: {
-            accept: "text/plain",
-          },
-        },
-      );
+      const response = await updateNotification(queryParams.toString());
 
       let responseData: NotificationResponse;
       try {

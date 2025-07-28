@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ApiService } from "../Services/ApiService";
+import { createNotification } from "../Services/apiEndpoints";
 import { toast } from "react-toastify";
 
 interface NotificationForm {
@@ -26,10 +26,7 @@ export default function NotificationManagementPanel() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await ApiService.post<ApiResponse>(
-        "/panel/v1/notification/create",
-        formData,
-      );
+      const response = await createNotification(formData);
 
       if (!response.error) {
         toast.success("اعلان با موفقیت ایجاد شد");
@@ -67,7 +64,7 @@ export default function NotificationManagementPanel() {
             onChange={handleChange}
             className="rounded-2xl bg-white p-2"
           >
-            <option className="text-gray-500 " value="" disabled>
+            <option className="text-gray-500" value="" disabled>
               موضوع
             </option>
             <option value="academic">دانشگاهی</option>

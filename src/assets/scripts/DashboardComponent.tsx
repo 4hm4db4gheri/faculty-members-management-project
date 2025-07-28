@@ -271,8 +271,47 @@ export default function DashboardComponent() {
           </button>
         </div>
 
-        {/* Exit Button - positioned at bottom */}
-        <div>
+        <div className="m-5 mx-auto mb-4 flex items-center justify-center bg-white w-32 h-32">
+          <img
+            src="src/assets/images/Sbu-logo.svg.png"
+            alt="لوگو"
+            className="h-full w-full bg-white object-contain"
+          />
+        </div>
+        <div className="mb-4 flex items-center justify-center px-2 text-3xl sm:text-4xl">
+          سماه
+        </div>
+        <div className="mx-auto my-3 h-[2px] w-[calc(100%-40px)] rounded bg-[#8D8D8D]"></div>
+
+        {/* Navigation Buttons */}
+        <button
+          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass(
+            "/dashboard",
+          )}`}
+          onClick={() => {
+            handleNavigate("/dashboard");
+            setSelectedNotification(null);
+          }}
+        >
+          داشبورد
+        </button>
+        <button
+          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass(
+            "/dashboard/records",
+          )}`}
+          onClick={() => handleNavigate("/dashboard/records")}
+        >
+          سوابق
+        </button>
+        <button
+          className={`m-1 inline-flex h-auto cursor-pointer items-center justify-center rounded-[25px] border-none p-3 text-center text-lg text-white transition-colors duration-300 ease-in-out outline-none sm:m-2 sm:p-4 sm:text-xl md:text-2xl lg:text-3xl ${getActiveClass(
+            "/dashboard/progress",
+          )}`}
+          onClick={() => handleNavigate("/dashboard/progress")}
+        >
+          نمودار پیشرفت
+        </button>
+        {hasFullAccess && (
           <button
             className={`m-1 inline-flex h-auto w-full cursor-pointer items-center justify-start rounded-[20px] border-none bg-transparent p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none hover:bg-[#3388BC33] sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl`}
             onClick={() => {
