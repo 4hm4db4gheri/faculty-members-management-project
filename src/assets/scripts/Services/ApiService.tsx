@@ -1,7 +1,7 @@
 import { AuthService } from "./AuthService";
 
 export class ApiService {
-  private static readonly BASE_URLS = ["https://faculty.liara.run/api"];
+  private static readonly BASE_URLS = ["https://backend.samaah.ir/api"];
 
   private static currentBaseUrlIndex = 0;
 

@@ -9,7 +9,7 @@ export const uploadTeachersExcel = async (file: File) => {
     const formData = new FormData();
     formData.append("file", file);
     const response = await fetch(
-        "https://faculty.liara.run/api/panel/v1/teacher/upload-excel",
+        "https://backend.samaah.ir/api/panel/v1/teacher/upload-excel",
         {
             method: "POST",
             headers: {
@@ -32,7 +32,7 @@ interface CreateUserResponse {
     [key: string]: unknown;
 }
 export const createUser = (data: CreateUserRequest): Promise<CreateUserResponse> =>
-    fetch("https://faculty.liara.run/api/panel/v1/user/create", {
+    fetch("https://backend.samaah.ir/api/panel/v1/user/create", {
         method: "POST",
         headers: {
             accept: "text/plain",
@@ -46,6 +46,14 @@ export const getUsers = () =>
 
 export const updateUserRole = (userId: string, role: string) =>
     ApiService.put(`/panel/v1/user/role/change?UserID=${userId}&RoleName=${role}`);
+
+export const changePassword = (username: string, newPassword: string) =>
+    fetch(`https://backend.samaah.ir/api/panel/v1/user/change-password?username=${encodeURIComponent(username)}&newPassword=${encodeURIComponent(newPassword)}`, {
+        method: "GET",
+        headers: {
+            Accept: "text/plain",
+        },
+    }).then((res) => res.text());
 
 // AUTH
 interface LoginRequest {
@@ -61,20 +69,29 @@ export const login = (data: LoginRequest): Promise<LoginResponse> =>
 
 // NOTIFICATIONS
 export const getNotifications = () =>
-    fetch("https://faculty.liara.run/api/panel/v1/notification/list", {
+    fetch("https://backend.samaah.ir/api/panel/v1/notification/list", {
         headers: { accept: "text/plain" },
     }).then((res) => res.json());
 
 export const getNotificationDetail = (id: number) =>
-    fetch(`https://faculty.liara.run/api/panel/v1/notification/get?Id=${id}`, {
+    fetch(`https://backend.samaah.ir/api/panel/v1/notification/get?Id=${id}`, {
         headers: { accept: "text/plain" },
     }).then((res) => res.json());
 
 export const updateNotification = (queryParams: string) =>
     fetch(
-        `https://faculty.liara.run/api/panel/v1/notification/update?${queryParams}`,
+        `https://backend.samaah.ir/api/panel/v1/notification/update?${queryParams}`,
         {
             method: "PUT",
+            headers: { accept: "text/plain" },
+        },
+    ).then((res) => res.json());
+
+export const changeNotificationStatus = (id: number, enabled: boolean) =>
+    fetch(
+        `https://backend.samaah.ir/api/panel/v1/notification/change-status?id=${id}&enabled=${enabled}`,
+        {
+            method: "GET",
             headers: { accept: "text/plain" },
         },
     ).then((res) => res.json());
@@ -92,7 +109,7 @@ export const createNotification = (data: CreateNotificationRequest): Promise<Cre
 
 // TEACHER NOTIFICATIONS
 export const getSentTeacherNotifications = (pageNumber: number, pageSize: number) =>
-    fetch(`https://faculty.liara.run/api/panel/v1/teacher-notification/teacher-notifications?PageNumber=${pageNumber}&PageSize=${pageSize}`,
+    fetch(`https://backend.samaah.ir/api/panel/v1/teacher-notification/teacher-notifications?PageNumber=${pageNumber}&PageSize=${pageSize}`,
         {
             method: "POST",
             headers: { accept: "text/plain" },
@@ -102,7 +119,7 @@ export const getSentTeacherNotifications = (pageNumber: number, pageSize: number
 
 // TEACHER NOTIFICATIONS (V2, POST, for SentNotificationsPanel)
 export const getSentTeacherNotificationsV2 = (pageNumber: number, pageSize: number) =>
-    fetch(`https://faculty.liara.run/api/panel/v1/teacher-notification/teacher-notifications?PageNumber=${pageNumber}&PageSize=${pageSize}`,
+    fetch(`https://backend.samaah.ir/api/panel/v1/teacher-notification/teacher-notifications?PageNumber=${pageNumber}&PageSize=${pageSize}`,
         {
             method: "POST",
             headers: { accept: "text/plain", "Content-Type": "application/json" },

@@ -5,7 +5,10 @@ import MyNotificationCard, {
 } from "../Elements/MyNotificationCard";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import { useNavigate } from "react-router-dom";
-import { getNotifications } from "../Services/apiEndpoints";
+import {
+  getNotifications,
+  changeNotificationStatus,
+} from "../Services/apiEndpoints";
 
 interface NotificationsPanelProps {
   onNotificationSelect: (notification: Notification) => void;
@@ -55,17 +58,9 @@ export default function NotificationsPanel({
   // لغو ارسال نوتیف
   const handleToggleNotification = async (id: number, enabled: boolean) => {
     try {
-      const response = await fetch(
-        `https://faculty.liara.run/api/panel/v1/notification/change-status?id=${id}&enabled=${enabled}`,
-        {
-          method: "GET",
-          headers: {
-            accept: "text/plain",
-          },
-        },
-      );
+      const response = await changeNotificationStatus(id, enabled);
 
-      if (!response.ok) {
+      if (response.error) {
         throw new Error(
           enabled ? "خطا در فعال‌سازی نوتیف" : "خطا در غیرفعال‌سازی نوتیف",
         );

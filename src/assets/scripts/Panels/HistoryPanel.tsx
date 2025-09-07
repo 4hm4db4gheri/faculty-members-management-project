@@ -27,11 +27,11 @@ interface ApiTeacher {
   id: number;
   firstName: string;
   lastName: string;
-  facultyName: string; 
+  facultyName: string;
   academicRank: number;
   employmentStatus: number;
   nationalCode: string;
-  group: string; 
+  group: string;
   tId: string;
   createTime: string;
   gender: number;

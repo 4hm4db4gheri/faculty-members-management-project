@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import LoadingSpinner from "../Elements/LoadingSpinner";
-// import { getSentTeacherNotifications } from "../Services/apiEndpoints";
+import { getSentTeacherNotificationsV2 } from "../Services/apiEndpoints";
 import { toast } from "react-toastify";
 
 interface SentNotification {
@@ -26,19 +26,8 @@ export default function SentNotificationsPanel() {
     const fetchNotifications = async () => {
       try {
         setIsLoading(true);
-        // Use fetch directly for the POST API
-        const response = await fetch(
-          "https://faculty.liara.run/api/panel/v1/teacher-notification/teacher-notifications?PageNumber=1&PageSize=1000",
-          {
-            method: "POST",
-            headers: {
-              accept: "text/plain",
-              "Content-Type": "application/json",
-            },
-            body: "",
-          },
-        );
-        const result: SentNotificationsApiResponse = await response.json();
+        const result: SentNotificationsApiResponse =
+          await getSentTeacherNotificationsV2(1, 1000);
         if (!result.error) {
           setNotifications(result.data);
         } else {

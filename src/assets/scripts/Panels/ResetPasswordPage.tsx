@@ -1,9 +1,9 @@
 //ResetPasswordPage
 import React, { useState } from "react";
-import { ApiService } from "../Services/ApiService";
 import { toast } from "react-toastify";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { changePassword } from "../Services/apiEndpoints";
 
 const ResetPasswordPage: React.FC = () => {
   const navigate = useNavigate();
@@ -32,23 +32,13 @@ const ResetPasswordPage: React.FC = () => {
     setIsLoading(true);
     try {
       // فرض: token همان username است (در صورت نیاز اصلاح شود)
-      const response = await fetch(
-        `https://faculty.liara.run/api/panel/v1/user/change-password?username=${encodeURIComponent(token)}&newPassword=${encodeURIComponent(newPassword)}`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "text/plain",
-          },
-        },
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.text();
+      await changePassword(token, newPassword);
       toast.success("رمز عبور با موفقیت تغییر کرد.");
       navigate("/login");
-    } catch (error: any) {
-      toast.error(error.message || "خطا در بازیابی رمز عبور.");
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "خطا در بازیابی رمز عبور.";
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
