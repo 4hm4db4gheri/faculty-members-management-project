@@ -1,0 +1,10 @@
+services:  
+  dashboard-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    ports:
+      - "2010:80"
+    environment:
+      - NODE_ENV=production
+  
