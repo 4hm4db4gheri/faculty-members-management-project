@@ -475,8 +475,8 @@ export default function HistoryPanel() {
         isOpen={isAdvancedSearchOpen}
         onClose={() => {
           setIsAdvancedSearchOpen(false);
-          resetSearchFields();
         }}
+        onResetForm={resetSearchFields}
         onSearchResults={handleAdvancedSearchResults}
         teachers={teachers}
         searchName={searchName}
