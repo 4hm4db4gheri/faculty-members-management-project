@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import MyPagination from "../Elements/MyPagination";
 import MyInput from "../Elements/MyInput";
 import MyPopup from "../Elements/MyPopup";
@@ -11,10 +11,7 @@ import { getTeachers, uploadTeachersExcel } from "../Services/apiEndpoints";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import AdvancedSearchIcon from "../../images/AdvancedSearch.svg";
-
-interface HistoryPanelProps {
-  onTeacherSelect: (teacher: Teacher) => void;
-}
+import { useNavigate } from "react-router-dom";
 
 interface Record {
   id: number;
@@ -100,7 +97,8 @@ interface UploadResponse {
   message: string[];
 }
 
-export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
+export default function HistoryPanel() {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchText, setSearchText] = useState("");
   const [teachers, setTeachers] = useState<Teacher[]>([]);
@@ -161,7 +159,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
     }
   };
 
-  const fetchTeachers = async () => {
+  const fetchTeachers = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = (await getTeachers()) as ApiResponse;
@@ -194,11 +192,11 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchTeachers();
-  }, []);
+  }, [fetchTeachers]);
 
   const handleTeachersUpload = async (file: File) => {
     setIsLoading(true);
@@ -260,8 +258,7 @@ export default function HistoryPanel({ onTeacherSelect }: HistoryPanelProps) {
   };
 
   const handleTeacherSelect = (teacher: Teacher) => {
-    setSelectedTeacher(teacher);
-    setShowUserInfo(true);
+    navigate(`/dashboard/records/${teacher.id}`);
   };
 
   // Function to convert academicRank number to string
