@@ -1,6 +1,7 @@
 # Multi-stage Docker build for Faculty Management Dashboard
-ARG NODE_IMAGE=node:18-alpine
-ARG NGINX_IMAGE=nginx:alpine
+# Using Microsoft Container Registry to avoid Docker Hub rate limits
+ARG NODE_IMAGE=mcr.microsoft.com/mirror/docker/library/node:18-alpine
+ARG NGINX_IMAGE=mcr.microsoft.com/mirror/docker/library/nginx:alpine
 
 FROM ${NODE_IMAGE} AS base
 WORKDIR /app

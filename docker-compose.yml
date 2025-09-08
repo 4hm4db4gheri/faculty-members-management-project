@@ -14,4 +14,14 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+
+  # Alternative simple build (if Docker Hub is blocked)
+  faculty-dashboard-simple:
+    build:
+      context: .
+      dockerfile: Dockerfile.simple
+    ports:
+      - "3001:80"
+    profiles: ["simple"]
+    restart: unless-stopped
   

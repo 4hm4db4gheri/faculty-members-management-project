@@ -1,0 +1,20 @@
+# Simple build using local Node.js (no Docker dependencies)
+# This approach builds locally then copies to a simple web server
+
+# Step 1: Build locally
+# npm run build
+
+# Step 2: Use this simple web server
+FROM busybox:latest AS webserver
+
+# Create nginx-like directory structure
+RUN mkdir -p /usr/share/nginx/html
+
+# Copy pre-built files (build locally first)
+COPY dist/ /usr/share/nginx/html/
+
+# Simple HTTP server using busybox httpd
+EXPOSE 80
+
+# Start simple HTTP server
+CMD ["busybox", "httpd", "-f", "-v", "-p", "80", "-h", "/usr/share/nginx/html"]
