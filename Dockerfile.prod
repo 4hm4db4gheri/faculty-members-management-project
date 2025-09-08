@@ -1,27 +1,40 @@
+# Multi-stage Docker build for Faculty Management Dashboard
 ARG NODE_IMAGE=node:18-alpine
 ARG NGINX_IMAGE=nginx:alpine
-ARG PNPM_VERSION=9.12.0
-ARG NPM_REGISTRY=https://registry.npmjs.org/
 
 FROM ${NODE_IMAGE} AS base
-ENV PNPM_HOME=/pnpm PATH="/pnpm:$PATH"
-RUN npm config set registry ${NPM_REGISTRY} \
- && npm i -g pnpm@${PNPM_VERSION} \
- && pnpm -v \
- && pnpm config set store-dir /pnpm/store
+WORKDIR /app
+
+# Copy package files (support both npm and pnpm)
+COPY package*.json ./
+COPY pnpm-lock.yaml* ./
+
+# Install dependencies using npm (more reliable in containers)
+RUN npm ci --only=production=false
 
 FROM base AS build
-WORKDIR /app
-COPY package.json pnpm-lock.yaml ./
-RUN --mount=type=cache,target=/pnpm/store,id=pnpm-store \
-    pnpm fetch && pnpm install 
+# Copy source code
 COPY . .
-RUN pnpm build
+
+# Build the application
+RUN npm run build
 
 FROM ${NGINX_IMAGE} AS runner
-RUN rm /etc/nginx/conf.d/default.conf
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Remove default nginx config
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy built application
 COPY --from=build /app/dist /usr/share/nginx/html
-HEALTHCHECK --interval=30s --timeout=3s --retries=3 CMD wget -qO- http://127.0.0.1/ || exit 1
+
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Add healthcheck
+HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
+
+# Expose port
 EXPOSE 80
+
+# Start nginx
 CMD ["nginx", "-g", "daemon off;"]

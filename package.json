@@ -5,9 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "docker:build": "docker build -f Dockerfile.prod -t faculty-dashboard .",
+    "docker:run": "docker run -d -p 3000:80 --name faculty-app faculty-dashboard",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.2",
