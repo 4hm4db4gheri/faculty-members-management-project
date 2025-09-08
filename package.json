@@ -8,10 +8,15 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "serve": "npx serve dist -p 3000",
+    "serve:py": "python -m http.server 3000 --directory dist",
     "docker:build": "docker build -f Dockerfile.prod -t faculty-dashboard .",
     "docker:run": "docker run -d -p 3000:80 --name faculty-app faculty-dashboard",
     "docker:up": "docker compose up -d",
-    "docker:down": "docker compose down"
+    "docker:down": "docker compose down",
+    "docker:simple": "npm run build && docker compose --profile simple up -d",
+    "deploy:build": "npm run build && echo Build completed! Files ready in dist/ folder",
+    "deploy:local": "npm run build && npm run serve"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.2",
