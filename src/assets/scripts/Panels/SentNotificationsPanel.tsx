@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import { getSentTeacherNotificationsV2 } from "../Services/apiEndpoints";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 interface SentNotification {
   title: string;
@@ -18,6 +19,7 @@ interface SentNotificationsApiResponse {
 }
 
 export default function SentNotificationsPanel() {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<SentNotification[]>([]);
@@ -102,7 +104,16 @@ export default function SentNotificationsPanel() {
 
   return (
     <div className="flex h-full flex-col gap-5 p-4">
-      <h2 className="text-2xl font-bold text-gray-800">وضعیت اعلان‌ها</h2>
+      {/* Header with back button and title */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-800">وضعیت اعلان‌ها</h2>
+        <button
+          onClick={() => navigate("/dashboard")}
+          className="rounded-2xl bg-white px-4 py-2 whitespace-nowrap text-gray-700 shadow-lg hover:bg-gray-50"
+        >
+          برگشت
+        </button>
+      </div>
       <div className="flex-1 overflow-y-auto">
         <div className="grid gap-4">
           {/* Table header */}
