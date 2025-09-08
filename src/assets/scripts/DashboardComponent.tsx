@@ -285,28 +285,26 @@ export default function DashboardComponent() {
           </button>
         </div>
         {/* Bottom section: Exit button */}
-        {hasFullAccess && (
-          <button
-            className={
-              `m-1 inline-flex h-auto w-full cursor-pointer items-center justify-start rounded-[20px] border-none bg-transparent p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none hover:bg-[#3388BC33] sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl` // w-full for alignment
-            }
-            style={{ marginTop: "auto" }}
-            onClick={() => {
-              // Clear any stored authentication data
-              localStorage.removeItem("token");
-              localStorage.removeItem("user");
-              // Navigate to login page
-              navigate("/login");
-            }}
-          >
-            <img
-              src={ExitIcon}
-              alt="Exit"
-              className="mr-2 h-8 w-8 pl-2 brightness-0 invert filter"
-            />
-            خروج
-          </button>
-        )}
+        <button
+          className={
+            `m-1 inline-flex h-auto w-full cursor-pointer items-center justify-start rounded-[20px] border-none bg-transparent p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none hover:bg-[#3388BC33] sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl` // w-full for alignment
+          }
+          style={{ marginTop: "auto" }}
+          onClick={() => {
+            // Clear any stored authentication data
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            // Navigate to login page
+            navigate("/login");
+          }}
+        >
+          <img
+            src={ExitIcon}
+            alt="Exit"
+            className="mr-2 h-8 w-8 pl-2 brightness-0 invert filter"
+          />
+          خروج
+        </button>
       </div>
 
       {/* Overlay for mobile sidebar */}
