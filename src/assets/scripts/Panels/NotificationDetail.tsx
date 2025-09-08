@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import MyDropdown from "../Elements/MyDropdown";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import {
   getNotificationDetail,
   updateNotification,
@@ -48,6 +49,7 @@ export default function NotificationDetail({
   notificationId,
   initialTitle,
 }: NotificationDetailProps) {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<NotificationForm>({
     subject: initialTitle || "",
     sendMethod: "",
@@ -240,7 +242,17 @@ export default function NotificationDetail({
   }
 
   return (
-    <div>
+    <div className="overflow-hidden">
+      {/* Back button */}
+      <div className="mb-4 flex items-start justify-end">
+        <button
+          onClick={() => navigate("/dashboard/notifications")}
+          className="rounded-2xl bg-white px-4 py-2 whitespace-nowrap text-gray-700 shadow-lg hover:bg-gray-50"
+        >
+          برگشت
+        </button>
+      </div>
+
       <form
         onSubmit={handleSubmit}
         className="relative min-h-screen space-y-7 p-4 text-right"
