@@ -8,6 +8,7 @@ interface AdvancedSearchProps {
   isOpen: boolean;
   onClose: () => void;
   onSearchResults: (teachers: Teacher[]) => void;
+  onResetForm?: () => void;
   teachers: Teacher[];
   searchName: string;
   setSearchName: (value: string) => void;
@@ -29,12 +30,12 @@ const facultyOptions = [
   "مهندسي مكانيك و انرژي",
   "انرژي",
   "مهندسي برق (الكترونيك و مخابرات)",
-  "مهندسي و علوم كامپيوتر",
+  "مهندسی و علوم کامپیوتر",
   "مهندسي عمران، آب و محيط زيست",
   "مهندسي مواد",
   "مهندسي برق (كنترل و قدرت)",
   "ادبيات و علوم انساني",
-  "الهيات و اديان",
+  "الهیات و ادیان",
   "حقوق",
   "علوم اقتصادي و سياسي",
   "مديريت و حسابداري",
@@ -90,6 +91,7 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   isOpen,
   onClose,
   onSearchResults,
+  onResetForm,
   teachers,
   searchName,
   setSearchName,
@@ -140,14 +142,21 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
       toast.info("هیچ استادی یافت نشد.");
     } else {
       onSearchResults(results);
+      // Don't reset form values when searching - just close the modal
       onClose();
     }
   };
 
-  const handleClose = () => {
-    setPoints("");
-    setSelectedGroup("همه");
-    setNationalCode("");
+  const handleClose = (resetForm = true) => {
+    if (resetForm) {
+      setPoints("");
+      setSelectedGroup("همه");
+      setNationalCode("");
+      // Also reset the parent form fields
+      if (onResetForm) {
+        onResetForm();
+      }
+    }
     onClose();
   };
 
@@ -157,7 +166,7 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
     <>
       <div
         className="fixed inset-0 z-40 bg-[#282828] opacity-50"
-        onClick={handleClose}
+        onClick={() => handleClose()}
       />
       <div className="fixed inset-x-0 top-1/2 z-50 mx-auto grid w-full max-w-4xl -translate-y-1/2 transform grid-rows-6 rounded-[25px] bg-white p-6 shadow-xl">
         <div className="row-span-1 content-center py-4 text-center text-xl font-bold text-black">

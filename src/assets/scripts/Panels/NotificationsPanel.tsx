@@ -48,12 +48,12 @@ export default function NotificationsPanel({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [notification, setnotification] = useState<notificationModel[]>([]);
-  const [enabledNotifications, setEnabledNotifications] = useState<Set<number>>(
-    () => {
-      const saved = localStorage.getItem("enabledNotifications");
-      return saved ? new Set(JSON.parse(saved)) : new Set();
-    },
-  );
+  const [disabledNotifications, setDisabledNotifications] = useState<
+    Set<number>
+  >(() => {
+    const saved = localStorage.getItem("disabledNotifications");
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
 
   // لغو ارسال نوتیف
   const handleToggleNotification = async (id: number, enabled: boolean) => {
@@ -66,16 +66,18 @@ export default function NotificationsPanel({
         );
       }
 
-      setEnabledNotifications((prev) => {
+      setDisabledNotifications((prev) => {
         const newSet = new Set(prev);
         if (enabled) {
-          newSet.add(id);
-        } else {
+          // If enabling, remove from disabled set
           newSet.delete(id);
+        } else {
+          // If disabling, add to disabled set
+          newSet.add(id);
         }
         // ذخیره در localStorage
         localStorage.setItem(
-          "enabledNotifications",
+          "disabledNotifications",
           JSON.stringify([...newSet]),
         );
         return newSet;
@@ -185,7 +187,7 @@ export default function NotificationsPanel({
           <MyNotificationCard
             key={notif.id}
             notification={notif}
-            isEnabled={enabledNotifications.has(notif.id)}
+            isEnabled={!disabledNotifications.has(notif.id)}
             onToggleEnabled={handleToggleNotification}
             onClick={() => {
               const notification = {

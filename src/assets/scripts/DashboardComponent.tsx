@@ -8,7 +8,13 @@ import ImprovementChartPanel from "./Panels/ImprovementChartPanel";
 import UserInfo from "./Panels/UserInfo";
 import NotificationDetail from "./Panels/NotificationDetail";
 import SentNotificationsPanel from "./Panels/SentNotificationsPanel";
-import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
+import {
+  Route,
+  Routes,
+  useNavigate,
+  useLocation,
+  useParams,
+} from "react-router-dom";
 import { Teacher } from "./types/Teacher";
 
 // Import SVG icons
@@ -30,10 +36,42 @@ interface Notification {
   description?: string;
 }
 
+// Component to handle teacher details with URL parameter
+function TeacherDetailWrapper() {
+  const { teacherId } = useParams<{ teacherId: string }>();
+  const navigate = useNavigate();
+
+  if (!teacherId) {
+    navigate("/dashboard/records");
+    return null;
+  }
+
+  // Create a minimal teacher object with just the ID for now
+  // The UserInfo component will fetch the full details
+  const teacher: Teacher = {
+    id: parseInt(teacherId),
+    firstName: "",
+    lastName: "",
+    faculty: "",
+    rank: "",
+    phoneNumber: "",
+    email: "",
+    group: "",
+    lastDegree: "",
+    employmentStatus: "",
+    isTeaching: false,
+    nationalCode: "",
+    points: 0,
+  };
+
+  return (
+    <UserInfo teacher={teacher} onBack={() => navigate("/dashboard/records")} />
+  );
+}
+
 export default function DashboardComponent() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
   const [selectedNotification, setSelectedNotification] =
     useState<Notification | null>(null);
   const [hasFullAccess, setHasFullAccess] = useState(false);
@@ -55,11 +93,6 @@ export default function DashboardComponent() {
   const handleNavigate = (path: string) => {
     navigate(path);
     setIsSidebarOpen(false);
-  };
-
-  const handleTeacherSelect = (teacher: Teacher) => {
-    setSelectedTeacher(teacher);
-    navigate(`/dashboard/records/${teacher.id}`);
   };
 
   const handleNotificationSelect = (notification: Notification) => {
@@ -104,19 +137,8 @@ export default function DashboardComponent() {
       <div className="m-2 flex h-[calc(100%-40px)] w-[calc(100%-40px)] flex-1 flex-col overflow-auto rounded-[25px] bg-[#EBF2FA] p-4 text-base shadow-lg lg:m-5 lg:mr-0 lg:w-auto lg:p-5">
         <Routes>
           <Route path="/" element={<MainDashboardPanel />} />
-          <Route
-            path="records"
-            element={<HistoryPanel onTeacherSelect={handleTeacherSelect} />}
-          />
-          <Route
-            path="records/:teacherId"
-            element={
-              <UserInfo
-                teacher={selectedTeacher!}
-                onBack={() => handleNavigate("/dashboard/records")}
-              />
-            }
-          />
+          <Route path="records" element={<HistoryPanel />} />
+          <Route path="records/:teacherId" element={<TeacherDetailWrapper />} />
           <Route path="progress" element={<ImprovementChartPanel />} />
           {hasFullAccess && (
             <Route path="roles" element={<RoleManagementPanel />} />
@@ -200,7 +222,7 @@ export default function DashboardComponent() {
             <img
               src={DashboardIcon}
               alt="Dashboard"
-              className="mr-2 pl-2 h-8 w-8 brightness-0 invert filter"
+              className="mr-2 h-8 w-8 pl-2 brightness-0 invert filter"
             />
             داشبورد
           </button>
@@ -213,7 +235,7 @@ export default function DashboardComponent() {
             <img
               src={HistoryIcon}
               alt="History"
-              className="mr-2 pl-2 h-8 w-8 brightness-0 invert filter"
+              className="mr-2 h-8 w-8 pl-2 brightness-0 invert filter"
             />
             سوابق
           </button>
@@ -226,7 +248,7 @@ export default function DashboardComponent() {
             <img
               src={ChartIcon}
               alt="Chart"
-              className="mr-2 pl-2 h-8 w-8 brightness-0 invert filter"
+              className="mr-2 h-8 w-8 pl-2 brightness-0 invert filter"
             />
             نمودار پیشرفت
           </button>
@@ -240,7 +262,7 @@ export default function DashboardComponent() {
               <img
                 src={RoleIcon}
                 alt="Role"
-                className="mr-2 pl-2 h-8 w-8 brightness-0 invert filter"
+                className="mr-2 h-8 w-8 pl-2 brightness-0 invert filter"
               />
               مدیریت نقش ها
             </button>
@@ -257,34 +279,32 @@ export default function DashboardComponent() {
             <img
               src={NotificationIcon}
               alt="Notifications"
-              className="mr-2 pl-2 h-8 w-8 brightness-0 invert filter"
+              className="mr-2 h-8 w-8 pl-2 brightness-0 invert filter"
             />
             اعلان ها
           </button>
         </div>
         {/* Bottom section: Exit button */}
-        {hasFullAccess && (
-          <button
-            className={
-              `m-1 inline-flex h-auto w-full cursor-pointer items-center justify-start rounded-[20px] border-none bg-transparent p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none hover:bg-[#3388BC33] sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl` // w-full for alignment
-            }
-            style={{ marginTop: "auto" }}
-            onClick={() => {
-              // Clear any stored authentication data
-              localStorage.removeItem("token");
-              localStorage.removeItem("user");
-              // Navigate to login page
-              navigate("/login");
-            }}
-          >
-            <img
-              src={ExitIcon}
-              alt="Exit"
-              className="mr-2 pl-2 h-8 w-8 brightness-0 invert filter"
-            />
-            خروج
-          </button>
-        )}
+        <button
+          className={
+            `m-1 inline-flex h-auto w-full cursor-pointer items-center justify-start rounded-[20px] border-none bg-transparent p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none hover:bg-[#3388BC33] sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl` // w-full for alignment
+          }
+          style={{ marginTop: "auto" }}
+          onClick={() => {
+            // Clear any stored authentication data
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            // Navigate to login page
+            navigate("/login");
+          }}
+        >
+          <img
+            src={ExitIcon}
+            alt="Exit"
+            className="mr-2 h-8 w-8 pl-2 brightness-0 invert filter"
+          />
+          خروج
+        </button>
       </div>
 
       {/* Overlay for mobile sidebar */}

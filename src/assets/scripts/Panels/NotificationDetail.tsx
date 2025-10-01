@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import MyDropdown from "../Elements/MyDropdown";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import {
   getNotificationDetail,
   updateNotification,
@@ -48,6 +49,7 @@ export default function NotificationDetail({
   notificationId,
   initialTitle,
 }: NotificationDetailProps) {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<NotificationForm>({
     subject: initialTitle || "",
     sendMethod: "",
@@ -115,8 +117,12 @@ export default function NotificationDetail({
 
   const getDateType = (beforeSendDay: string): string[] => {
     try {
-      const days = JSON.parse(beforeSendDay);
-      if (Array.isArray(days)) {
+      // Handle new string format - split by comma and parse each day
+      const days = beforeSendDay
+        .split(",")
+        .map((day) => parseInt(day.trim()))
+        .filter((day) => !isNaN(day));
+      if (days.length > 0) {
         return days.sort((a, b) => a - b).map((day) => `${day} روز قبل`);
       }
       return [];
@@ -175,7 +181,7 @@ export default function NotificationDetail({
         title: formData.subject.trim(),
         sendType,
         notificationType: 0,
-        beforeSendDay: JSON.stringify(sendDays),
+        beforeSendDay: sendDays.join(","), // Send as comma-separated string
         description: formData.description.trim(),
         message: formData.description.trim(), // ارسال متن شرح اعلان به عنوان پیام
       };
@@ -184,23 +190,13 @@ export default function NotificationDetail({
         Id: notificationId?.toString() || "",
         Message: formData.description.trim(),
         SendType: sendType.toString(),
-        BeforeSendDay: JSON.stringify(sendDays),
+        BeforeSendDay: sendDays.join(","), // Send as comma-separated string
       });
 
-      const response = await updateNotification(queryParams.toString());
-
-      let responseData: NotificationResponse;
-      try {
-        responseData = await response.json();
-        console.log("Server response:", responseData);
-      } catch (parseError) {
-        console.error("Error parsing response:", parseError);
-        throw new Error("خطا در پردازش پاسخ سرور");
-      }
-
-      if (!response.ok) {
-        throw new Error(response.statusText || "خطا در ارتباط با سرور");
-      }
+      const responseData: NotificationResponse = await updateNotification(
+        queryParams.toString(),
+      );
+      console.log("Server response:", responseData);
       if (responseData.error) {
         const errorMessage =
           responseData.message && Array.isArray(responseData.message)
@@ -240,7 +236,17 @@ export default function NotificationDetail({
   }
 
   return (
-    <div>
+    <div className="overflow-hidden">
+      {/* Back button */}
+      <div className="mb-4 flex items-start justify-end">
+        <button
+          onClick={() => navigate("/dashboard/notifications")}
+          className="rounded-2xl bg-white px-4 py-2 whitespace-nowrap text-gray-700 shadow-lg hover:bg-gray-50"
+        >
+          برگشت
+        </button>
+      </div>
+
       <form
         onSubmit={handleSubmit}
         className="relative min-h-screen space-y-7 p-4 text-right"

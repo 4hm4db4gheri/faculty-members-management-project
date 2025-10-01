@@ -67,6 +67,24 @@ export default function MainDashboardPanel() {
   const [notifLoading, setNotifLoading] = useState(true);
   const [notifError, setNotifError] = useState<string | null>(null);
 
+  // Add state for user name
+  const [userName, setUserName] = useState<string>("اسم کاربر");
+
+  // Get user name from localStorage
+  useEffect(() => {
+    const userData = localStorage.getItem("userData");
+    if (userData) {
+      try {
+        const parsedUserData = JSON.parse(userData);
+        if (parsedUserData.firstName && parsedUserData.lastName) {
+          setUserName(`${parsedUserData.firstName} ${parsedUserData.lastName}`);
+        }
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+      }
+    }
+  }, []);
+
   // Fetch teachers from API
   useEffect(() => {
     const fetchTeachers = async () => {
@@ -277,7 +295,7 @@ export default function MainDashboardPanel() {
           />
         </div>
         <div className="flex content-center items-center justify-center pt-[30px] text-5xl text-black">
-          اسم کاربر
+          {userName}
         </div>
 
         {/* New notifications section */}
