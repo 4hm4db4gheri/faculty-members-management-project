@@ -115,8 +115,8 @@ export default function MainDashboardPanel() {
         );
 
         setTeachers(convertedTeachers);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
+      } catch {
+        setError("خطا در دریافت اطلاعات");
       } finally {
         setIsLoading(false);
       }

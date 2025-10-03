@@ -83,7 +83,7 @@ export default function NotificationsPanel({
         return newSet;
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "خطا در تغییر وضعیت نوتیف");
+      setError("خطا در تغییر وضعیت نوتیف");
     }
   };
 
@@ -99,7 +99,7 @@ export default function NotificationsPanel({
           throw new Error(data.message.join(", "));
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
+        setError("خطا در دریافت اطلاعات");
       } finally {
         setIsLoading(false);
       }

@@ -92,8 +92,8 @@ export default function NotificationDetail({
         } else {
           throw new Error(data.message?.join(", ") || "خطا در دریافت اطلاعات");
         }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "خطا در دریافت اطلاعات");
+      } catch {
+        setError("خطا در دریافت اطلاعات");
       } finally {
         setIsLoading(false);
       }
@@ -216,17 +216,14 @@ export default function NotificationDetail({
       });
     } catch (error) {
       console.error("Error in handleSubmit:", error);
-      toast.error(
-        error instanceof Error ? error.message : "خطا در بروزرسانی اعلان",
-        {
-          position: "bottom-left",
-          style: {
-            background: "#FEF2F2",
-            color: "#991B1B",
-            direction: "rtl",
-          },
+      toast.error("خطا در بروزرسانی اعلان", {
+        position: "bottom-left",
+        style: {
+          background: "#FEF2F2",
+          color: "#991B1B",
+          direction: "rtl",
         },
-      );
+      });
     } finally {
       setIsSubmitting(false);
     }

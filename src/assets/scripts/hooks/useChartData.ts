@@ -121,8 +121,7 @@ export const useChartData = (
         }
 
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "خطا در بارگذاری داده‌های نمودار.";
-        setError(errorMessage);
+        setError("خطا در دریافت اطلاعات");
         console.error("Failed to fetch chart data:", err);
       } finally {
         if (isInitialLoad) {

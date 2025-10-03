@@ -187,7 +187,7 @@ export default function HistoryPanel() {
         throw new Error(response.message.join(", "));
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      setError("خطا در دریافت اطلاعات");
       console.error("Failed to fetch teachers:", err);
     } finally {
       setIsLoading(false);
@@ -240,8 +240,8 @@ export default function HistoryPanel() {
       }
       // Close the popup immediately after upload attempt
       setIsTeachersUploadOpen(false);
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "خطا در آپلود فایل");
+    } catch {
+      toast.error("خطا در آپلود فایل");
     } finally {
       setIsLoading(false);
     }

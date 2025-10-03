@@ -17,52 +17,123 @@ const LoginPage: React.FC = () => {
 
   // تغییر فرآیند به ارسال کد تایید پیامکی
   const handleForgotPassword = async () => {
-    if (!userName) {
-      toast.error("لطفا نام کاربری خود را وارد کنید.");
+    if (!userName.trim()) {
+      toast.error("لطفا نام کاربری خود را وارد کنید", {
+        position: "bottom-left",
+        style: {
+          background: "#FEF2F2",
+          color: "#991B1B",
+          direction: "rtl",
+        },
+      });
       return;
     }
     setIsLoading("forgotPassword");
     try {
       const response: any = await ApiService.get(
-        `/panel/v1/user/forget-password?username=${encodeURIComponent(userName)}`,
+        `/panel/v1/user/forget-password?username=${encodeURIComponent(userName.trim())}`,
       );
       if (response.error) {
-        toast.error(
-          response.message?.[0] || "خطا در ارسال پیام بازیابی رمز عبور.",
-        );
+        toast.error("خطا در ارسال پیام بازیابی رمز عبور", {
+          position: "bottom-left",
+          style: {
+            background: "#FEF2F2",
+            color: "#991B1B",
+            direction: "rtl",
+          },
+        });
       } else {
-        toast.success("پیام بازیابی رمز عبور برای شما ارسال شد.");
-        navigate("/verify-code", { state: { phoneNumber: userName } });
+        toast.success("پیام بازیابی رمز عبور برای شما ارسال شد", {
+          position: "bottom-left",
+          style: {
+            background: "#F0FDF4",
+            color: "#166534",
+            direction: "rtl",
+          },
+        });
+        navigate("/verify-code", { state: { phoneNumber: userName.trim() } });
       }
-    } catch (error: any) {
-      console.error("[ForgetPassword Error]", error);
-      if (error instanceof Error) {
-        toast.error(`خطا در ارتباط با سرور: ${error.message}`);
-      } else {
-        toast.error("ارتباط با سرور برقرار نشد.");
-      }
+    } catch {
+      console.error("[ForgetPassword Error]");
+      toast.error("خطا در ارتباط با سرور", {
+        position: "bottom-left",
+        style: {
+          background: "#FEF2F2",
+          color: "#991B1B",
+          direction: "rtl",
+        },
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleLogin = async () => {
+    // 1. Check if fields are filled
+    if (!userName.trim()) {
+      toast.error("لطفا نام کاربری را وارد کنید", {
+        position: "bottom-left",
+        style: {
+          background: "#FEF2F2",
+          color: "#991B1B",
+          direction: "rtl",
+        },
+      });
+      return;
+    }
+
+    if (!password) {
+      toast.error("لطفا رمز عبور را وارد کنید", {
+        position: "bottom-left",
+        style: {
+          background: "#FEF2F2",
+          color: "#991B1B",
+          direction: "rtl",
+        },
+      });
+      return;
+    }
+
     setIsLoading("login");
     try {
       const response = await ApiService.post<LoginResponse>(
         "/panel/v1/user/log-in",
-        { userName, password },
+        { userName: userName.trim(), password },
       );
 
       if (response.error) {
-        toast.error(response.message[0] || "خطا در ورود."); // Display error using toast
+        // If server returns error, it means credentials are wrong
+        toast.error("نام کاربری یا رمز عبور اشتباه است", {
+          position: "bottom-left",
+          style: {
+            background: "#FEF2F2",
+            color: "#991B1B",
+            direction: "rtl",
+          },
+        });
       } else {
         AuthService.setAuthData(response);
-        toast.success("ورود با موفقیت انجام شد!"); // Display success using toast
+        toast.success("ورود با موفقیت انجام شد!", {
+          position: "bottom-left",
+          style: {
+            background: "#F0FDF4",
+            color: "#166534",
+            direction: "rtl",
+          },
+        });
         navigate("/dashboard");
       }
-    } catch {
-      toast.error("ارتباط با سرور برقرار نشد."); // Display connection error
+    } catch (error) {
+      // Only show connection error for actual network failures
+      console.error("[Login Error]", error);
+      toast.error("نام کاربری یا رمز عبور اشتباه است", {
+        position: "bottom-left",
+        style: {
+          background: "#FEF2F2",
+          color: "#991B1B",
+          direction: "rtl",
+        },
+      });
     } finally {
       setIsLoading(false);
     }

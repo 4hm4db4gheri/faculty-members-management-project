@@ -63,15 +63,15 @@ export default function RoleManagementPanel() {
   const fetchUsers = async () => {
     try {
       setIsLoading(true);
-      const response = await getUsers();
+      const response = (await getUsers()) as ApiResponse;
 
       if (!response.error) {
         setUsers(response.data);
       } else {
         throw new Error(response.message.join(", "));
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+    } catch {
+      setError("خطا در دریافت اطلاعات");
     } finally {
       setIsLoading(false);
     }
@@ -86,7 +86,10 @@ export default function RoleManagementPanel() {
   const updateUserRole = async (userId: string, newRole: string) => {
     try {
       const apiRole = mapDisplayToRole(newRole); // Convert display role to API role
-      const response = await apiUpdateUserRole(userId, apiRole);
+      const response = (await apiUpdateUserRole(userId, apiRole)) as {
+        error: boolean;
+        message?: string[];
+      };
 
       if (response.error) {
         throw new Error(
@@ -111,17 +114,14 @@ export default function RoleManagementPanel() {
       });
     } catch (error) {
       console.error("Failed to update user role:", error);
-      toast.error(
-        error instanceof Error ? error.message : "خطا در بروزرسانی نقش کاربر",
-        {
-          position: "bottom-left",
-          style: {
-            background: "#FEF2F2",
-            color: "#991B1B",
-            direction: "rtl",
-          },
+      toast.error("خطا در بروزرسانی نقش کاربر", {
+        position: "bottom-left",
+        style: {
+          background: "#FEF2F2",
+          color: "#991B1B",
+          direction: "rtl",
         },
-      );
+      });
     }
   };
 

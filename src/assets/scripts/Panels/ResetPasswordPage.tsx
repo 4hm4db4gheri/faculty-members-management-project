@@ -35,10 +35,8 @@ const ResetPasswordPage: React.FC = () => {
       await changePassword(token, newPassword);
       toast.success("رمز عبور با موفقیت تغییر کرد.");
       navigate("/login");
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : "خطا در بازیابی رمز عبور.";
-      toast.error(errorMessage);
+    } catch {
+      toast.error("خطا در بازیابی رمز عبور");
     } finally {
       setIsLoading(false);
     }
