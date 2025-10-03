@@ -354,12 +354,12 @@ export default function HistoryPanel() {
   }
 
   return (
-    <div className="grid h-full grid-rows-[auto_auto_1fr] gap-4">
+    <div className="grid h-full grid-rows-[auto_auto_1fr] gap-3 p-2 sm:gap-4 md:p-0">
       {/* Search Section */}
-      <div className="mb-4">
-        <div className="grid h-full grid-cols-10 gap-6 rounded-[25px] px-2 pt-5">
+      <div className="mb-2 sm:mb-4">
+        <div className="grid h-full grid-cols-2 gap-2 rounded-[25px] px-2 pt-3 sm:grid-cols-4 sm:gap-3 md:grid-cols-10 md:gap-4 lg:gap-6 lg:pt-5">
           {/* Single Search Field */}
-          <div className="col-span-6">
+          <div className="col-span-2 sm:col-span-3 md:col-span-6">
             <MyInput
               placeholder="جستجو..."
               value={searchText}
@@ -368,38 +368,38 @@ export default function HistoryPanel() {
           </div>
 
           {/* Update the advanced search button */}
-          <div className="col-span-1 content-center">
+          <div className="col-span-1 content-center md:col-span-1">
             <button
               onClick={() => setIsAdvancedSearchOpen(true)}
-              className="flex h-10 w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white px-4 py-4 text-xl text-black shadow-xs ring-1 ring-gray-300 transition-colors duration-300 ring-inset hover:bg-gray-50"
+              className="flex h-10 w-full cursor-pointer items-center justify-center rounded-[15px] border-none bg-white px-2 py-2 text-xl text-black shadow-xs ring-1 ring-gray-300 transition-colors duration-300 ring-inset hover:bg-gray-50 md:rounded-[25px] md:px-4"
               title="جستجوی پیشرفته"
             >
               <img
                 src={AdvancedSearchIcon}
                 alt="جستجوی پیشرفته"
-                className="h-6 w-6"
+                className="h-5 w-5 sm:h-6 sm:w-6"
               />
             </button>
           </div>
 
-          <div className="col-span-2 flex items-center justify-center">
+          <div className="col-span-2 flex items-center justify-center sm:col-span-2 md:col-span-2">
             <button
               onClick={() => setIsTeachersUploadOpen(true)}
-              className="rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+              className="w-full rounded-lg bg-blue-500 px-2 py-1.5 text-xs text-white hover:bg-blue-600 sm:px-3 sm:py-2 sm:text-sm md:px-4 md:text-base"
             >
               آپلود لیست اساتید
             </button>
           </div>
-          <div className="col-span-1 content-center">
+          <div className="col-span-2 content-center sm:col-span-2 md:col-span-1">
             <button
               onClick={handleExportExcel}
-              className="flex w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white px-4 py-2 text-xl text-black shadow-xs ring-1 ring-gray-300 transition-colors duration-300 hover:bg-gray-50"
+              className="flex h-10 w-full cursor-pointer items-center justify-center rounded-[15px] border-none bg-white px-2 py-2 text-sm text-black shadow-xs ring-1 ring-gray-300 transition-colors duration-300 hover:bg-gray-50 sm:text-base md:rounded-[25px] md:px-4 md:text-lg lg:text-xl"
             >
               <span className="flex items-center">
-                <span className="mr-2">Excel</span>
+                <span className="mr-1 sm:mr-2">Excel</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
+                  className="h-4 w-4 sm:h-5 sm:w-5"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -416,14 +416,14 @@ export default function HistoryPanel() {
       </div>
 
       {/* Table Headers */}
-      <div className="grid grid-cols-4">
-        <div className="col-span-2 content-end pr-20 pb-4 text-start text-black">
+      <div className="hidden grid-cols-4 sm:grid">
+        <div className="col-span-2 content-end px-2 pb-3 text-start text-sm text-black sm:px-4 md:text-base lg:pr-20 lg:text-lg">
           نام استاد
         </div>
-        <div className="col-span-1 content-end pb-4 text-center text-black">
+        <div className="col-span-1 content-end pb-3 text-center text-sm text-black md:text-base lg:text-lg">
           دانشکده
         </div>
-        <div className="col-span-1 content-end pb-4 text-center text-black">
+        <div className="col-span-1 content-end pb-3 text-center text-sm text-black md:text-base lg:text-lg">
           رتبه علمی
         </div>
       </div>

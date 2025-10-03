@@ -234,10 +234,10 @@ export default function MainDashboardPanel() {
   }
 
   return (
-    <div className="box-border grid h-full grid-cols-3 gap-[30px] rounded-[25px]">
-      <div className="col-span-2 grid h-full grid-rows-[0.4fr_2fr_2fr] gap-[30px]">
+    <div className="box-border grid h-full grid-cols-1 gap-4 rounded-[25px] p-2 sm:gap-5 md:p-0 lg:grid-cols-3 lg:gap-[30px]">
+      <div className="col-span-1 grid h-full grid-rows-[auto_1fr_1fr] gap-4 sm:gap-5 lg:col-span-2 lg:grid-rows-[0.4fr_2fr_2fr] lg:gap-[30px]">
         <div className="rounded-[25px]">
-          <div className="relative items-center rounded-[25px] pr-[10px]">
+          <div className="relative items-center rounded-[25px] px-2 sm:pr-[10px]">
             <MyInput
               placeholder="جستجو"
               value={searchText}
@@ -249,13 +249,13 @@ export default function MainDashboardPanel() {
             {showDropdown && searchResults.length > 0 && (
               <div
                 ref={dropdownRef}
-                className="scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 absolute z-50 mt-1 max-h-[300px] w-full overflow-y-auto rounded-[15px] bg-white shadow-lg"
+                className="scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 absolute z-50 mt-1 max-h-[200px] w-full overflow-y-auto rounded-[15px] bg-white shadow-lg sm:max-h-[300px]"
               >
                 {searchResults.map((teacher) => (
                   <button
                     key={teacher.id}
                     onClick={() => handleTeacherSelect(teacher)}
-                    className="w-full px-4 py-2 text-right text-black first:rounded-t-[15px] last:rounded-b-[15px] hover:bg-gray-100"
+                    className="w-full px-4 py-2 text-right text-sm text-black first:rounded-t-[15px] last:rounded-b-[15px] hover:bg-gray-100 sm:text-base"
                   >
                     {`${teacher.firstName} ${teacher.lastName}`}
                   </button>
@@ -265,15 +265,17 @@ export default function MainDashboardPanel() {
           </div>
         </div>
 
-        <div className="rounded-[25px] bg-white shadow">
-          <h2 className="text-center text-2xl font-bold">مرتبۀ علمی</h2>
+        <div className="rounded-[25px] bg-white p-3 shadow sm:p-4">
+          <h2 className="text-center text-lg font-bold sm:text-xl lg:text-2xl">
+            مرتبۀ علمی
+          </h2>
           <div className="h-fit">
             <ChartComponent1 data={chartData1 || []} />
           </div>
         </div>
 
-        <div className="rounded-[25px] bg-white shadow">
-          <h2 className="text-center text-2xl font-bold">
+        <div className="rounded-[25px] bg-white p-3 shadow sm:p-4">
+          <h2 className="text-center text-lg font-bold sm:text-xl lg:text-2xl">
             آمار تفکیکی اعضای هیئت علمی
           </h2>
           <div className="h-fit">
@@ -281,8 +283,8 @@ export default function MainDashboardPanel() {
           </div>
         </div>
       </div>
-      <div className="col-span-1 flex h-full flex-col items-center justify-center rounded-[25px] bg-white pt-[10px]">
-        <div className="flex h-[130px] w-[130px] items-center justify-center overflow-hidden rounded-full bg-[#8D8D8D]">
+      <div className="col-span-1 flex h-full min-h-[500px] flex-col items-center justify-start rounded-[25px] bg-white py-6 sm:py-8 lg:justify-center lg:pt-[10px]">
+        <div className="flex h-[100px] w-[100px] items-center justify-center overflow-hidden rounded-full bg-[#8D8D8D] sm:h-[130px] sm:w-[130px]">
           <img
             src="/user-avatar.png"
             alt="User Avatar"
@@ -294,30 +296,34 @@ export default function MainDashboardPanel() {
             }}
           />
         </div>
-        <div className="flex content-center items-center justify-center pt-[30px] text-5xl text-black">
+        <div className="flex content-center items-center justify-center pt-4 text-2xl text-black sm:pt-[30px] sm:text-3xl lg:text-4xl xl:text-5xl">
           {userName}
         </div>
 
         {/* New notifications section */}
-        <div className="mt-8 flex w-full flex-col gap-4 p-5">
+        <div className="mt-4 flex w-full flex-col gap-3 px-4 sm:mt-6 sm:gap-4 sm:p-5 lg:mt-8">
           <button
             onClick={() => navigate("/dashboard/sent-notifications")}
-            className="w-full rounded-[25px] bg-[#1B4965] px-6 py-3 text-xl font-semibold text-white transition-colors hover:bg-[#3388BC]"
+            className="w-full rounded-[20px] bg-[#1B4965] px-4 py-2.5 text-base font-semibold text-white transition-colors hover:bg-[#3388BC] sm:rounded-[25px] sm:px-6 sm:py-3 sm:text-lg lg:text-xl"
           >
             بررسی وضعیت اعلان‌ها
           </button>
-          <div className="flex flex-col gap-2 rounded-[25px] bg-gray-50 p-4">
-            <h3 className="mb-2 text-lg font-semibold text-gray-800">
+          <div className="flex flex-col gap-2 rounded-[20px] bg-gray-50 p-3 sm:rounded-[25px] sm:p-4">
+            <h3 className="mb-1 text-base font-semibold text-gray-800 sm:mb-2 sm:text-lg">
               آخرین اعلان‌ها
             </h3>
             {notifLoading ? (
-              <div className="text-center text-gray-500">
+              <div className="text-center text-sm text-gray-500 sm:text-base">
                 در حال بارگذاری...
               </div>
             ) : notifError ? (
-              <div className="text-center text-red-500">{notifError}</div>
+              <div className="text-center text-sm text-red-500 sm:text-base">
+                {notifError}
+              </div>
             ) : latestNotifications.length === 0 ? (
-              <div className="text-center text-gray-500">اعلانی وجود ندارد</div>
+              <div className="text-center text-sm text-gray-500 sm:text-base">
+                اعلانی وجود ندارد
+              </div>
             ) : (
               latestNotifications.map((notification) => (
                 <div
@@ -326,21 +332,21 @@ export default function MainDashboardPanel() {
                     notification.teacherName +
                     notification.status
                   }
-                  className="flex flex-col gap-1 rounded-lg bg-white p-3 shadow-sm"
+                  className="flex flex-col gap-1 rounded-lg bg-white p-2.5 shadow-sm sm:p-3"
                 >
-                  <div className="flex flex-row items-center justify-between">
-                    <span className="text-sm font-medium text-gray-800">
+                  <div className="flex flex-row items-center justify-between gap-2">
+                    <span className="text-xs font-medium text-gray-800 sm:text-sm">
                       {notification.title}
                     </span>
                     <span
-                      className={`rounded-full px-2 py-1 text-xs ${notification.status.trim() === "Sent" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+                      className={`rounded-full px-2 py-0.5 text-[10px] whitespace-nowrap sm:py-1 sm:text-xs ${notification.status.trim() === "Sent" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
                     >
                       {notification.status.trim() === "Sent"
                         ? "ارسال شد"
                         : "ناموفق"}
                     </span>
                   </div>
-                  <div className="text-xs text-black">
+                  <div className="text-[10px] text-black sm:text-xs">
                     {notification.teacherName}
                   </div>
                 </div>

@@ -30,7 +30,10 @@ const LoginPage: React.FC = () => {
     }
     setIsLoading("forgotPassword");
     try {
-      const response: any = await ApiService.get(
+      const response = await ApiService.get<{
+        error: boolean;
+        message?: string[];
+      }>(
         `/panel/v1/user/forget-password?username=${encodeURIComponent(userName.trim())}`,
       );
       if (response.error) {
@@ -140,16 +143,16 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="grid h-screen grid-cols-2 bg-cover bg-center">
+    <div className="grid h-screen grid-cols-1 bg-cover bg-center md:grid-cols-2">
       {/* فرم ثبت‌نام سمت چپ */}
-      <div className="bg-opacity-60 flex items-center justify-center bg-white backdrop-blur-md">
-        <div className="w-full max-w-md rounded-2xl bg-[#EBF2FA] p-8 text-center shadow-2xl">
+      <div className="bg-opacity-60 flex items-center justify-center bg-white px-4 backdrop-blur-md">
+        <div className="w-full max-w-md rounded-2xl bg-[#EBF2FA] p-6 text-center shadow-2xl sm:p-8">
           <img
             src="src/assets/images/Sbu-logo.svg.png"
             alt="دانشگاه شهید بهشتی"
-            className="mx-auto mb-6 w-32"
+            className="mx-auto mb-4 w-24 sm:mb-6 sm:w-32"
           />
-          <p className="mb-8 text-xl text-gray-500">
+          <p className="mb-6 text-lg text-gray-500 sm:mb-8 sm:text-xl">
             سامانه کنترل وضعیت هیات علمی
           </p>
           <div className="space-y-6">
@@ -193,7 +196,7 @@ const LoginPage: React.FC = () => {
                 <button
                   onClick={handleLogin}
                   disabled={isLoading}
-                  className="mt-10 w-60 rounded-3xl bg-[#1B4965] py-2 font-bold text-white transition duration-300 hover:bg-[#358cc1] disabled:opacity-50"
+                  className="mt-6 w-full max-w-xs rounded-3xl bg-[#1B4965] py-2 font-bold text-white transition duration-300 hover:bg-[#358cc1] disabled:opacity-50 sm:mt-10"
                 >
                   ورود
                 </button>
@@ -204,7 +207,7 @@ const LoginPage: React.FC = () => {
       </div>
       {/* تصویر سمت راست */}
       <div
-        className="h-full w-full bg-cover bg-center"
+        className="hidden h-full w-full bg-cover bg-center md:block"
         style={{
           backgroundImage: "url('src/assets/images/background.jpg')",
         }}

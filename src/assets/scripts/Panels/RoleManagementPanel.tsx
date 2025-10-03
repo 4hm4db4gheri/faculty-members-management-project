@@ -184,24 +184,24 @@ export default function RoleManagementPanel() {
   };
 
   return (
-    <div className="grid h-full grid-rows-[auto_auto_1fr] gap-4">
+    <div className="grid h-full grid-rows-[auto_auto_1fr] gap-3 p-2 sm:gap-4 md:p-0">
       {/* Search Section */}
-      <div className="grid h-2/15 grid-cols-3 rounded-[25px] bg-transparent px-2 py-3">
-        <div className="content-center px-20 text-center">
+      <div className="grid h-auto grid-cols-1 gap-3 rounded-[25px] bg-transparent px-2 py-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
+        <div className="content-center text-center sm:px-4 lg:px-10 xl:px-20">
           <MyInput
             placeholder="نام"
             value={searchText}
             onChange={(value) => setSearchText(value)}
           />
         </div>
-        <div className="content-center px-20 text-center">
+        <div className="content-center text-center sm:px-4 lg:px-10 xl:px-20">
           <MyInput
             placeholder="نام خانوادگی"
             value={lastnameSearchText}
             onChange={(value) => setLastnameSearchText(value)}
           />
         </div>
-        <div className="group relative px-20">
+        <div className="group relative sm:px-4 lg:px-10 xl:px-20">
           <MyDropdown
             options={roleOptions}
             defaultOption="همه"
@@ -215,17 +215,17 @@ export default function RoleManagementPanel() {
       </div>
 
       {/* Headers */}
-      <div className="mb-2 grid h-1/15 grid-cols-4">
-        <div className="col-span-2 content-center pr-20 text-start text-xl text-black">
+      <div className="mb-2 grid h-auto grid-cols-3 gap-2 sm:grid-cols-4">
+        <div className="col-span-1 content-center px-2 text-start text-sm text-black sm:col-span-2 sm:px-4 sm:text-base lg:pr-20 lg:text-xl">
           نام
         </div>
-        <div className="textsize col-span-1 content-center text-center text-xl text-black">
+        <div className="textsize col-span-1 content-center text-center text-sm text-black sm:text-base lg:text-xl">
           نقش
         </div>
         <div className="col-span-1 flex items-center justify-center">
           <button
             onClick={() => setIsCreateUserOpen(true)}
-            className="rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+            className="rounded-lg bg-blue-500 px-2 py-1.5 text-xs text-white hover:bg-blue-600 sm:px-3 sm:py-2 sm:text-sm md:px-4 md:text-base"
           >
             افزودن کاربر
           </button>
