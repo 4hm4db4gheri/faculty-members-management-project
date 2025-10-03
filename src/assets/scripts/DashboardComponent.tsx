@@ -291,11 +291,10 @@ export default function DashboardComponent() {
           }
           style={{ marginTop: "auto" }}
           onClick={() => {
-            // Clear any stored authentication data
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
+            // Clear all authentication data using AuthService
+            AuthService.clearAuth();
             // Navigate to login page
-            navigate("/login");
+            navigate("/", { replace: true });
           }}
         >
           <img
