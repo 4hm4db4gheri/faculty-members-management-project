@@ -266,19 +266,19 @@ export default function MainDashboardPanel() {
         </div>
 
         <div className="rounded-[25px] bg-white p-3 shadow sm:p-4">
-          <h2 className="text-center text-lg font-bold sm:text-xl lg:text-2xl">
+          <h2 className="mb-2 text-center text-lg font-bold text-gray-800 sm:text-xl lg:text-2xl">
             مرتبۀ علمی
           </h2>
-          <div className="h-fit">
+          <div className="h-[200px] sm:h-[240px] lg:h-[280px]">
             <ChartComponent1 data={chartData1 || []} />
           </div>
         </div>
 
         <div className="rounded-[25px] bg-white p-3 shadow sm:p-4">
-          <h2 className="text-center text-lg font-bold sm:text-xl lg:text-2xl">
+          <h2 className="mb-2 text-center text-lg font-bold text-gray-800 sm:text-xl lg:text-2xl">
             آمار تفکیکی اعضای هیئت علمی
           </h2>
-          <div className="h-fit">
+          <div className="h-[200px] sm:h-[240px] lg:h-[280px]">
             <ChartComponent2 data={chartData2 || []} />
           </div>
         </div>
