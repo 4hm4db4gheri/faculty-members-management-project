@@ -15,8 +15,11 @@ interface ChartComponentProps {
 
 export default function ChartComponent1({ data }: ChartComponentProps) {
   return (
-    <ResponsiveContainer width="100%" height={240}>
-      <BarChart data={data} margin={{ top: 10, right: 20 }}>
+    <ResponsiveContainer width="100%" height="100%">
+      <BarChart
+        data={data}
+        margin={{ top: 10, right: 20, bottom: 40, left: 10 }}
+      >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis
           dataKey="name"
@@ -38,7 +41,7 @@ export default function ChartComponent1({ data }: ChartComponentProps) {
         <Legend
           verticalAlign="bottom"
           iconType="circle"
-          wrapperStyle={{ fontSize: 13 }}
+          wrapperStyle={{ fontSize: 13, paddingTop: "10px" }}
         />
         <Bar dataKey=" دانشيار" fill="#8884d8" radius={[5, 5, 0, 0]} />
         <Bar dataKey=" استادیار" fill="#82ca9d" radius={[5, 5, 0, 0]} />

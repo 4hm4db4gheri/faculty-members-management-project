@@ -40,7 +40,7 @@ export default function NotificationManagementPanel() {
         throw new Error(response.message.join(", "));
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "خطا در ایجاد اعلان");
+      toast.error("خطا در ایجاد اعلان");
     }
   };
 

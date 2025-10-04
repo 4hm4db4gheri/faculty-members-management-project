@@ -5,7 +5,7 @@ interface MyTeacherContainerProps {
   onClick: (teacher: Teacher) => void;
 }
 
-export default function MyTeacherContainer({
+export default function MyTeacherContainer({  
   teacher,
   onClick,
 }: MyTeacherContainerProps) {

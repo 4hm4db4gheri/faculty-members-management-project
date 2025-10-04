@@ -42,7 +42,7 @@ export const createUser = (data: CreateUserRequest): Promise<CreateUserResponse>
     }).then((res) => res.json());
 
 export const getUsers = () =>
-    ApiService.get("/panel/v1/user/GetList");
+    ApiService.get("/panel/v1/user/getList?PageNumber=0&PageSize=250");
 
 export const updateUserRole = (userId: string, role: string) =>
     ApiService.put(`/panel/v1/user/role/change?UserID=${userId}&RoleName=${role}`);

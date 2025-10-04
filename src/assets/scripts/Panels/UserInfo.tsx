@@ -47,11 +47,9 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
         } else {
           throw new Error(response.message.join(", "));
         }
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "خطا در دریافت اطلاعات";
-        setError(errorMessage);
-        toast.error(errorMessage);
+      } catch {
+        setError("خطا در دریافت اطلاعات");
+        toast.error("خطا در دریافت اطلاعات");
       } finally {
         setIsLoading(false);
       }

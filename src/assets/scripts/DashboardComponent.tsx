@@ -170,12 +170,12 @@ export default function DashboardComponent() {
       {/* Sidebar / Navigation Panel */}
 
       <div
-        className={`fixed inset-y-0 right-0 z-40 flex w-64 flex-col items-stretch justify-between bg-[#1B4965] transition-transform duration-300 ease-in-out lg:w-64 xl:w-72 ${
+        className={`fixed inset-y-0 right-0 z-40 flex w-64 flex-col items-stretch justify-between overflow-hidden bg-[#1B4965] transition-transform duration-300 ease-in-out lg:w-64 xl:w-72 ${
           isSidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
         } lg:static lg:flex lg:translate-x-0 lg:p-4`}
       >
-        {/* Top section */}
-        <div className="flex flex-1 flex-col">
+        {/* Top section - Scrollable */}
+        <div className="flex flex-1 flex-col overflow-y-auto">
           {/* Close button for mobile sidebar */}
           <div className="flex justify-end p-4 lg:hidden">
             <button
@@ -198,20 +198,20 @@ export default function DashboardComponent() {
               </svg>
             </button>
           </div>
-          <div className="m-5 mx-auto mb-4 flex h-32 w-32 items-center justify-center bg-white">
+          <div className="mx-auto mt-3 mb-3 flex h-24 w-24 items-center justify-center bg-white sm:h-28 sm:w-28 lg:mt-5 lg:mb-4 lg:h-32 lg:w-32">
             <img
               src="src/assets/images/Sbu-logo.svg.png"
               alt="لوگو"
               className="h-full w-full bg-white object-contain"
             />
           </div>
-          <div className="mb-4 flex items-center justify-center px-2 text-3xl sm:text-4xl">
+          <div className="mb-3 flex items-center justify-center px-2 text-2xl sm:text-3xl lg:mb-4 lg:text-4xl">
             سماه
           </div>
-          <div className="mx-auto my-3 h-[2px] w-[calc(100%-40px)] rounded bg-[#8D8D8D]"></div>
+          <div className="mx-auto my-2 h-[2px] w-[calc(100%-40px)] rounded bg-[#8D8D8D] lg:my-3"></div>
           {/* Navigation Buttons */}
           <button
-            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl ${getActiveClass(
+            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2 text-left text-sm text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-2.5 sm:text-base lg:text-lg xl:text-xl ${getActiveClass(
               "/dashboard",
             )}`}
             onClick={() => {
@@ -222,12 +222,12 @@ export default function DashboardComponent() {
             <img
               src={DashboardIcon}
               alt="Dashboard"
-              className="mr-2 h-8 w-8 pl-2 brightness-0 invert filter"
+              className="mr-2 h-6 w-6 pl-2 brightness-0 invert filter sm:h-7 sm:w-7 lg:h-8 lg:w-8"
             />
             داشبورد
           </button>
           <button
-            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl ${getActiveClass(
+            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2 text-left text-sm text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-2.5 sm:text-base lg:text-lg xl:text-xl ${getActiveClass(
               "/dashboard/records",
             )}`}
             onClick={() => handleNavigate("/dashboard/records")}
@@ -235,12 +235,12 @@ export default function DashboardComponent() {
             <img
               src={HistoryIcon}
               alt="History"
-              className="mr-2 h-8 w-8 pl-2 brightness-0 invert filter"
+              className="mr-2 h-6 w-6 pl-2 brightness-0 invert filter sm:h-7 sm:w-7 lg:h-8 lg:w-8"
             />
             سوابق
           </button>
           <button
-            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl ${getActiveClass(
+            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2 text-left text-sm text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-2.5 sm:text-base lg:text-lg xl:text-xl ${getActiveClass(
               "/dashboard/progress",
             )}`}
             onClick={() => handleNavigate("/dashboard/progress")}
@@ -248,13 +248,13 @@ export default function DashboardComponent() {
             <img
               src={ChartIcon}
               alt="Chart"
-              className="mr-2 h-8 w-8 pl-2 brightness-0 invert filter"
+              className="mr-2 h-6 w-6 pl-2 brightness-0 invert filter sm:h-7 sm:w-7 lg:h-8 lg:w-8"
             />
             نمودار پیشرفت
           </button>
           {hasFullAccess && (
             <button
-              className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl ${getActiveClass(
+              className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2 text-left text-sm text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-2.5 sm:text-base lg:text-lg xl:text-xl ${getActiveClass(
                 "/dashboard/roles",
               )}`}
               onClick={() => handleNavigate("/dashboard/roles")}
@@ -262,13 +262,13 @@ export default function DashboardComponent() {
               <img
                 src={RoleIcon}
                 alt="Role"
-                className="mr-2 h-8 w-8 pl-2 brightness-0 invert filter"
+                className="mr-2 h-6 w-6 pl-2 brightness-0 invert filter sm:h-7 sm:w-7 lg:h-8 lg:w-8"
               />
               مدیریت نقش ها
             </button>
           )}
           <button
-            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl ${getActiveClass(
+            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2 text-left text-sm text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-2.5 sm:text-base lg:text-lg xl:text-xl ${getActiveClass(
               "/dashboard/notifications",
             )}`}
             onClick={() => {
@@ -279,32 +279,30 @@ export default function DashboardComponent() {
             <img
               src={NotificationIcon}
               alt="Notifications"
-              className="mr-2 h-8 w-8 pl-2 brightness-0 invert filter"
+              className="mr-2 h-6 w-6 pl-2 brightness-0 invert filter sm:h-7 sm:w-7 lg:h-8 lg:w-8"
             />
             اعلان ها
           </button>
         </div>
-        {/* Bottom section: Exit button */}
-        <button
-          className={
-            `m-1 inline-flex h-auto w-full cursor-pointer items-center justify-start rounded-[20px] border-none bg-transparent p-2.5 text-left text-base text-white transition-colors duration-300 ease-in-out outline-none hover:bg-[#3388BC33] sm:m-1.5 sm:p-3 sm:text-lg md:text-xl lg:text-2xl` // w-full for alignment
-          }
-          style={{ marginTop: "auto" }}
-          onClick={() => {
-            // Clear any stored authentication data
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            // Navigate to login page
-            navigate("/login");
-          }}
-        >
-          <img
-            src={ExitIcon}
-            alt="Exit"
-            className="mr-2 h-8 w-8 pl-2 brightness-0 invert filter"
-          />
-          خروج
-        </button>
+        {/* Bottom section: Exit button - Always visible */}
+        <div className="flex-shrink-0 border-t border-[#3388BC33]">
+          <button
+            className="m-1 inline-flex h-auto w-full cursor-pointer items-center justify-start rounded-[20px] border-none bg-transparent p-2 text-left text-sm text-white transition-colors duration-300 ease-in-out outline-none hover:bg-[#3388BC33] sm:m-1.5 sm:p-2.5 sm:text-base lg:text-lg xl:text-xl"
+            onClick={() => {
+              // Clear all authentication data using AuthService
+              AuthService.clearAuth();
+              // Navigate to login page
+              navigate("/", { replace: true });
+            }}
+          >
+            <img
+              src={ExitIcon}
+              alt="Exit"
+              className="mr-2 h-6 w-6 pl-2 brightness-0 invert filter sm:h-7 sm:w-7 lg:h-8 lg:w-8"
+            />
+            خروج
+          </button>
+        </div>
       </div>
 
       {/* Overlay for mobile sidebar */}

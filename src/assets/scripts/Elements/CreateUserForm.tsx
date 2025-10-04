@@ -63,13 +63,87 @@ export default function CreateUserForm({
   };
 
   const handlePhoneInput = (value: string) => {
-    const phoneNumber = value.replace(/\D/g, "").slice(0, 11);
+    const phoneNumber = value.replace(/\D/g, "").slice(0, 10);
     setFormData({ ...formData, phoneNumber });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // 1. Check if all fields are filled
+    if (!formData.firstName.trim()) {
+      toast.error("لطفا نام را وارد کنید", {
+        position: "bottom-left",
+        style: {
+          background: "#FEF2F2",
+          color: "#991B1B",
+          direction: "rtl",
+        },
+      });
+      return;
+    }
+
+    if (!formData.lastName.trim()) {
+      toast.error("لطفا نام خانوادگی را وارد کنید", {
+        position: "bottom-left",
+        style: {
+          background: "#FEF2F2",
+          color: "#991B1B",
+          direction: "rtl",
+        },
+      });
+      return;
+    }
+
+    if (!formData.username.trim()) {
+      toast.error("لطفا نام کاربری را وارد کنید", {
+        position: "bottom-left",
+        style: {
+          background: "#FEF2F2",
+          color: "#991B1B",
+          direction: "rtl",
+        },
+      });
+      return;
+    }
+
+    if (!formData.password) {
+      toast.error("لطفا رمز عبور را وارد کنید", {
+        position: "bottom-left",
+        style: {
+          background: "#FEF2F2",
+          color: "#991B1B",
+          direction: "rtl",
+        },
+      });
+      return;
+    }
+
+    if (!formData.confirmPassword) {
+      toast.error("لطفا تکرار رمز عبور را وارد کنید", {
+        position: "bottom-left",
+        style: {
+          background: "#FEF2F2",
+          color: "#991B1B",
+          direction: "rtl",
+        },
+      });
+      return;
+    }
+
+    if (!formData.phoneNumber.trim()) {
+      toast.error("لطفا شماره تلفن را وارد کنید", {
+        position: "bottom-left",
+        style: {
+          background: "#FEF2F2",
+          color: "#991B1B",
+          direction: "rtl",
+        },
+      });
+      return;
+    }
+
+    // 2. Check if passwords match
     if (formData.password !== formData.confirmPassword) {
       toast.error("رمز عبور و تکرار آن مطابقت ندارند", {
         position: "bottom-left",
@@ -82,50 +156,45 @@ export default function CreateUserForm({
       return;
     }
 
-    // Phone number validation
-    let phone = formData.phoneNumber.trim();
+    // 3. Phone number validation - must be exactly 10 digits starting with 9
+    const phone = formData.phoneNumber.trim().replace(/\D/g, "");
 
-    if (/^\d{10}$/.test(phone)) {
-      // Valid: 10 digits, do nothing
-    } else if (/^\d{11}$/.test(phone)) {
-      if (phone[0] === "0") {
-        phone = phone.slice(1); // Remove leading zero
-      } else {
-        toast.error("شماره تلفن ۱۱ رقمی باید با 0 شروع شود.", {
-          position: "bottom-left",
-          style: {
-            background: "#FEF2F2",
-            color: "#991B1B",
-            direction: "rtl",
-          },
-        });
-        return;
-      }
-    } else {
-      toast.error(
-        "شماره تلفن باید ۱۰ رقم (بدون صفر) یا ۱۱ رقم (با صفر) باشد.",
-        {
-          position: "bottom-left",
-          style: {
-            background: "#FEF2F2",
-            color: "#991B1B",
-            direction: "rtl",
-          },
+    if (phone.length !== 10) {
+      toast.error("شماره تلفن باید ۱۰ رقم باشد", {
+        position: "bottom-left",
+        style: {
+          background: "#FEF2F2",
+          color: "#991B1B",
+          direction: "rtl",
         },
-      );
+      });
       return;
     }
 
+    if (phone[0] !== "9") {
+      toast.error("شماره تلفن باید با 9 شروع شود", {
+        position: "bottom-left",
+        style: {
+          background: "#FEF2F2",
+          color: "#991B1B",
+          direction: "rtl",
+        },
+      });
+      return;
+    }
+
+    // 4. Try to create user - duplicate username will be caught here
     setIsLoading(true);
     try {
-      const data: ApiResponse = await createUser({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        username: formData.username,
+      const response = await createUser({
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        username: formData.username.trim(),
         password: formData.password,
-        phoneNumber: phone, // Use the validated/processed phone number
+        phoneNumber: phone,
         hasFullAccess: formData.hasFullAccess,
       });
+      const data = response as unknown as ApiResponse;
 
       if (!data.error) {
         toast.success("کاربر با موفقیت ایجاد شد", {
@@ -148,20 +217,44 @@ export default function CreateUserForm({
           hasFullAccess: false,
         });
       } else {
-        throw new Error(data.message.join(", "));
+        // Handle specific error messages from backend
+        const errorMessage = data.message.join(", ");
+
+        // Check for duplicate username error
+        if (
+          errorMessage.toLowerCase().includes("duplicate") ||
+          errorMessage.toLowerCase().includes("exist") ||
+          errorMessage.includes("تکراری") ||
+          errorMessage.includes("موجود")
+        ) {
+          toast.error("این نام کاربری قبلا استفاده شده است", {
+            position: "bottom-left",
+            style: {
+              background: "#FEF2F2",
+              color: "#991B1B",
+              direction: "rtl",
+            },
+          });
+        } else {
+          toast.error("خطا در ایجاد کاربر", {
+            position: "bottom-left",
+            style: {
+              background: "#FEF2F2",
+              color: "#991B1B",
+              direction: "rtl",
+            },
+          });
+        }
       }
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "خطا در ایجاد کاربر",
-        {
-          position: "bottom-left",
-          style: {
-            background: "#FEF2F2",
-            color: "#991B1B",
-            direction: "rtl",
-          },
+    } catch {
+      toast.error("خطا در ایجاد کاربر", {
+        position: "bottom-left",
+        style: {
+          background: "#FEF2F2",
+          color: "#991B1B",
+          direction: "rtl",
         },
-      );
+      });
     } finally {
       setIsLoading(false);
     }
@@ -208,7 +301,7 @@ export default function CreateUserForm({
             className="[-webkit-text-security:disc] [text-security:disc]"
           />
           <MyInput
-            placeholder="شماره تلفن (مثال: 9123456789)"
+            placeholder="شماره تلفن (۱۰ رقم، مثال: 9123456789)"
             value={formData.phoneNumber}
             onChange={handlePhoneInput}
           />

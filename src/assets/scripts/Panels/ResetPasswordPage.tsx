@@ -35,25 +35,25 @@ const ResetPasswordPage: React.FC = () => {
       await changePassword(token, newPassword);
       toast.success("رمز عبور با موفقیت تغییر کرد.");
       navigate("/login");
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : "خطا در بازیابی رمز عبور.";
-      toast.error(errorMessage);
+    } catch {
+      toast.error("خطا در بازیابی رمز عبور");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="grid h-screen grid-cols-2 bg-cover bg-center">
-      <div className="bg-opacity-60 flex items-center justify-center bg-white backdrop-blur-md">
-        <div className="w-full max-w-md rounded-2xl bg-[#EBF2FA] p-8 text-center shadow-2xl">
+    <div className="grid h-screen grid-cols-1 bg-cover bg-center md:grid-cols-2">
+      <div className="bg-opacity-60 flex items-center justify-center bg-white px-4 backdrop-blur-md">
+        <div className="w-full max-w-md rounded-2xl bg-[#EBF2FA] p-6 text-center shadow-2xl sm:p-8">
           <img
             src="src/assets/images/Sbu-logo.svg.png"
             alt="دانشگاه شهید بهشتی"
-            className="mx-auto mb-6 w-32"
+            className="mx-auto mb-4 w-24 sm:mb-6 sm:w-32"
           />
-          <p className="mb-8 text-xl text-gray-500">بازیابی رمز عبور</p>
+          <p className="mb-6 text-lg text-gray-500 sm:mb-8 sm:text-xl">
+            بازیابی رمز عبور
+          </p>
           <div className="space-y-6">
             {isLoading ? (
               <LoadingSpinner size="md" text="در حال بازیابی رمز عبور..." />
@@ -78,7 +78,7 @@ const ResetPasswordPage: React.FC = () => {
                 <button
                   onClick={handleResetPassword}
                   disabled={isLoading}
-                  className="w-60 rounded-3xl bg-[#1B4965] py-2 font-bold text-white transition duration-300 hover:bg-[#358cc1] disabled:opacity-50"
+                  className="w-full max-w-xs rounded-3xl bg-[#1B4965] py-2 font-bold text-white transition duration-300 hover:bg-[#358cc1] disabled:opacity-50"
                 >
                   تغییر رمز عبور
                 </button>
@@ -94,7 +94,7 @@ const ResetPasswordPage: React.FC = () => {
         </div>
       </div>
       <div
-        className="h-full w-full bg-cover bg-center"
+        className="hidden h-full w-full bg-cover bg-center md:block"
         style={{
           backgroundImage: "url('src/assets/images/background.jpg')",
         }}
