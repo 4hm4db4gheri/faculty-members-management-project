@@ -9,6 +9,12 @@ import { useNavigate } from "react-router-dom";
 import MyDropdown from "../Elements/MyDropdown";
 import MyInput from "../Elements/MyInput";
 import PersianDatePicker from "../Elements/PersianDatePicker";
+import {
+  gregorianToJalali,
+  jalaliToGregorian,
+  toPersianDigits,
+  extractDateOnly,
+} from "../utils/dateUtils";
 
 interface SentNotification {
   title: string;
@@ -111,23 +117,13 @@ export default function SentNotificationsPanel() {
     }
   };
 
-  // Convert ISO date to Persian date (fallback to YYYY/MM/DD if Intl not available)
-  const toPersianDate = (isoDate: string): string => {
+  // Convert ISO date to Solar (Jalali) date, ignoring time
+  const toSolarDate = (isoDate: string): string => {
     try {
-      const date = new Date(isoDate);
-      if (
-        typeof Intl !== "undefined" &&
-        Intl.DateTimeFormat &&
-        Intl.DateTimeFormat.supportedLocalesOf("fa").length > 0
-      ) {
-        return new Intl.DateTimeFormat("fa-IR", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-        }).format(date);
-      }
-      // fallback: just show YYYY/MM/DD
-      return date.toISOString().slice(0, 10).replace(/-/g, "/");
+      // Extract only the date part, ignore time
+      const dateOnly = extractDateOnly(isoDate);
+      // Convert Gregorian to Jalali (Solar)
+      return gregorianToJalali(dateOnly);
     } catch {
       return isoDate;
     }
@@ -181,15 +177,24 @@ export default function SentNotificationsPanel() {
         }
       }
 
-      // Filter by date (Persian date format YYYY/MM/DD)
+      // Filter by date (Solar date format YYYY/MM/DD)
       if (filters.date) {
-        // Convert notification date to YYYY/MM/DD format for comparison
-        const notifDate = new Date(notif.sendAt).toISOString().split("T")[0];
-        const filterDate = filters.date.replace(/\//g, "-");
+        try {
+          // Extract only the date part from notification (ignore time)
+          const notifDateOnly = extractDateOnly(notif.sendAt);
 
-        // Simple comparison - you might need to convert Persian calendar to Gregorian
-        // For now, we'll just compare the formatted dates
-        if (notifDate !== filterDate) return false;
+          // Convert filter's Solar date to Gregorian date for comparison
+          const filterGregorianDate = jalaliToGregorian(filters.date);
+          const filterDateOnly = filterGregorianDate
+            .toISOString()
+            .split("T")[0];
+
+          // Compare dates (both are now in YYYY-MM-DD Gregorian format)
+          if (notifDateOnly !== filterDateOnly) return false;
+        } catch {
+          // If conversion fails, skip this filter
+          return true;
+        }
       }
 
       return true;
@@ -242,7 +247,7 @@ export default function SentNotificationsPanel() {
 
       {/* Inline Filters */}
       <div>
-        <div className="mr-10 grid items-center grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <div className="mr-10 grid grid-cols-1 items-center gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           {/* عنوان (Notification Title) */}
           <div className="group relative">
             <MyDropdown
@@ -333,17 +338,7 @@ export default function SentNotificationsPanel() {
             />
             {filters.date && (
               <span className="text-xs text-gray-600">
-                {filters.date
-                  .replace(/0/g, "۰")
-                  .replace(/1/g, "۱")
-                  .replace(/2/g, "۲")
-                  .replace(/3/g, "۳")
-                  .replace(/4/g, "۴")
-                  .replace(/5/g, "۵")
-                  .replace(/6/g, "۶")
-                  .replace(/7/g, "۷")
-                  .replace(/8/g, "۸")
-                  .replace(/9/g, "۹")}
+                {toPersianDigits(filters.date)}
               </span>
             )}
           </div>
@@ -392,7 +387,7 @@ export default function SentNotificationsPanel() {
                 </p>
                 <div className="mt-1 flex items-center gap-2">
                   <span className="text-xs text-gray-500">
-                    {toPersianDate(notification.sendAt)}
+                    {toPersianDigits(toSolarDate(notification.sendAt))}
                   </span>
                   <span
                     className={`rounded-full px-2 py-0.5 text-xs ${
@@ -421,7 +416,7 @@ export default function SentNotificationsPanel() {
                 {notification.teacherName}
               </div>
               <div className="hidden text-center text-black sm:block">
-                {toPersianDate(notification.sendAt)}
+                {toPersianDigits(toSolarDate(notification.sendAt))}
               </div>
               <div className="hidden text-center sm:block">
                 <span
