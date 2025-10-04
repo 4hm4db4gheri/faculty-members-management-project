@@ -55,7 +55,7 @@ export default function ImprovementChartPanel() {
   }, [selectedChart2Faculties]);
 
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-[25px] p-4">
+    <div className="flex h-full flex-col rounded-[25px] p-4">
       <h1 className="mb-4 text-center text-xl font-bold text-black">
         نمودارهای آماری و پیشرفت
       </h1>
@@ -67,9 +67,9 @@ export default function ImprovementChartPanel() {
           خطا در بارگذاری نمودارها: {error}
         </div>
       ) : (
-        <div className="flex flex-1 flex-col gap-4 overflow-hidden">
+        <div className="flex flex-1 flex-col gap-4 overflow-y-auto">
           {/* بخش نمودار ۱ */}
-          <div className="relative flex-1 rounded-[25px] bg-white p-3 shadow">
+          <div className="relative min-h-[350px] rounded-[25px] bg-white p-3 pb-8 shadow">
             <h2 className="mb-3 text-center text-lg font-bold text-gray-800">
               مرتبۀ علمی
             </h2>
@@ -84,7 +84,7 @@ export default function ImprovementChartPanel() {
             </div>
 
             {/* داده‌های نمودار ۱ که از هوک دریافت شده و فیلتر شده‌اند */}
-            <div className="flex h-full items-center justify-center">
+            <div className="flex h-[300px] items-center justify-center">
               {chartData1 && chartData1.length > 0 ? (
                 <ChartComponent1 data={chartData1} />
               ) : (
@@ -96,7 +96,7 @@ export default function ImprovementChartPanel() {
           </div>
 
           {/* بخش نمودار ۲ */}
-          <div className="relative flex-1 rounded-[25px] bg-white p-3 shadow">
+          <div className="relative min-h-[350px] rounded-[25px] bg-white p-3 pb-8 shadow">
             <h2 className="mb-3 text-center text-lg font-bold text-gray-800">
               آمار تفکیکی اعضای هیئت علمی
             </h2>
@@ -111,7 +111,7 @@ export default function ImprovementChartPanel() {
             </div>
 
             {/* داده‌های نمودار ۲ که از هوک دریافت شده و فیلتر شده‌اند */}
-            <div className="flex h-full items-center justify-center">
+            <div className="flex h-[300px] items-center justify-center">
               {chartData2 && chartData2.length > 0 ? (
                 <ChartComponent2 data={chartData2} />
               ) : (
