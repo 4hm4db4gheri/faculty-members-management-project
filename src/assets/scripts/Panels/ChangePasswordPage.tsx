@@ -1,44 +1,56 @@
-//ResetPasswordPage
 import React, { useState } from "react";
-import { toast } from "react-toastify";
+import { useLocation, useNavigate } from "react-router-dom";
 import LoadingSpinner from "../Elements/LoadingSpinner";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { changePassword } from "../Services/apiEndpoints";
+import { toast } from "react-toastify";
+import { changePasswordWithCode } from "../Services/apiEndpoints";
 
-const ResetPasswordPage: React.FC = () => {
+const ChangePasswordPage: React.FC = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const token = searchParams.get("token");
+  const location = useLocation() as {
+    state?: { phoneNumber?: string; code?: string };
+  };
+  const phoneNumber = location.state?.phoneNumber || "";
+  const code = location.state?.code || "";
+
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleResetPassword = async () => {
-    if (!token) {
-      toast.error("توکن بازیابی نامعتبر است.");
+  const handleChangePassword = async () => {
+    if (!phoneNumber || !code) {
+      toast.error(
+        "دسترسی مستقیم به صفحه مجاز نیست. دوباره فرآیند را شروع کنید.",
+      );
+      navigate("/login");
       return;
     }
-
+    if (!newPassword || !confirmPassword) {
+      toast.error("لطفا همه فیلدها را پر کنید.");
+      return;
+    }
     if (newPassword !== confirmPassword) {
       toast.error("رمز عبور و تکرار آن مطابقت ندارند.");
       return;
     }
-
     if (newPassword.length < 8) {
       toast.error("رمز عبور باید حداقل ۸ کاراکتر باشد.");
       return;
     }
-
     setIsLoading(true);
     try {
-      // فرض: token همان username است (در صورت نیاز اصلاح شود)
-      await changePassword(token, newPassword);
-      toast.success("رمز عبور با موفقیت تغییر کرد.");
-      navigate("/login");
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : "خطا در بازیابی رمز عبور.";
-      toast.error(errorMessage);
+      const response: any = await changePasswordWithCode(
+        phoneNumber,
+        code,
+        newPassword,
+      );
+      if (response?.error) {
+        toast.error(response.message?.[0] || "تغییر رمز عبور ناموفق بود.");
+      } else {
+        toast.success("رمز عبور با موفقیت تغییر کرد.");
+        navigate("/login");
+      }
+    } catch {
+      toast.error("ارتباط با سرور برقرار نشد.");
     } finally {
       setIsLoading(false);
     }
@@ -53,10 +65,10 @@ const ResetPasswordPage: React.FC = () => {
             alt="دانشگاه شهید بهشتی"
             className="mx-auto mb-6 w-32"
           />
-          <p className="mb-8 text-xl text-gray-500">بازیابی رمز عبور</p>
+          <p className="mb-8 text-xl text-gray-500">تغییر رمز عبور</p>
           <div className="space-y-6">
             {isLoading ? (
-              <LoadingSpinner size="md" text="در حال بازیابی رمز عبور..." />
+              <LoadingSpinner size="md" text="در حال تغییر رمز عبور..." />
             ) : (
               <>
                 <input
@@ -65,7 +77,6 @@ const ResetPasswordPage: React.FC = () => {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   className="focus:ring-primary-400 w-full rounded-[15px] border border-gray-300 bg-white px-4 py-2 focus:outline-none"
-                  disabled={isLoading}
                 />
                 <input
                   type="password"
@@ -73,11 +84,9 @@ const ResetPasswordPage: React.FC = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className="focus:ring-primary-400 w-full rounded-[15px] border border-gray-300 bg-white px-4 py-2 focus:outline-none"
-                  disabled={isLoading}
                 />
                 <button
-                  onClick={handleResetPassword}
-                  disabled={isLoading}
+                  onClick={handleChangePassword}
                   className="w-60 rounded-3xl bg-[#1B4965] py-2 font-bold text-white transition duration-300 hover:bg-[#358cc1] disabled:opacity-50"
                 >
                   تغییر رمز عبور
@@ -95,12 +104,12 @@ const ResetPasswordPage: React.FC = () => {
       </div>
       <div
         className="h-full w-full bg-cover bg-center"
-        style={{
-          backgroundImage: "url('src/assets/images/background.jpg')",
-        }}
+        style={{ backgroundImage: "url('src/assets/images/background.jpg')" }}
       ></div>
     </div>
   );
 };
 
-export default ResetPasswordPage;
+export default ChangePasswordPage;
+
+

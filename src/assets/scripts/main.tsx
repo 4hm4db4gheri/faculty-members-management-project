@@ -4,8 +4,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "../styles/main.css";
 import DashboardComponent from "./DashboardComponent";
 import LoginPage from "./Panels/LoginPage";
-import ResetPasswordPage from "./Panels/ResetPasswordPage";
 import VerifyCodePage from "./Panels/VerifyCodePage";
+import ChangePasswordPage from "./Panels/ChangePasswordPage";
 
 import { RTLProvider } from "./RTLProvider";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -19,8 +19,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/verify-code" element={<VerifyCodePage />} />
+          <Route path="/change-password" element={<ChangePasswordPage />} />
 
           <Route
             path="/dashboard/*"
