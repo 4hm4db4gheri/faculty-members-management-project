@@ -87,9 +87,9 @@ export const updateNotification = (queryParams: string) =>
         },
     ).then((res) => res.json());
 
-export const changeNotificationStatus = (id: number, enabled: boolean) =>
+export const changeNotificationStatus = (id: number, isEnable: boolean) =>
     fetch(
-        `https://backend.samaah.ir/api/panel/v1/notification/change-status?id=${id}&enabled=${enabled}`,
+        `https://backend.samaah.ir/api/panel/v1/notification/change-status?id=${id}&isEnable=${isEnable}`,
         {
             method: "GET",
             headers: { accept: "text/plain" },

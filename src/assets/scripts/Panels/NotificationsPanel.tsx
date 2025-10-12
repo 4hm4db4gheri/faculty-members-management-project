@@ -9,6 +9,7 @@ import {
   getNotifications,
   changeNotificationStatus,
 } from "../Services/apiEndpoints";
+import { toast } from "react-toastify";
 
 interface NotificationsPanelProps {
   onNotificationSelect: (notification: Notification) => void;
@@ -19,8 +20,7 @@ interface notificationModel {
   title: string;
   sendType: number;
   notificationType: number;
-  beforeSendDay: string;
-  enabled: boolean;
+  isEnable: boolean;
 }
 
 interface notificationResponse {
@@ -34,7 +34,6 @@ export default function NotificationsPanel({
 }: NotificationsPanelProps) {
   const navigate = useNavigate();
   const [importance, setImportance] = useState("همه");
-  const [time, setTime] = useState("همه");
   const [, setSelectedNotification] = useState<Notification | null>(null);
 
   const importanceOptions = [
@@ -44,16 +43,9 @@ export default function NotificationsPanel({
     "اخطار نهایی",
     "پیشنهاد",
   ] as const;
-  const timeOptions = ["همه", "امروز", "این هفته"] as const;
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [notification, setnotification] = useState<notificationModel[]>([]);
-  const [disabledNotifications, setDisabledNotifications] = useState<
-    Set<number>
-  >(() => {
-    const saved = localStorage.getItem("disabledNotifications");
-    return saved ? new Set(JSON.parse(saved)) : new Set();
-  });
 
   // لغو ارسال نوتیف
   const handleToggleNotification = async (id: number, enabled: boolean) => {
@@ -61,29 +53,42 @@ export default function NotificationsPanel({
       const response = await changeNotificationStatus(id, enabled);
 
       if (response.error) {
-        throw new Error(
-          enabled ? "خطا در فعال‌سازی نوتیف" : "خطا در غیرفعال‌سازی نوتیف",
-        );
+        const errorMessage = enabled
+          ? "خطا در فعال‌سازی نوتیف"
+          : "خطا در غیرفعال‌سازی نوتیف";
+        toast.error(errorMessage, {
+          position: "bottom-left",
+          style: {
+            background: "#FEF2F2",
+            color: "#991B1B",
+            direction: "rtl",
+          },
+        });
+        throw new Error(errorMessage);
       }
 
-      setDisabledNotifications((prev) => {
-        const newSet = new Set(prev);
-        if (enabled) {
-          // If enabling, remove from disabled set
-          newSet.delete(id);
-        } else {
-          // If disabling, add to disabled set
-          newSet.add(id);
-        }
-        // ذخیره در localStorage
-        localStorage.setItem(
-          "disabledNotifications",
-          JSON.stringify([...newSet]),
-        );
-        return newSet;
+      // Update the local notification state
+      setnotification((prev) =>
+        prev.map((notif) =>
+          notif.id === id ? { ...notif, isEnable: enabled } : notif,
+        ),
+      );
+
+      // Show success message from API response or default message
+      const successMessage =
+        response.data ||
+        (enabled ? "اعلان با موفقیت فعال شد" : "اعلان با موفقیت غیرفعال شد");
+      toast.success(successMessage, {
+        position: "bottom-left",
+        style: {
+          background: "#F0FDF4",
+          color: "#166534",
+          direction: "rtl",
+        },
       });
     } catch (err) {
-      setError("خطا در تغییر وضعیت نوتیف");
+      // Error toast already shown above, just update error state
+      setError(err instanceof Error ? err.message : "خطا در تغییر وضعیت نوتیف");
     }
   };
 
@@ -98,7 +103,7 @@ export default function NotificationsPanel({
         } else {
           throw new Error(data.message.join(", "));
         }
-      } catch (err) {
+      } catch {
         setError("خطا در دریافت اطلاعات");
       } finally {
         setIsLoading(false);
@@ -121,7 +126,7 @@ export default function NotificationsPanel({
     .trim()
     .replace(/\s+/g, " ");
 
-  const dropdownContainerClasses = "relative w-5/5";
+  const dropdownContainerClasses = "relative w-1/3";
   const dropdownClasses = "w-full pt-2";
 
   if (isLoading) {
@@ -136,21 +141,21 @@ export default function NotificationsPanel({
     );
   }
 
-  const filteredNotifications = notification.filter((notif) => {
-    const importanceMatches =
-      importance === "همه" ||
-      getNotificationType(notif.notificationType) === importance;
+  const filteredNotifications = notification
+    .filter((notif) => {
+      const importanceMatches =
+        importance === "همه" ||
+        getNotificationType(notif.notificationType) === importance;
 
-    const timeMatches =
-      time === "همه" || matchesTimeFilter(notif.beforeSendDay, time);
-
-    return importanceMatches && timeMatches;
-  });
+      // Note: Time filter removed as API no longer provides date information
+      return importanceMatches;
+    })
+    .sort((a, b) => a.id - b.id);
 
   return (
     <div>
       {/* Filters */}
-      <div className="mt-4 mb-8 flex justify-center gap-6 px-6">
+      <div className="mt-4 mb-8 flex justify-start gap-6 px-6">
         <div className={dropdownContainerClasses}>
           <MyDropdown
             options={importanceOptions}
@@ -165,21 +170,6 @@ export default function NotificationsPanel({
           />
           <span className={labelClasses}>اهمیت</span>
         </div>
-
-        <div className={dropdownContainerClasses}>
-          <MyDropdown
-            options={timeOptions}
-            defaultOption="همه"
-            value={time}
-            onSelect={(value) => {
-              if (typeof value === "string") {
-                setTime(value);
-              }
-            }}
-            className={dropdownClasses}
-          />
-          <span className={labelClasses}>زمان</span>
-        </div>
       </div>
       {/* Notifications List */}
       <div className="space-y-2.5 px-4">
@@ -187,7 +177,7 @@ export default function NotificationsPanel({
           <MyNotificationCard
             key={notif.id}
             notification={notif}
-            isEnabled={!disabledNotifications.has(notif.id)}
+            isEnabled={notif.isEnable}
             onToggleEnabled={handleToggleNotification}
             onClick={() => {
               const notification = {
@@ -245,26 +235,5 @@ function getNotificationType(notificationType: number): string {
       return "پیشنهاد";
     default:
       return "یادآوری";
-  }
-}
-
-function matchesTimeFilter(dateString: string, timeFilter: string): boolean {
-  const date = new Date(dateString);
-  const now = new Date();
-
-  switch (timeFilter) {
-    case "امروز":
-      return (
-        date.getFullYear() === now.getFullYear() &&
-        date.getMonth() === now.getMonth() &&
-        date.getDate() === now.getDate()
-      );
-    case "این هفته": {
-      const startOfWeek = new Date(now);
-      startOfWeek.setDate(now.getDate() - now.getDay());
-      return date >= startOfWeek && date <= now;
-    }
-    default:
-      return true;
   }
 }

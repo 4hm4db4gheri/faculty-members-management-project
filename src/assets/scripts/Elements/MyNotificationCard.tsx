@@ -18,7 +18,7 @@ interface notificationModel {
   title: string;
   sendType: number;
   notificationType: number;
-  beforeSendDay: string;
+  isEnable: boolean;
 }
 
 interface MyNotificationCardProps {
