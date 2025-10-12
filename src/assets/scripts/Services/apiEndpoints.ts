@@ -47,13 +47,91 @@ export const getUsers = () =>
 export const updateUserRole = (userId: string, role: string) =>
     ApiService.put(`/panel/v1/user/role/change?UserID=${userId}&RoleName=${role}`);
 
-export const changePassword = (username: string, newPassword: string) =>
-    fetch(`https://backend.samaah.ir/api/panel/v1/user/change-password?username=${encodeURIComponent(username)}&newPassword=${encodeURIComponent(newPassword)}`, {
-        method: "GET",
-        headers: {
-            Accept: "text/plain",
-        },
-    }).then((res) => res.text());
+
+// FORGOT PASSWORD FLOW
+export const requestPasswordReset = async (username: string) => {
+    console.log(`🔍 Starting password reset for username: ${username}`);
+    
+    // فقط با پارامتر userName درخواست ارسال شود
+    const endpoints = [
+        `/panel/v1/user/forget-password?userName=${encodeURIComponent(username)}`
+    ];
+
+    let lastError: any = null;
+    
+    for (const endpoint of endpoints) {
+        try {
+            console.log(`🔄 Trying endpoint: ${endpoint}`);
+            const response: any = await ApiService.get(endpoint);
+            console.log(`✅ Response from ${endpoint}:`, response);
+            
+            if (!response.error) {
+                console.log(`🎉 Success with endpoint: ${endpoint}`);
+                return response;
+            } else {
+                console.log(`❌ Error response from ${endpoint}:`, response);
+                lastError = response;
+            }
+        } catch (error) {
+            console.log(`💥 Exception from ${endpoint}:`, error);
+            lastError = error;
+            continue;
+        }
+    }
+    
+    console.error(`🚨 All endpoints failed. Last error:`, lastError);
+    throw new Error(`همه endpoint های بازیابی رمز عبور ناموفق بودند. آخرین خطا: ${lastError?.message || 'نامشخص'}`);
+};
+
+export const validateVerificationCode = async (username: string, code: string) => {
+    // Try different parameter names
+    const endpoints = [
+        `/panel/v1/user/forget-password/verificationcode-validation?userName=${encodeURIComponent(username)}&code=${encodeURIComponent(code)}`,
+        `/panel/v1/user/forget-password/verificationcode-validation?username=${encodeURIComponent(username)}&code=${encodeURIComponent(code)}`,
+        `/panel/v1/user/forget-password/verificationcode-validation?phoneNumber=${encodeURIComponent(username)}&code=${encodeURIComponent(code)}`,
+        `/panel/v1/user/forget-password/verificationcode-validation?phone=${encodeURIComponent(username)}&code=${encodeURIComponent(code)}`
+    ];
+
+    for (const endpoint of endpoints) {
+        try {
+            console.log(`Trying validation endpoint: ${endpoint}`);
+            const response: any = await ApiService.get(endpoint);
+            if (!response.error) {
+                return response;
+            }
+        } catch (error) {
+            console.log(`Validation endpoint ${endpoint} failed:`, error);
+            continue;
+        }
+    }
+    
+    throw new Error("همه endpoint های تایید کد ناموفق بودند");
+};
+
+export const changePasswordWithCode = async (username: string, code: string, newPassword: string) => {
+    // Try different parameter names
+    const endpoints = [
+        `/panel/v1/user/change-password?userName=${encodeURIComponent(username)}&code=${encodeURIComponent(code)}&newPassword=${encodeURIComponent(newPassword)}`,
+        `/panel/v1/user/change-password?username=${encodeURIComponent(username)}&code=${encodeURIComponent(code)}&newPassword=${encodeURIComponent(newPassword)}`,
+        `/panel/v1/user/change-password?phoneNumber=${encodeURIComponent(username)}&code=${encodeURIComponent(code)}&newPassword=${encodeURIComponent(newPassword)}`,
+        `/panel/v1/user/change-password?phone=${encodeURIComponent(username)}&code=${encodeURIComponent(code)}&newPassword=${encodeURIComponent(newPassword)}`
+    ];
+
+    for (const endpoint of endpoints) {
+        try {
+            console.log(`Trying change password endpoint: ${endpoint}`);
+            const response: any = await ApiService.get(endpoint);
+            if (!response.error) {
+                return response;
+            }
+        } catch (error) {
+            console.log(`Change password endpoint ${endpoint} failed:`, error);
+            continue;
+        }
+    }
+    
+    throw new Error("همه endpoint های تغییر رمز عبور ناموفق بودند");
+};
 
 // AUTH
 interface LoginRequest {

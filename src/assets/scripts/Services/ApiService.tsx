@@ -98,11 +98,12 @@ export class ApiService {
   }
 
   static async get<T>(endpoint: string): Promise<T> {
+    // Always start retries from the first base URL for each request
+    this.currentBaseUrlIndex = 0;
     const token = AuthService.getAccessToken();
 
     const headers: HeadersInit = {
       accept: "text/plain",
-      "Content-Type": "application/json",
     };
 
     if (token) {
@@ -122,7 +123,7 @@ export class ApiService {
         const response = await fetch(currentUrl, {
           method: "GET",
           headers,
-          signal: AbortSignal.timeout(10000), // 10 second timeout
+          signal: AbortSignal.timeout(20000), // 20 second timeout
         });
 
         console.log(
