@@ -7,12 +7,7 @@ interface NotificationForm {
   sendMethod: string;
   sendDate: string;
   description: string;
-}
-
-interface ApiResponse {
-  data: unknown;
-  error: boolean;
-  message: string[];
+  [key: string]: string; // Index signature for compatibility
 }
 
 export default function NotificationManagementPanel() {
@@ -37,7 +32,10 @@ export default function NotificationManagementPanel() {
           description: "",
         });
       } else {
-        throw new Error(response.message.join(", "));
+        const errorMessage = Array.isArray(response.message)
+          ? response.message.join(", ")
+          : "خطا در ایجاد اعلان";
+        throw new Error(errorMessage);
       }
     } catch (err) {
       toast.error("خطا در ایجاد اعلان");
