@@ -184,7 +184,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
                 </div>
               </div>
               <div className="space-y-4">
-                <h3 className="text-xl font-bold">اطلاعات تماس</h3>
+                <h3 className="text-xl font-bold text-black">اطلاعات تماس</h3>
                 <div className="space-y-2">
                   <p className="text-gray-700">
                     تلفن: {detailedTeacher.phoneNumber || "نامشخص"}
@@ -215,7 +215,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
               </div>
             </div>
             <div className="space-y-4">
-              <h3 className="text-xl font-bold">اطلاعات شغلی</h3>
+              <h3 className="text-xl font-bold text-black">اطلاعات شغلی</h3>
               <div className="grid grid-cols-2 gap-8">
                 <div className="space-y-2">
                   <p className="text-gray-700">
@@ -370,7 +370,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
       </div>
 
       {/* Content wrapper with tabs and white container */}
-      <div className="relative -mt-36 flex-1">
+      <div className="relative -mt-36 flex-1 flex flex-col overflow-hidden">
         <div className="relative z-10 flex items-center gap-3 pr-46 pb-1.5">
           {tabs.map((tab) => (
             <button
@@ -387,7 +387,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
           ))}
         </div>
 
-        <div className="relative z-20 -mt-4 h-full w-full flex-1 rounded-2xl bg-white p-8">
+        <div className="relative z-20 -mt-4 w-full flex-1 rounded-2xl bg-white p-8 overflow-y-auto">
           <div className="mr-36">
             <h1 className="pr-5 text-2xl font-bold text-black">
               {teacher.rank}

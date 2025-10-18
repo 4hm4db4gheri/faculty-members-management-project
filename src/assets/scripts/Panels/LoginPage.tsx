@@ -22,6 +22,32 @@ const LoginPage: React.FC = () => {
     localStorage.removeItem("mockUsername");
   }, []);
 
+  // Handle Space and Enter key press to trigger login
+  React.useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      // Trigger login on Space (when not in input) or Enter key
+      if (!isLoading) {
+        if (
+          event.code === "Space" &&
+          event.target instanceof HTMLElement &&
+          event.target.tagName !== "INPUT" &&
+          event.target.tagName !== "TEXTAREA"
+        ) {
+          event.preventDefault();
+          handleLogin();
+        } else if (event.code === "Enter") {
+          event.preventDefault();
+          handleLogin();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [userName, password, isLoading]); // Include dependencies so handleLogin has access to current values
+
   // تابع بازیابی رمز عبور
   const handleForgotPassword = async () => {
     if (!userName || userName.trim() === "") {
@@ -203,28 +229,6 @@ const LoginPage: React.FC = () => {
                     disabled={isLoading}
                   >
                     رمز عبور را فراموش کرده‌ام
-                  </button>
-                  <button
-                    type="button"
-                    className="text-left text-xs text-gray-500 hover:underline focus:outline-none"
-                    onClick={() => {
-                      const testUsernames = [
-                        "admin",
-                        "test",
-                        "user",
-                        "09123456789",
-                        "0912345678",
-                      ];
-                      const randomUsername =
-                        testUsernames[
-                          Math.floor(Math.random() * testUsernames.length)
-                        ];
-                      setUserName(randomUsername);
-                      toast.info(`نام کاربری تست: ${randomUsername}`);
-                    }}
-                    disabled={isLoading}
-                  >
-                    تست نام کاربری
                   </button>
                 </div>
                 <button
