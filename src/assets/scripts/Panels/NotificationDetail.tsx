@@ -3,6 +3,7 @@ import MyDropdown from "../Elements/MyDropdown";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import NotFoundPage from "./NotFoundPage";
 import {
   getNotificationDetail,
   updateNotification,
@@ -232,6 +233,11 @@ export default function NotificationDetail({
     return <LoadingSpinner size="lg" />;
   }
 
+  // Show 404 page if there's an error fetching the notification
+  if (error) {
+    return <NotFoundPage />;
+  }
+
   return (
     <div className="overflow-hidden">
       {/* Back button */}
@@ -248,11 +254,6 @@ export default function NotificationDetail({
         onSubmit={handleSubmit}
         className="relative min-h-screen space-y-7 p-4 text-right"
       >
-        {error && (
-          <div className="mb-4 rounded-lg bg-red-50 p-4 text-red-500">
-            {error}
-          </div>
-        )}{" "}
         <div className="relative w-full">
           <input
             type="text"

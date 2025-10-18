@@ -12,7 +12,7 @@ import {
 import { toast } from "react-toastify";
 
 interface NotificationsPanelProps {
-  onNotificationSelect: (notification: Notification) => void;
+  onNotificationSelect?: (notification: Notification) => void;
 }
 
 interface notificationModel {
@@ -29,9 +29,7 @@ interface notificationResponse {
   message: string[];
 }
 
-export default function NotificationsPanel({
-  onNotificationSelect,
-}: NotificationsPanelProps) {
+export default function NotificationsPanel({ onNotificationSelect }: NotificationsPanelProps = {} as NotificationsPanelProps) {
   const navigate = useNavigate();
   const [importance, setImportance] = useState("همه");
   const [, setSelectedNotification] = useState<Notification | null>(null);
@@ -213,7 +211,7 @@ export default function NotificationsPanel({
                 })(),
               };
               setSelectedNotification(notification);
-              onNotificationSelect(notification);
+              onNotificationSelect?.(notification);
               navigate(`/dashboard/notifications/${notif.id}`);
             }}
           />

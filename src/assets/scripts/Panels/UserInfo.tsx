@@ -4,6 +4,7 @@ import type { Teacher, Record } from "../types/Teacher";
 import { ApiService } from "../Services/ApiService";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import { toast } from "react-toastify";
+import NotFoundPage from "./NotFoundPage";
 import FemaleProfessorAvatar from "../../images/arab-woman-face-covered-with-hijab-muslim-woman-muslim-girl-avatar-avatar-icon-in-flat-style-smiling-girl-in-a-scarf-isolated-illustration-vector.jpg";
 
 interface UserInfoProps {
@@ -126,6 +127,11 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
     );
   };
 
+  // Show 404 page if there's an error or no teacher data found
+  if (error || (!isLoading && !detailedTeacher)) {
+    return <NotFoundPage />;
+  }
+
   const renderTabContent = () => {
     if (isLoading) {
       return (
@@ -135,20 +141,8 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
       );
     }
 
-    if (error) {
-      return (
-        <div className="flex h-full items-center justify-center text-red-500">
-          خطا در دریافت اطلاعات: {error}
-        </div>
-      );
-    }
-
     if (!detailedTeacher) {
-      return (
-        <div className="flex h-full items-center justify-center text-gray-500">
-          اطلاعات استاد یافت نشد
-        </div>
-      );
+      return null;
     }
 
     switch (activeTab) {
