@@ -7,12 +7,13 @@ interface NotificationForm {
   sendMethod: string;
   sendDate: string;
   description: string;
+  [key: string]: string; // Index signature to match CreateNotificationRequest
 }
 
 interface ApiResponse {
-  data: unknown;
+  data?: unknown;
   error: boolean;
-  message: string[];
+  message?: string[];
 }
 
 export default function NotificationManagementPanel() {
@@ -26,7 +27,7 @@ export default function NotificationManagementPanel() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await createNotification(formData);
+      const response = await createNotification(formData) as unknown as ApiResponse;
 
       if (!response.error) {
         toast.success("اعلان با موفقیت ایجاد شد");
@@ -37,7 +38,7 @@ export default function NotificationManagementPanel() {
           description: "",
         });
       } else {
-        throw new Error(response.message.join(", "));
+        throw new Error(response.message?.join(", ") || "خطای نامشخص");
       }
     } catch (err) {
       toast.error("خطا در ایجاد اعلان");
