@@ -7,6 +7,9 @@ import { AuthService } from "../Services/AuthService";
 import { LoginResponse } from "../types/auth.types";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import { toast } from "react-toastify";
+import SbuLogo from "../../../assets/images/Sbu-logo.svg.png";
+import S from "../../styles/background.module.css";
+
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
@@ -160,7 +163,7 @@ const LoginPage: React.FC = () => {
       <div className="bg-opacity-60 flex items-center justify-center bg-white px-4 backdrop-blur-md">
         <div className="w-full max-w-md rounded-2xl bg-[#EBF2FA] p-6 text-center shadow-2xl sm:p-8">
           <img
-            src="src/assets/images/Sbu-logo.svg.png"
+            src={SbuLogo}
             alt="دانشگاه شهید بهشتی"
             className="mx-auto mb-4 w-24 sm:mb-6 sm:w-32"
           />
@@ -241,10 +244,7 @@ const LoginPage: React.FC = () => {
       </div>
       {/* تصویر سمت راست */}
       <div
-        className="hidden h-full w-full bg-cover bg-center md:block"
-        style={{
-          backgroundImage: "url('src/assets/images/background.jpg')",
-        }}
+        className={`hidden h-full w-full bg-cover bg-center md:block ${S.background}`}
       ></div>
     </div>
   );

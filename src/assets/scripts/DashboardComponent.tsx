@@ -24,6 +24,7 @@ import ChartIcon from "../elements/chart.svg";
 import RoleIcon from "../elements/role.svg";
 import NotificationIcon from "../elements/notification.svg";
 import ExitIcon from "../elements/exit.svg";
+import SbuLogo from "../../assets/images/Sbu-logo.svg.png";
 
 interface Notification {
   id: number;
@@ -200,7 +201,7 @@ export default function DashboardComponent() {
           </div>
           <div className="mx-auto mt-3 mb-3 flex h-24 w-24 items-center justify-center bg-white sm:h-28 sm:w-28 lg:mt-5 lg:mb-4 lg:h-32 lg:w-32">
             <img
-              src="src/assets/images/Sbu-logo.svg.png"
+              src={SbuLogo}
               alt="لوگو"
               className="h-full w-full bg-white object-contain"
             />

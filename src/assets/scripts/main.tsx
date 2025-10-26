@@ -11,6 +11,7 @@ import { RTLProvider } from "./RTLProvider";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ToastContainer } from "react-toastify"; // Import ToastContainer
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS
+import "../styles/main.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <StrictMode>
