@@ -302,7 +302,7 @@ export default function SentNotificationsPanel() {
           {/* نوع ارسال (Send Type) */}
           <div className="group relative">
             <MyDropdown
-              options={["همه", "ایمیل", "اس ام اس", "سیستمی"]}
+              options={["همه", "ایمیل", "اس ام اس"]}
               defaultOption="همه"
               value={filters.sendType}
               onSelect={(value) => {
