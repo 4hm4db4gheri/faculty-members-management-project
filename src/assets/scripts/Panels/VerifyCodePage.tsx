@@ -5,6 +5,7 @@ import { validateVerificationCode } from "../Services/apiEndpoints";
 import { toast } from "react-toastify";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import { useNavigate, useLocation } from "react-router-dom";
+import { AuthService } from "../Services/AuthService";
 import SbuLogo from "../../../assets/images/Sbu-logo.svg.png";
 import S from "../../styles/background.module.css";
 
@@ -14,6 +15,13 @@ const VerifyCodePage: React.FC = () => {
   const { phoneNumber } = location.state || {};
   const [code, setCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect to dashboard if already authenticated
+  React.useEffect(() => {
+    if (AuthService.isAuthenticated()) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [navigate]);
 
   // مرحله اول: اعتبارسنجی کد تایید
   const handleVerifyCode = async () => {

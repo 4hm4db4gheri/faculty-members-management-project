@@ -18,6 +18,13 @@ const LoginPage: React.FC = () => {
     false | "login" | "forgotPassword"
   >(false);
 
+  // Redirect to dashboard if already authenticated
+  React.useEffect(() => {
+    if (AuthService.isAuthenticated()) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [navigate]);
+
   // پاک کردن localStorage از حالت شبیه‌سازی
   React.useEffect(() => {
     localStorage.removeItem("mockPasswordReset");

@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import { toast } from "react-toastify";
 import { changePasswordWithCode } from "../Services/apiEndpoints";
+import { AuthService } from "../Services/AuthService";
 import SbuLogo from "../../../assets/images/Sbu-logo.svg.png";
 import S from "../../styles/background.module.css";
 
@@ -17,6 +18,13 @@ const ChangePasswordPage: React.FC = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect to dashboard if already authenticated
+  React.useEffect(() => {
+    if (AuthService.isAuthenticated()) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [navigate]);
 
   const handleChangePassword = async () => {
     if (!phoneNumber || !code) {
