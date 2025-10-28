@@ -8,6 +8,7 @@ import ImprovementChartPanel from "./Panels/ImprovementChartPanel";
 import UserInfo from "./Panels/UserInfo";
 import NotificationDetail from "./Panels/NotificationDetail";
 import SentNotificationsPanel from "./Panels/SentNotificationsPanel";
+import NotFoundPage from "./Panels/NotFoundPage";
 import {
   Route,
   Routes,
@@ -26,31 +27,29 @@ import NotificationIcon from "../elements/notification.svg";
 import ExitIcon from "../elements/exit.svg";
 import SbuLogo from "../../assets/images/Sbu-logo.svg.png";
 
-interface Notification {
-  id: number;
-  title: string;
-  priority: string;
-  tag: string;
-  subject?: string;
-  sendMethod?: string;
-  sendDate?: string;
-  description?: string;
-}
-
 // Component to handle teacher details with URL parameter
 function TeacherDetailWrapper() {
   const { teacherId } = useParams<{ teacherId: string }>();
   const navigate = useNavigate();
 
+  // Validate teacherId
   if (!teacherId) {
     navigate("/dashboard/records");
     return null;
   }
 
+  const parsedId = parseInt(teacherId);
+  
+  // Check if teacherId is a valid number
+  if (isNaN(parsedId) || parsedId <= 0 || !teacherId.match(/^\d+$/)) {
+    // Invalid ID format (not a number or negative), show 404
+    return <NotFoundPage />;
+  }
+
   // Create a minimal teacher object with just the ID for now
   // The UserInfo component will fetch the full details
   const teacher: Teacher = {
-    id: parseInt(teacherId),
+    id: parsedId,
     firstName: "",
     lastName: "",
     faculty: "",
@@ -70,11 +69,52 @@ function TeacherDetailWrapper() {
   );
 }
 
+// Component to handle notification details with URL parameter validation
+function NotificationDetailWrapper() {
+  const { notificationId } = useParams<{ notificationId: string }>();
+  const navigate = useNavigate();
+  const [notification, setNotification] = useState<{
+    id: number;
+    title: string;
+  } | null>(null);
+
+  useEffect(() => {
+    // Validate notificationId
+    if (!notificationId) {
+      navigate("/dashboard/notifications");
+      return;
+    }
+
+    const parsedId = parseInt(notificationId);
+    
+    // Check if notificationId is a valid number
+    if (isNaN(parsedId) || parsedId <= 0 || !notificationId.match(/^\d+$/)) {
+      // Invalid ID format, don't set notification (will show 404 below)
+      return;
+    }
+
+    setNotification({
+      id: parsedId,
+      title: "",
+    });
+  }, [notificationId, navigate]);
+
+  // If notification is null after validation, show 404
+  if (!notificationId || !notificationId.match(/^\d+$/)) {
+    return <NotFoundPage />;
+  }
+
+  return (
+    <NotificationDetail
+      notificationId={notification?.id}
+      initialTitle={notification?.title}
+    />
+  );
+}
+
 export default function DashboardComponent() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedNotification, setSelectedNotification] =
-    useState<Notification | null>(null);
   const [hasFullAccess, setHasFullAccess] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -94,10 +134,6 @@ export default function DashboardComponent() {
   const handleNavigate = (path: string) => {
     navigate(path);
     setIsSidebarOpen(false);
-  };
-
-  const handleNotificationSelect = (notification: Notification) => {
-    setSelectedNotification(notification);
   };
 
   const getActiveClass = (path: string) => {
@@ -146,25 +182,18 @@ export default function DashboardComponent() {
           )}
           <Route
             path="notifications"
-            element={
-              <NotificationsPanel
-                onNotificationSelect={handleNotificationSelect}
-              />
-            }
+            element={<NotificationsPanel />}
           />
           <Route
             path="notifications/:notificationId"
-            element={
-              <NotificationDetail
-                notificationId={selectedNotification?.id}
-                initialTitle={selectedNotification?.title}
-              />
-            }
+            element={<NotificationDetailWrapper />}
           />
           <Route
             path="sent-notifications"
             element={<SentNotificationsPanel />}
           />
+          {/* Catch-all route for 404 errors within dashboard */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
 
@@ -215,10 +244,7 @@ export default function DashboardComponent() {
             className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2 text-left text-sm text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-2.5 sm:text-base lg:text-lg xl:text-xl ${getActiveClass(
               "/dashboard",
             )}`}
-            onClick={() => {
-              handleNavigate("/dashboard");
-              setSelectedNotification(null);
-            }}
+            onClick={() => handleNavigate("/dashboard")}
           >
             <img
               src={DashboardIcon}
@@ -272,10 +298,7 @@ export default function DashboardComponent() {
             className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2 text-left text-sm text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-2.5 sm:text-base lg:text-lg xl:text-xl ${getActiveClass(
               "/dashboard/notifications",
             )}`}
-            onClick={() => {
-              handleNavigate("/dashboard/notifications");
-              setSelectedNotification(null);
-            }}
+            onClick={() => handleNavigate("/dashboard/notifications")}
           >
             <img
               src={NotificationIcon}

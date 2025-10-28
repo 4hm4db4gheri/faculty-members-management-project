@@ -296,7 +296,7 @@ export default function MainDashboardPanel() {
             }}
           />
         </div>
-        <div className="flex content-center items-center justify-center pt-4 text-2xl text-black sm:pt-[30px] sm:text-3xl lg:text-4xl xl:text-5xl">
+        <div className="pt-4 text-center text-2xl text-black sm:pt-[30px] sm:text-3xl lg:text-4xl xl:text-5xl">
           {userName}
         </div>
 

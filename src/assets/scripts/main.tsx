@@ -6,6 +6,7 @@ import DashboardComponent from "./DashboardComponent";
 import LoginPage from "./Panels/LoginPage";
 import VerifyCodePage from "./Panels/VerifyCodePage";
 import ChangePasswordPage from "./Panels/ChangePasswordPage";
+import NotFoundPage from "./Panels/NotFoundPage";
 
 import { RTLProvider } from "./RTLProvider";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -31,6 +32,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
               </ProtectedRoute>
             }
           />
+
+          {/* Catch-all route for 404 errors */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
       <ToastContainer
