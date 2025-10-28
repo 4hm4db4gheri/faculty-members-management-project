@@ -5,7 +5,7 @@
 /**
  * Convert Gregorian date to Jalali (Solar) date
  * @param gregorianDate - Date object or ISO string (e.g., "2025-07-09T16:15:14.157931Z")
- * @returns Jalali date in format "DD/MM/YYYY"
+ * @returns Jalali date in format "YYYY/MM/DD"
  */
 export function gregorianToJalali(gregorianDate: Date | string): string {
     const date = typeof gregorianDate === "string" ? new Date(gregorianDate) : gregorianDate;
@@ -17,28 +17,28 @@ export function gregorianToJalali(gregorianDate: Date | string): string {
 
     const { jy, jm, jd } = gregorianToJalaliNumbers(gy, gm, gd);
 
-    // Format with leading zeros - Day/Month/Year format
+    // Format with leading zeros - Year/Month/Day format
     const jyStr = jy.toString();
     const jmStr = jm.toString().padStart(2, "0");
     const jdStr = jd.toString().padStart(2, "0");
 
-    return `${jdStr}/${jmStr}/${jyStr}`;
+    return `${jyStr}/${jmStr}/${jdStr}`;
 }
 
 /**
  * Convert Jalali (Solar) date to Gregorian date
- * @param jalaliDate - Jalali date in format "DD/MM/YYYY"
+ * @param jalaliDate - Jalali date in format "YYYY/MM/DD"
  * @returns Date object (at midnight UTC)
  */
 export function jalaliToGregorian(jalaliDate: string): Date {
     const parts = jalaliDate.split("/");
     if (parts.length !== 3) {
-        throw new Error("Invalid Jalali date format. Expected DD/MM/YYYY");
+        throw new Error("Invalid Jalali date format. Expected YYYY/MM/DD");
     }
 
-    const jd = parseInt(parts[0]);
+    const jy = parseInt(parts[0]);
     const jm = parseInt(parts[1]);
-    const jy = parseInt(parts[2]);
+    const jd = parseInt(parts[2]);
 
     const { gy, gm, gd } = jalaliToGregorianNumbers(jy, jm, jd);
 

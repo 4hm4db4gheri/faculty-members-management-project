@@ -88,7 +88,7 @@ export default function PersianDatePicker({
 
     // Validate
     if (englishYear.length === 4 && month && day) {
-      const formattedDate = `${englishDay}/${englishMonth}/${englishYear}`;
+      const formattedDate = `${englishYear}/${englishMonth}/${englishDay}`;
       onChange(formattedDate);
       setIsOpen(false);
     } else {
@@ -151,18 +151,18 @@ export default function PersianDatePicker({
               تاریخ را به صورت شمسی وارد کنید
             </p>
 
-            {/* Three Input Fields for Day, Month, Year */}
+            {/* Three Input Fields for Year, Month, Day */}
             <div className="mb-4 flex items-center justify-center gap-2">
-              {/* Day Input */}
+              {/* Year Input */}
               <div className="flex flex-col items-center">
-                <label className="mb-1 text-xs text-gray-600">روز</label>
+                <label className="mb-1 text-xs text-gray-600">سال</label>
                 <input
                   type="text"
-                  value={day}
-                  onChange={handleDayChange}
-                  placeholder="۱۸"
-                  maxLength={2}
-                  className="w-16 rounded-[10px] border border-gray-300 bg-white px-3 py-2 text-center text-lg text-black placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  value={year}
+                  onChange={handleYearChange}
+                  placeholder="۱۴۰۴"
+                  maxLength={4}
+                  className="w-20 rounded-[10px] border border-gray-300 bg-white px-3 py-2 text-center text-lg text-black placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   style={{ direction: "ltr" }}
                 />
               </div>
@@ -185,23 +185,23 @@ export default function PersianDatePicker({
 
               <span className="mt-6 text-xl text-gray-400">/</span>
 
-              {/* Year Input */}
+              {/* Day Input */}
               <div className="flex flex-col items-center">
-                <label className="mb-1 text-xs text-gray-600">سال</label>
+                <label className="mb-1 text-xs text-gray-600">روز</label>
                 <input
                   type="text"
-                  value={year}
-                  onChange={handleYearChange}
-                  placeholder="۱۴۰۴"
-                  maxLength={4}
-                  className="w-20 rounded-[10px] border border-gray-300 bg-white px-3 py-2 text-center text-lg text-black placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  value={day}
+                  onChange={handleDayChange}
+                  placeholder="۱۸"
+                  maxLength={2}
+                  className="w-16 rounded-[10px] border border-gray-300 bg-white px-3 py-2 text-center text-lg text-black placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   style={{ direction: "ltr" }}
                 />
               </div>
             </div>
 
             <p className="mb-4 text-center text-xs text-gray-500">
-              فرمت: روز/ماه/سال (مثال: ۱۸/۰۴/۱۴۰۴)
+              فرمت: سال/ماه/روز (مثال: ۱۴۰۴/۰۴/۱۸)
             </p>
 
             {value && (
