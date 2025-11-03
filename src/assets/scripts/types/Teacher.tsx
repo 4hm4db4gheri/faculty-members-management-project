@@ -66,6 +66,7 @@ export interface Teacher {
   researchRecords?: Record[] | null;
   promotionRecords?: Record[] | null;
   statusChangeRecords?: Record[] | null;
+  courses?: Record[] | null;
 }
 
 export interface Record {

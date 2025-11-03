@@ -17,12 +17,30 @@ interface DetailedTeacherResponse {
   message: string[];
 }
 
+// Helper function to convert academicRank number to string
+const getRankString = (rank?: number | string): string => {
+  if (typeof rank === "string" && rank) return rank;
+  if (typeof rank === "number") {
+    switch (rank) {
+      case 0:
+        return "استادیار";
+      case 1:
+        return "دانشیار";
+      case 2:
+        return "استاد تمام";
+      default:
+        return "نامشخص";
+    }
+  }
+  return "نامشخص";
+};
+
 export default function UserInfo({ teacher, onBack }: UserInfoProps) {
   const tabs = [
     "اطلاعات کاربر",
-    "سوابق علمی پژوهشی",
-    "ارتباط با صنعت",
+    "سوابق پژوهشی",
     "سوابق آموزشی",
+    "ارتباط با صنعت",
     "سوابق اجرایی",
     "سوابق ارتقا و تبدیل وضعیت",
     "تایم لاین",
@@ -32,31 +50,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
   const [detailedTeacher, setDetailedTeacher] = useState<Teacher | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Fetch detailed teacher data
-  useEffect(() => {
-    const fetchDetailedTeacher = async () => {
-      setIsLoading(true);
-      try {
-        const response = await ApiService.get<DetailedTeacherResponse>(
-          `/panel/v1/teacher/read-teacher-by-id/${teacher.id}`,
-        );
-
-        if (!response.error) {
-          setDetailedTeacher(response.data);
-        } else {
-          throw new Error(response.message.join(", "));
-        }
-      } catch {
-        setError("خطا در دریافت اطلاعات");
-        toast.error("خطا در دریافت اطلاعات");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchDetailedTeacher();
-  }, [teacher.id]);
+  const [facultyDisplay, setFacultyDisplay] = useState<string | null>(null);
 
   // Helper function to get gender text
   const getGenderText = (gender?: number): string => {
@@ -93,12 +87,150 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
     }
   };
 
+  // Helper to format faculty display: prefer readable strings, handle objects,
+  // and fall back to numeric IDs if no readable name is found.
+  const formatFacultyDisplay = (...vals: Array<any>): string => {
+    let numericCandidate: string | undefined;
+
+    for (const v of vals) {
+      if (v === undefined || v === null) continue;
+
+      // If faculty comes as an object, try common name keys
+      if (typeof v === "object") {
+        const name =
+          (v as any).name ||
+          (v as any).title ||
+          (v as any).facultyName ||
+          (v as any).label;
+        if (typeof name === "string") {
+          const s = name.trim();
+          if (!s) continue;
+          if (isNaN(Number(s))) return s; // readable string
+          if (!numericCandidate) numericCandidate = s; // remember numeric as fallback
+        }
+        continue;
+      }
+
+      // Coerce to string for numbers/strings
+      const s = String(v).trim();
+      if (!s) continue;
+      if (isNaN(Number(s))) return s; // readable string
+      if (!numericCandidate) numericCandidate = s; // numeric fallback
+    }
+
+    return numericCandidate ?? "نامشخص";
+  };
+
+  // Try to resolve numeric faculty IDs to readable names using backend data.
+  const resolveFacultyName = async (val: any): Promise<string> => {
+    if (val === undefined || val === null) return "نامشخص";
+
+    // If it's an object, try to extract a name
+    if (typeof val === "object") {
+      const name =
+        (val as any).name ||
+        (val as any).title ||
+        (val as any).facultyName ||
+        (val as any).label;
+      if (name && typeof name === "string") return name.trim() || "نامشخص";
+      return "نامشخص";
+    }
+
+    const s = String(val).trim();
+    if (!s) return "نامشخص";
+
+    // If it's already a non-numeric string, return it
+    if (isNaN(Number(s))) return s;
+
+    // It's numeric (or numeric string): try to lookup via backend faculties list first
+    try {
+      const facResp: any = await ApiService.get("/panel/v1/teacher/faculties");
+      if (facResp && !facResp.error && Array.isArray(facResp.data)) {
+        const facList = facResp.data as string[];
+        const idx = Number(s);
+        // try direct index and index-1 (API indexing unknown)
+        if (!Number.isNaN(idx)) {
+          if (facList[idx]) return facList[idx];
+          if (facList[idx - 1]) return facList[idx - 1];
+        }
+      }
+
+      // Fallback: try to infer from teachers list (older heuristic)
+      const resp: any = await ApiService.get(
+        "/panel/v1/teacher/read-teachers?PageNumber=1&PageSize=1000",
+      );
+      if (!resp || resp.error) return `دانشکده #${s}`;
+
+      const list = resp.data as any[] | undefined;
+      if (Array.isArray(list)) {
+        // Try to find a teacher entry that references this faculty id and extract a faculty name
+        for (const item of list) {
+          // direct faculty id fields
+          if (
+            item.faculty === s ||
+            item.faculty === Number(s) ||
+            item.facultyId === s ||
+            item.facultyId === Number(s)
+          ) {
+            if (item.facultyName) return item.facultyName;
+            if (item.facultyNameInPersian) return item.facultyNameInPersian;
+          }
+
+          // Search any field that equals the id and return a nearby facultyName if present
+          for (const k of Object.keys(item)) {
+            try {
+              if (String(item[k]) === s) {
+                if (item.facultyName) return item.facultyName;
+                if (item.facultyNameInPersian) return item.facultyNameInPersian;
+              }
+            } catch {
+              // ignore
+            }
+          }
+        }
+      }
+
+      // If not found, as a sensible fallback return an ID-based label
+      return `دانشکده #${s}`;
+    } catch (err) {
+      console.error("Error resolving faculty name:", err);
+      return `دانشکده #${s}`;
+    }
+  };
+
+  // Keep a resolved facultyDisplay in state so we can await backend lookup if needed
+  useEffect(() => {
+    let mounted = true;
+
+    const compute = async () => {
+      // Prefer detailed and teacher explicit names
+      if (detailedTeacher?.facultyName) {
+        if (mounted) setFacultyDisplay(detailedTeacher.facultyName);
+        return;
+      }
+      if ((teacher as any).facultyName) {
+        if (mounted) setFacultyDisplay((teacher as any).facultyName);
+        return;
+      }
+
+      const candidate = detailedTeacher?.faculty ?? teacher.faculty;
+      const resolved = await resolveFacultyName(candidate);
+      if (mounted) setFacultyDisplay(resolved);
+    };
+
+    compute();
+
+    return () => {
+      mounted = false;
+    };
+  }, [detailedTeacher, teacher]);
+
   // Helper function to render records list
   const renderRecordsList = (
     records: Record[] | null | undefined,
     title: string,
   ) => {
-    if (!records || records.length === 0) {
+    if (!records || !Array.isArray(records) || records.length === 0) {
       return (
         <div className="space-y-4">
           <h3 className="text-xl font-bold">{title}</h3>
@@ -107,15 +239,34 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
       );
     }
 
+    const sorted = [...records].sort((a, b) => {
+      const da = a.date ? new Date(a.date).getTime() : 0;
+      const db = b.date ? new Date(b.date).getTime() : 0;
+      return db - da;
+    });
+
     return (
       <div className="space-y-4">
-        <h3 className="text-xl font-bold">{title}</h3>
-        <ul className="list-inside list-disc space-y-2 text-gray-700">
-          {records.map((record) => (
-            <li key={record.id}>
-              {record.title} - {formatDate(record.date)}
+        <div className="flex items-center gap-3">
+          <h3 className="text-xl font-bold">{title}</h3>
+          <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
+            {sorted.length} مورد
+          </span>
+        </div>
+        <ul className="space-y-3 text-gray-700">
+          {sorted.map((record) => (
+            <li
+              key={record.id}
+              className="rounded-lg border border-gray-100 bg-gray-50 p-3 hover:bg-gray-100"
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-medium">{record.title}</span>
+                <span className="text-xs text-gray-500">
+                  {formatDate(record.date)}
+                </span>
+              </div>
               {record.description && (
-                <p className="mr-4 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-600">
                   {record.description}
                 </p>
               )}
@@ -125,6 +276,47 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
       </div>
     );
   };
+
+  // Fetch detailed teacher data
+  useEffect(() => {
+    const fetchDetailedTeacher = async () => {
+      setIsLoading(true);
+      try {
+        const response = await ApiService.get<DetailedTeacherResponse>(
+          `/panel/v1/teacher/read-teacher-by-id/${teacher.id}`,
+        );
+
+        if (!response.error) {
+          const teacherData = response.data;
+
+          // If educationalRecords doesn't exist but courses does, use courses
+          if (!teacherData.educationalRecords && (teacherData as any).courses) {
+            teacherData.educationalRecords = (teacherData as any).courses;
+          }
+
+          // Convert academicRank to rank if needed
+          if (
+            (teacherData as any).academicRank !== undefined &&
+            !teacherData.rank
+          ) {
+            teacherData.rank = getRankString((teacherData as any).academicRank);
+          }
+
+          setDetailedTeacher(teacherData);
+        } else {
+          throw new Error(response.message.join(", "));
+        }
+      } catch (err) {
+        console.error("Error fetching teacher details:", err);
+        setError("خطا در دریافت اطلاعات");
+        toast.error("خطا در دریافت اطلاعات");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDetailedTeacher();
+  }, [teacher.id]);
 
   const renderTabContent = () => {
     if (isLoading) {
@@ -244,6 +436,17 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
                     گرایش تحصیلی:{" "}
                     {detailedTeacher.educationalOrientation || "نامشخص"}
                   </p>
+                  <p className="text-gray-700">
+                    تاریخ ترفیع علمی:{" "}
+                    {formatDate(detailedTeacher.academicPromotionDate)}
+                  </p>
+                  <p className="text-gray-700">
+                    آخرین ترفیع: {formatDate(detailedTeacher.lastPromotionDate)}
+                  </p>
+                  <p className="text-gray-700">
+                    دانشکده ماموریت:{" "}
+                    {detailedTeacher.facultyOfMission || "نامشخص"}
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <p className="text-gray-700">
@@ -266,19 +469,34 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
                   <p className="text-gray-700">
                     آخرین وضعیت: {detailedTeacher.lastStatus || "نامشخص"}
                   </p>
+                  <p className="text-gray-700">
+                    تاریخ آخرین وضعیت:{" "}
+                    {formatDate(detailedTeacher.lastStatusDate)}
+                  </p>
+                  <p className="text-gray-700">
+                    نوع و شماره بیمه:{" "}
+                    {detailedTeacher.insuranceTypeAndNumber || "نامشخص"}
+                  </p>
+                  <p className="text-gray-700">
+                    شماره شبا: {detailedTeacher.shebaNumber || "نامشخص"}
+                  </p>
+                  <p className="text-gray-700">
+                    بانک و شماره حساب:{" "}
+                    {detailedTeacher.bankAndAccountNumber || "نامشخص"}
+                  </p>
+                  <p className="text-gray-700">
+                    بند آیین‌نامه: {detailedTeacher.bandeAyeenName || "نامشخص"}
+                  </p>
                 </div>
               </div>
             </div>
           </div>
         );
 
-      case "سوابق علمی پژوهشی":
+      case "سوابق پژوهشی":
         return (
           <div className="mt-8 space-y-6">
-            {renderRecordsList(
-              detailedTeacher.researchRecords,
-              "مقالات و پژوهش‌ها",
-            )}
+            {renderRecordsList(detailedTeacher.researchRecords, "سوابق پژوهشی")}
           </div>
         );
 
@@ -393,13 +611,16 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
           ))}
         </div>
 
-        <div className="relative z-20 -mt-4 h-full w-full flex-1 rounded-2xl bg-white p-8">
+        <div className="relative z-20 -mt-4 h-full w-full flex-1 rounded-2xl bg-white p-2">
           <div className="mr-36">
-            <h1 className="pr-5 text-2xl font-bold text-black">
-              {teacher.rank}
-            </h1>
-            <h2 className="pt-1 pr-5 text-3xl font-bold text-black">{`${teacher.firstName} ${teacher.lastName}`}</h2>
-            <p className="pt-2 pr-5 text-gray-600">دانشکده {teacher.faculty}</p>
+            <h1 className="pt-5 pr-7 text-3xl font-bold text-black">{`${detailedTeacher?.firstName ?? teacher.firstName} ${detailedTeacher?.lastName ?? teacher.lastName}`}</h1>
+            <p className="pt-2 pr-7 text-gray-600">
+              {facultyDisplay ??
+                formatFacultyDisplay(detailedTeacher?.faculty, teacher.faculty)}
+            </p>
+            <p className="pt-1 pr-7 text-2xl font-bold text-black">
+              {detailedTeacher?.rank ?? teacher.rank ?? "نامشخص"}
+            </p>
           </div>
           {renderTabContent()}
         </div>
