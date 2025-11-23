@@ -1,11 +1,20 @@
 import { useState, useEffect } from "react";
 import Timeline from "./../../components/TimeLineComponent";
-import type { Teacher, Record } from "../types/Teacher";
+import type {
+  Teacher,
+  IndustrialRecord,
+  ExecutiveRecord,
+  ResearchRecord,
+  PromotionRecord,
+  StatusChangeRecord,
+  EducationalRecord,
+} from "../types/Teacher";
 import { ApiService } from "../Services/ApiService";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import { toast } from "react-toastify";
 import NotFoundPage from "./NotFoundPage";
 import FemaleProfessorAvatar from "../../images/arab-woman-face-covered-with-hijab-muslim-woman-muslim-girl-avatar-avatar-icon-in-flat-style-smiling-girl-in-a-scarf-isolated-illustration-vector.jpg";
+import { gregorianToJalali } from "../utils/dateUtils";
 
 interface UserInfoProps {
   teacher: Teacher;
@@ -59,6 +68,37 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
     fetchDetailedTeacher();
   }, [teacher.id]);
 
+  // Helper function to get faculty name
+  const getFacultyName = (
+    facultyName?: string,
+    facultyNameEnglish?: string,
+    facultyId?: number | string,
+  ): string => {
+    // Use English name if available
+    if (facultyNameEnglish) {
+      return facultyNameEnglish;
+    }
+
+    // Otherwise use Persian name if available
+    if (facultyName && typeof facultyName === "string") {
+      return facultyName;
+    }
+
+    // If faculty is a string, use it
+    if (typeof facultyId === "string") {
+      return facultyId;
+    }
+
+    return "نامشخص";
+  };
+
+  // Helper function to detect if text is Persian/Arabic (RTL) or English (LTR)
+  const isRTL = (text: string): boolean => {
+    // Check if text contains Persian/Arabic characters
+    const persianArabicPattern = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/;
+    return persianArabicPattern.test(text);
+  };
+
   // Helper function to get gender text
   const getGenderText = (gender?: number): string => {
     switch (gender) {
@@ -87,16 +127,60 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
   const formatDate = (dateString?: string): string => {
     if (!dateString) return "نامشخص";
     try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString("fa-IR");
+      // Extract year to determine if it's Jalali or Gregorian
+      const yearMatch = dateString.match(/^(\d{4})-/);
+      if (!yearMatch) return dateString;
+
+      const year = parseInt(yearMatch[1]);
+
+      // If year is less than 1600, it's already a Jalali date
+      if (year < 1600) {
+        // Just format the existing Jalali date
+        const parts = dateString.split("T")[0].split("-");
+        return `${parts[0]}/${parts[1]}/${parts[2]}`;
+      } else {
+        // It's a Gregorian date, convert to Jalali
+        return gregorianToJalali(dateString);
+      }
     } catch {
       return dateString;
     }
   };
 
-  // Helper function to render records list
-  const renderRecordsList = (
-    records: Record[] | null | undefined,
+  // Helper function to get academic rank text
+  const getAcademicRankText = (rank?: number): string => {
+    switch (rank) {
+      case 0:
+        return "مربی";
+      case 1:
+        return "استادیار";
+      case 2:
+        return "دانشیار";
+      case 3:
+        return "استاد";
+      default:
+        return "نامشخص";
+    }
+  };
+
+  // Helper function to get employment status text
+  const getEmploymentStatusText = (status?: number | string): string => {
+    if (typeof status === "string") return status;
+    switch (status) {
+      case 0:
+        return "رسمی";
+      case 1:
+        return "پیمانی";
+      case 2:
+        return "قراردادی";
+      default:
+        return "نامشخص";
+    }
+  };
+
+  // Render Industrial Records
+  const renderIndustrialRecords = (
+    records: IndustrialRecord[] | null | undefined,
     title: string,
   ) => {
     if (!records || records.length === 0) {
@@ -111,12 +195,200 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
     return (
       <div className="space-y-4">
         <h3 className="text-xl font-bold">{title}</h3>
-        <ul className="list-inside list-disc space-y-2 text-gray-700">
-          {records.map((record) => (
-            <li key={record.id}>
-              {record.title} - {formatDate(record.date)}
+        <ul className="list-inside list-disc space-y-3 text-gray-700">
+          {records.map((record, index) => (
+            <li key={record.id || index}>
+              <span className="font-semibold">{record.organizationName}</span> -{" "}
+              {formatDate(record.date)}
               {record.description && (
-                <p className="mr-4 text-sm text-gray-500">
+                <p className="mr-4 mt-1 text-sm text-gray-500">
+                  {record.description}
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
+  // Render Executive Records
+  const renderExecutiveRecords = (
+    records: ExecutiveRecord[] | null | undefined,
+    title: string,
+  ) => {
+    if (!records || records.length === 0) {
+      return (
+        <div className="space-y-4">
+          <h3 className="text-xl font-bold">{title}</h3>
+          <p className="text-gray-500">هیچ موردی یافت نشد.</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-4">
+        <h3 className="text-xl font-bold">{title}</h3>
+        <ul className="list-inside list-disc space-y-3 text-gray-700">
+          {records.map((record, index) => (
+            <li key={record.id || index}>
+              <span className="font-semibold">
+                {formatDate(record.startDate)} تا {formatDate(record.endDate)}
+              </span>
+              {record.description && (
+                <p className="mr-4 mt-1 text-sm text-gray-500">
+                  {record.description}
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
+  // Render Research Records
+  const renderResearchRecords = (
+    records: ResearchRecord[] | null | undefined,
+    title: string,
+  ) => {
+    if (!records || records.length === 0) {
+      return (
+        <div className="space-y-4">
+          <h3 className="text-xl font-bold">{title}</h3>
+          <p className="text-gray-500">هیچ موردی یافت نشد.</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-4">
+        <h3 className="text-xl font-bold">{title}</h3>
+        <ol className="space-y-2 text-gray-700">
+          {records.map((record, index) => {
+            const textDirection = isRTL(record.reference) ? "rtl" : "ltr";
+            const textAlign = textDirection === "rtl" ? "right" : "left";
+
+            return (
+              <li
+                key={record.id || index}
+                className={`list-decimal list-inside px-3 py-2 rounded-lg transition-colors duration-200 ${
+                  record.url ? "hover:bg-blue-100 cursor-pointer" : ""
+                }`}
+                style={{ direction: textDirection, textAlign }}
+                onClick={() => {
+                  if (record.url) {
+                    window.open(record.url, "_blank", "noopener,noreferrer");
+                  }
+                }}
+              >
+                <span className="text-sm text-gray-700">
+                  {record.reference}
+                </span>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+    );
+  };
+
+  // Render Promotion Records
+  const renderPromotionRecords = (
+    records: PromotionRecord[] | null | undefined,
+    title: string,
+  ) => {
+    if (!records || records.length === 0) {
+      return (
+        <div className="space-y-4">
+          <h3 className="text-xl font-bold">{title}</h3>
+          <p className="text-gray-500">هیچ موردی یافت نشد.</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-4">
+        <h3 className="text-xl font-bold">{title}</h3>
+        <ul className="list-inside list-disc space-y-3 text-gray-700">
+          {records.map((record, index) => (
+            <li key={record.id || index}>
+              ارتقا از{" "}
+              <span className="font-semibold">
+                {getAcademicRankText(record.fromAcademicRank)}
+              </span>{" "}
+              به{" "}
+              <span className="font-semibold">
+                {getAcademicRankText(record.toAcademicRank)}
+              </span>{" "}
+              - {formatDate(record.promotionDate)}
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
+  // Render Status Change Records
+  const renderStatusChangeRecords = (
+    records: StatusChangeRecord[] | null | undefined,
+    title: string,
+  ) => {
+    if (!records || records.length === 0) {
+      return (
+        <div className="space-y-4">
+          <h3 className="text-xl font-bold">{title}</h3>
+          <p className="text-gray-500">هیچ موردی یافت نشد.</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-4">
+        <h3 className="text-xl font-bold">{title}</h3>
+        <ul className="list-inside list-disc space-y-3 text-gray-700">
+          {records.map((record, index) => (
+            <li key={record.id || index}>
+              تغییر از{" "}
+              <span className="font-semibold">
+                {getEmploymentStatusText(record.fromStatus)}
+              </span>{" "}
+              به{" "}
+              <span className="font-semibold">
+                {getEmploymentStatusText(record.toStatus)}
+              </span>{" "}
+              - {formatDate(record.statusChangeDate)}
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
+  // Render Educational Records
+  const renderEducationalRecords = (
+    records: EducationalRecord[] | null | undefined,
+    title: string,
+  ) => {
+    if (!records || records.length === 0) {
+      return (
+        <div className="space-y-4">
+          <h3 className="text-xl font-bold">{title}</h3>
+          <p className="text-gray-500">هیچ موردی یافت نشد.</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-4">
+        <h3 className="text-xl font-bold">{title}</h3>
+        <ul className="list-inside list-disc space-y-3 text-gray-700">
+          {records.map((record, index) => (
+            <li key={record.id || index}>
+              <span className="font-semibold">{record.title}</span> -{" "}
+              {formatDate(record.date)}
+              {record.description && (
+                <p className="mr-4 mt-1 text-sm text-gray-500">
                   {record.description}
                 </p>
               )}
@@ -151,7 +423,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
           <div className="mt-8 space-y-6">
             <div className="grid grid-cols-2 gap-8">
               <div className="space-y-4">
-                <h3 className="text-xl font-bold">اطلاعات فردی</h3>
+                <h3 className="text-xl font-bold text-black">اطلاعات فردی</h3>
                 <div className="space-y-2">
                   <p className="text-gray-700">
                     کد پرسنلی: {detailedTeacher.personalNumber || "نامشخص"}
@@ -219,7 +491,8 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
               <div className="grid grid-cols-2 gap-8">
                 <div className="space-y-2">
                   <p className="text-gray-700">
-                    وضعیت اشتغال: {detailedTeacher.employmentStatus || "نامشخص"}
+                    وضعیت اشتغال:{" "}
+                    {getEmploymentStatusText(detailedTeacher.employmentStatus)}
                   </p>
                   <p className="text-gray-700">
                     تاریخ استخدام: {formatDate(detailedTeacher.employmentDate)}
@@ -227,6 +500,10 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
                   <p className="text-gray-700">
                     تاریخ پایان خدمت:{" "}
                     {formatDate(detailedTeacher.employmentEndDate)}
+                  </p>
+                  <p className="text-gray-700">
+                    رتبه علمی:{" "}
+                    {getAcademicRankText(detailedTeacher.academicRank)}
                   </p>
                   <p className="text-gray-700">
                     آخرین مدرک: {detailedTeacher.lastDegree || "نامشخص"}
@@ -269,7 +546,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
       case "سوابق علمی پژوهشی":
         return (
           <div className="mt-8 space-y-6">
-            {renderRecordsList(
+            {renderResearchRecords(
               detailedTeacher.researchRecords,
               "مقالات و پژوهش‌ها",
             )}
@@ -279,7 +556,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
       case "ارتباط با صنعت":
         return (
           <div className="mt-8 space-y-6">
-            {renderRecordsList(
+            {renderIndustrialRecords(
               detailedTeacher.industrialRecords,
               "پروژه های صنعتی",
             )}
@@ -289,7 +566,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
       case "سوابق آموزشی":
         return (
           <div className="mt-8 space-y-6">
-            {renderRecordsList(
+            {renderEducationalRecords(
               detailedTeacher.educationalRecords,
               "سوابق آموزشی",
             )}
@@ -299,7 +576,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
       case "سوابق اجرایی":
         return (
           <div className="mt-8 space-y-6">
-            {renderRecordsList(
+            {renderExecutiveRecords(
               detailedTeacher.executiveRecords,
               "سوابق اجرایی",
             )}
@@ -309,8 +586,11 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
       case "سوابق ارتقا و تبدیل وضعیت":
         return (
           <div className="mt-8 space-y-6">
-            {renderRecordsList(detailedTeacher.promotionRecords, "سوابق ارتقا")}
-            {renderRecordsList(
+            {renderPromotionRecords(
+              detailedTeacher.promotionRecords,
+              "سوابق ارتقا",
+            )}
+            {renderStatusChangeRecords(
               detailedTeacher.statusChangeRecords,
               "تغییرات وضعیت",
             )}
@@ -389,11 +669,20 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
 
         <div className="relative z-20 -mt-4 w-full flex-1 rounded-2xl bg-white p-8 overflow-y-auto">
           <div className="mr-36">
-            <h1 className="pr-5 text-2xl font-bold text-black">
-              {teacher.rank}
-            </h1>
-            <h2 className="pt-1 pr-5 text-3xl font-bold text-black">{`${teacher.firstName} ${teacher.lastName}`}</h2>
-            <p className="pt-2 pr-5 text-gray-600">دانشکده {teacher.faculty}</p>
+            <p className="pr-5 text-lg text-gray-600">
+              {detailedTeacher?.academicRank !== undefined
+                ? getAcademicRankText(detailedTeacher.academicRank)
+                : teacher.rank || "نامشخص"}
+            </p>
+            <h1 className="pr-5 text-2xl font-bold text-black">{`${detailedTeacher?.firstName || teacher.firstName} ${detailedTeacher?.lastName || teacher.lastName}`}</h1>
+            <p className="pt-2 pr-5 text-gray-600">
+              دانشکده{" "}
+              {getFacultyName(
+                detailedTeacher?.facultyName,
+                detailedTeacher?.facultyNameInEnglish,
+                teacher.faculty,
+              )}
+            </p>
           </div>
           {renderTabContent()}
         </div>
