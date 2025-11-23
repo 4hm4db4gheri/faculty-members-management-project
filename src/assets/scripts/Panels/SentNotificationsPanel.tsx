@@ -73,6 +73,7 @@ export default function SentNotificationsPanel() {
     teacherName: "",
     date: "",
   });
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -337,10 +338,10 @@ export default function SentNotificationsPanel() {
           <div className="flex items-center gap-2">
             <DatePicker
               ref={datePickerRef}
-              value=""
+              value={filters.date || ""}
               onChange={(dateObject) => {
-                if (dateObject) {
-                  // Format as YYYY/MM/DD
+                // Only apply filter if user manually selected a date (not auto-selection on open)
+                if (dateObject && isDatePickerOpen) {
                   const formatted = `${dateObject.year}/${String(dateObject.month.number).padStart(2, "0")}/${String(dateObject.day).padStart(2, "0")}`;
                   setFilters({ ...filters, date: formatted });
                 }
@@ -350,6 +351,12 @@ export default function SentNotificationsPanel() {
               format="YYYY/MM/DD"
               placeholder="تاریخ را انتخاب کنید"
               editable={false}
+              onOpen={() => {
+                setIsDatePickerOpen(true);
+              }}
+              onClose={() => {
+                setIsDatePickerOpen(false);
+              }}
               render={(_value, openCalendar) => {
                 return (
                   <button
