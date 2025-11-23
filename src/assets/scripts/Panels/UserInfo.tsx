@@ -71,20 +71,26 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
   // Helper function to get faculty name
   const getFacultyName = (
     facultyName?: string,
+    facultyNameInPersian?: string,
     facultyNameEnglish?: string,
     facultyId?: number | string,
   ): string => {
-    // Use English name if available
+    // First priority: Persian name (when backend adds it)
+    if (facultyNameInPersian && typeof facultyNameInPersian === "string") {
+      return facultyNameInPersian;
+    }
+
+    // Second priority: English name (currently available)
     if (facultyNameEnglish) {
       return facultyNameEnglish;
     }
 
-    // Otherwise use Persian name if available
+    // Third priority: Generic faculty name
     if (facultyName && typeof facultyName === "string") {
       return facultyName;
     }
 
-    // If faculty is a string, use it
+    // Fourth priority: If faculty is a string ID, use it
     if (typeof facultyId === "string") {
       return facultyId;
     }
@@ -679,6 +685,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
               دانشکده{" "}
               {getFacultyName(
                 detailedTeacher?.facultyName,
+                detailedTeacher?.facultyNameInPersian,
                 detailedTeacher?.facultyNameInEnglish,
                 teacher.faculty,
               )}

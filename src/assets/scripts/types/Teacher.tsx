@@ -15,6 +15,7 @@ export interface Teacher {
   points: number;
   // Additional detailed fields
   facultyNameInEnglish?: string;
+  facultyNameInPersian?: string;
   groupNameInPersian?: string;
   groupNameInEnglish?: string;
   tId?: string;
