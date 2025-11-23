@@ -290,7 +290,6 @@ export default function HistoryPanel() {
         return (
           teacher.firstName.toLowerCase().includes(term) ||
           teacher.lastName.toLowerCase().includes(term) ||
-          teacher.faculty.toLowerCase().includes(term) ||
           teacher.rank.toLowerCase().includes(term)
         );
       } else {
@@ -298,7 +297,6 @@ export default function HistoryPanel() {
           (term) =>
             teacher.firstName.toLowerCase().includes(term) ||
             teacher.lastName.toLowerCase().includes(term) ||
-            teacher.faculty.toLowerCase().includes(term) ||
             teacher.rank.toLowerCase().includes(term),
         );
       }
