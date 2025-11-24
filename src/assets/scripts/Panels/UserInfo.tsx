@@ -7,7 +7,7 @@ import type {
   ResearchRecord,
   PromotionRecord,
   StatusChangeRecord,
-  EducationalRecord,
+  Course,
 } from "../types/Teacher";
 import { ApiService } from "../Services/ApiService";
 import LoadingSpinner from "../Elements/LoadingSpinner";
@@ -73,6 +73,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
     facultyName?: string,
     facultyNameInPersian?: string,
     facultyNameEnglish?: string,
+    facultyOfMission?: string,
     facultyId?: number | string,
   ): string => {
     // First priority: Persian name (when backend adds it)
@@ -80,17 +81,22 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
       return facultyNameInPersian;
     }
 
-    // Second priority: English name (currently available)
+    // Second priority: Faculty of Mission (Persian name from another field)
+    if (facultyOfMission && typeof facultyOfMission === "string") {
+      return facultyOfMission;
+    }
+
+    // Third priority: English name (currently available)
     if (facultyNameEnglish) {
       return facultyNameEnglish;
     }
 
-    // Third priority: Generic faculty name
+    // Fourth priority: Generic faculty name
     if (facultyName && typeof facultyName === "string") {
       return facultyName;
     }
 
-    // Fourth priority: If faculty is a string ID, use it
+    // Fifth priority: If faculty is a string ID, use it
     if (typeof facultyId === "string") {
       return facultyId;
     }
@@ -371,12 +377,26 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
     );
   };
 
-  // Render Educational Records
-  const renderEducationalRecords = (
-    records: EducationalRecord[] | null | undefined,
+  // Helper function to convert day number to Persian day name
+  const getDayName = (dayNumber: number): string => {
+    const days = [
+      "شنبه",
+      "یکشنبه",
+      "دوشنبه",
+      "سه‌شنبه",
+      "چهارشنبه",
+      "پنجشنبه",
+      "جمعه",
+    ];
+    return days[dayNumber] || "نامشخص";
+  };
+
+  // Render Courses (Educational Records)
+  const renderCourses = (
+    courses: Course[] | null | undefined,
     title: string,
   ) => {
-    if (!records || records.length === 0) {
+    if (!courses || courses.length === 0) {
       return (
         <div className="space-y-4">
           <h3 className="text-xl font-bold">{title}</h3>
@@ -388,19 +408,53 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
     return (
       <div className="space-y-4">
         <h3 className="text-xl font-bold">{title}</h3>
-        <ul className="list-inside list-disc space-y-3 text-gray-700">
-          {records.map((record, index) => (
-            <li key={record.id || index}>
-              <span className="font-semibold">{record.title}</span> -{" "}
-              {formatDate(record.date)}
-              {record.description && (
-                <p className="mr-4 mt-1 text-sm text-gray-500">
-                  {record.description}
-                </p>
-              )}
-            </li>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {courses.map((course, index) => (
+            <div
+              key={course.id || index}
+              className="rounded-lg border border-gray-200 bg-gray-50 p-4"
+            >
+              <div className="space-y-2">
+                <h4 className="text-lg font-semibold text-gray-800">
+                  {course.title}
+                </h4>
+                <div className="space-y-1 text-sm text-gray-600">
+                  <p>
+                    <span className="font-medium">تعداد واحد:</span>{" "}
+                    {course.creditHour} واحد
+                  </p>
+                  {course.activeDays && course.activeDays.length > 0 && (
+                    <p>
+                      <span className="font-medium">روزهای برگزاری:</span>{" "}
+                      {course.activeDays.map((day) => getDayName(day)).join("، ")}
+                    </p>
+                  )}
+                  {course.time && (
+                    <p>
+                      <span className="font-medium">ساعت:</span>{" "}
+                      {new Date(course.time).toLocaleTimeString("fa-IR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  )}
+                  <p>
+                    <span className="font-medium">وضعیت:</span>{" "}
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs ${
+                        course.isActive
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      {course.isActive ? "فعال" : "غیرفعال"}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
     );
   };
@@ -572,10 +626,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
       case "سوابق آموزشی":
         return (
           <div className="mt-8 space-y-6">
-            {renderEducationalRecords(
-              detailedTeacher.educationalRecords,
-              "سوابق آموزشی",
-            )}
+            {renderCourses(detailedTeacher.courses, "دروس تدریس شده")}
           </div>
         );
 
@@ -687,6 +738,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
                 detailedTeacher?.facultyName,
                 detailedTeacher?.facultyNameInPersian,
                 detailedTeacher?.facultyNameInEnglish,
+                detailedTeacher?.facultyOfMission,
                 teacher.faculty,
               )}
             </p>
