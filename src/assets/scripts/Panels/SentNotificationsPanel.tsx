@@ -110,12 +110,10 @@ export default function SentNotificationsPanel() {
   // Map sendType to Persian
   const mapSendType = (sendType: number): string => {
     switch (sendType) {
-      case 0:
-        return "ایمیل";
       case 1:
-        return "اس ام اس";
+        return "ایمیل";
       case 2:
-        return "سیستمی";
+        return "اس ام اس";
       default:
         return "نامشخص";
     }
