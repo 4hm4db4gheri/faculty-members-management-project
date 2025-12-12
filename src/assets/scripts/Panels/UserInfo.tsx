@@ -163,13 +163,11 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
   const getAcademicRankText = (rank?: number): string => {
     switch (rank) {
       case 0:
-        return "مربی";
-      case 1:
         return "استادیار";
-      case 2:
+      case 1:
         return "دانشیار";
-      case 3:
-        return "استاد";
+      case 2:
+        return "استاد تمام";
       default:
         return "نامشخص";
     }
