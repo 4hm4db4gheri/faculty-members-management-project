@@ -171,6 +171,7 @@ export default function HistoryPanel() {
             lastName: apiTeacher.lastName,
             faculty: apiTeacher.facultyName,
             rank: getRankString(apiTeacher.academicRank),
+            academicRank: apiTeacher.academicRank,
             phoneNumber: apiTeacher.phoneNumber || "",
             email: apiTeacher.emailAddress || "",
             group: apiTeacher.group || "",

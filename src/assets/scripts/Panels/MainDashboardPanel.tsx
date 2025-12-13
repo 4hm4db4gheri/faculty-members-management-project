@@ -103,6 +103,7 @@ export default function MainDashboardPanel() {
             lastName: apiTeacher.lastName,
             faculty: apiTeacher.facultyNameInPersian,
             rank: getRankString(apiTeacher.academicRank),
+            academicRank: apiTeacher.academicRank,
             phoneNumber: "",
             email: "",
             group: "",
