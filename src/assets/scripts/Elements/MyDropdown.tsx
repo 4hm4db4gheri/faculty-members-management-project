@@ -23,7 +23,6 @@ export default function Dropdown({
   value,
   multiSelect = false,
   disabledOptions = [],
-  isLoading = false,
 }: DropdownProps) {
   const [selectedOptions, setSelectedOptions] = useState<string[]>(
     multiSelect
