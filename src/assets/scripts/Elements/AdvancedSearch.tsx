@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import MyInput from "./MyInput";
 import MyDropdown from "./MyDropdown";
 import type { Teacher } from "../types/Teacher";
 import { toast } from "react-toastify";
+import { getFaculties, getFacultyGroups } from "../Services/apiEndpoints";
+import LoadingSpinner from "../Elements/LoadingSpinner";
 
 interface AdvancedSearchProps {
   isOpen: boolean;
@@ -18,32 +20,10 @@ interface AdvancedSearchProps {
   setSelectedDegree: (value: string) => void;
 }
 
-const facultyOptions = [
-  "همه",
-  "علوم و فناوري زيستي",
-  "علوم زمين",
-  "علوم رياضي",
-  "فيزيك",
-  "علوم شيمي و نفت",
-  "معماري و شهرسازي",
-  "فناوري‌هاي نوين و مهندسي هوا فضا",
-  "مهندسي مكانيك و انرژي",
-  "انرژي",
-  "مهندسي برق (الكترونيك و مخابرات)",
-  "مهندسی و علوم کامپیوتر",
-  "مهندسي عمران، آب و محيط زيست",
-  "مهندسي مواد",
-  "مهندسي برق (كنترل و قدرت)",
-  "ادبيات و علوم انساني",
-  "الهیات و ادیان",
-  "حقوق",
-  "علوم اقتصادي و سياسي",
-  "مديريت و حسابداري",
-  "علوم تربيتي و روان‌شناسي",
-  "علوم ورزشي و تندرستي",
-];
+// Faculty options will be fetched from API
 
-const groupOptions = [
+// All available groups (used when "همه" is selected)
+const allGroupOptions = [
   "همه",
   "معماري كامپيوتر و شبكه",
   "نرم‌افزار و سيستم‌هاي اطلاعاتي",
@@ -103,6 +83,12 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   const [points, setPoints] = React.useState("");
   const [selectedGroup, setSelectedGroup] = React.useState("همه");
   const [nationalCode, setNationalCode] = React.useState("");
+  const [groupOptions, setGroupOptions] = useState<string[]>(allGroupOptions);
+  const [facultyOptions, setFacultyOptions] = useState<string[]>(["همه"]);
+  const [facultyGroupsCache, setFacultyGroupsCache] = useState<
+    Map<string, string[]>
+  >(new Map());
+  const [isLoadingGroups, setIsLoadingGroups] = useState(false);
 
   // Helper function to get academic rank text (matching UserInfo.tsx)
   const getAcademicRankText = (rank?: number): string => {
@@ -120,6 +106,144 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
 
   const statusOptions = ["همه", "استادیار", "دانشیار", "استاد تمام"];
 
+  // Fetch faculties when modal opens
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const fetchFaculties = async () => {
+      // If faculties are already loaded, skip fetching
+      if (facultyOptions.length > 1) {
+        return;
+      }
+
+      try {
+        const response = await getFaculties();
+        if (!response.error && response.data) {
+          // Add "همه" at the beginning
+          setFacultyOptions(["همه", ...response.data]);
+        } else {
+          toast.error("خطا در دریافت لیست دانشکده‌ها");
+        }
+      } catch (error) {
+        console.error("Error fetching faculties:", error);
+        toast.error("خطا در دریافت لیست دانشکده‌ها");
+      }
+    };
+
+    fetchFaculties();
+  }, [isOpen, facultyOptions.length]);
+
+  // Pre-fetch all faculty groups when modal opens and faculties are loaded
+  useEffect(() => {
+    if (!isOpen || facultyOptions.length <= 1) return;
+
+    const fetchAllFacultyGroups = async () => {
+      // If cache is already populated, skip fetching
+      if (facultyGroupsCache.size > 0) {
+        return;
+      }
+
+      const cache = new Map<string, string[]>();
+
+      // Fetch groups for all faculties (excluding "همه")
+      const facultiesToFetch = facultyOptions.filter(
+        (faculty) => faculty !== "همه",
+      );
+
+      try {
+        // Fetch all faculties in parallel
+        const fetchPromises = facultiesToFetch.map(async (faculty) => {
+          try {
+            const response = await getFacultyGroups(faculty);
+            if (!response.error && response.data) {
+              cache.set(faculty, response.data);
+            }
+          } catch (error) {
+            console.error(`Error fetching groups for ${faculty}:`, error);
+            // Continue with other faculties even if one fails
+          }
+        });
+
+        await Promise.all(fetchPromises);
+        setFacultyGroupsCache(cache);
+      } catch (error) {
+        console.error("Error fetching faculty groups:", error);
+        toast.error("خطا در دریافت گروه‌های دانشکده");
+      }
+    };
+
+    fetchAllFacultyGroups();
+  }, [isOpen, facultyOptions, facultyGroupsCache.size]);
+
+  // Update group options when faculty changes (using cached data)
+  useEffect(() => {
+    // If "همه" is selected, show all groups
+    if (selectedFaculty === "همه") {
+      setGroupOptions(allGroupOptions);
+      setIsLoadingGroups(false);
+      // Reset group selection if it's not in all groups
+      setSelectedGroup((prev) => {
+        if (prev !== "همه" && !allGroupOptions.includes(prev)) {
+          return "همه";
+        }
+        return prev;
+      });
+      return;
+    }
+
+    // Use cached data if available
+    const cachedGroups = facultyGroupsCache.get(selectedFaculty);
+    if (cachedGroups !== undefined) {
+      // Data is loaded (could be empty array)
+      if (cachedGroups.length === 0) {
+        // No groups found for this faculty
+        setGroupOptions(["گروهی پیدا نشد"]);
+      } else {
+        const facultyGroups = ["همه", ...cachedGroups];
+        setGroupOptions(facultyGroups);
+        // Reset group selection if current selection is not in the new list
+        setSelectedGroup((prev) => {
+          if (!facultyGroups.includes(prev)) {
+            return "همه";
+          }
+          return prev;
+        });
+      }
+      setIsLoadingGroups(false);
+    } else {
+      // If not in cache yet, show loading state
+      setGroupOptions(["در حال بارگذاری..."]);
+      setIsLoadingGroups(true);
+    }
+  }, [selectedFaculty, facultyGroupsCache]);
+
+  // Update group options when cache is populated
+  useEffect(() => {
+    if (selectedFaculty === "همه" || !isLoadingGroups) {
+      return;
+    }
+
+    const cachedGroups = facultyGroupsCache.get(selectedFaculty);
+    if (cachedGroups !== undefined) {
+      // Data is loaded (could be empty array)
+      if (cachedGroups.length === 0) {
+        // No groups found for this faculty
+        setGroupOptions(["گروهی پیدا نشد"]);
+      } else {
+        const facultyGroups = ["همه", ...cachedGroups];
+        setGroupOptions(facultyGroups);
+        // Reset group selection if current selection is not in the new list
+        setSelectedGroup((prev) => {
+          if (!facultyGroups.includes(prev)) {
+            return "همه";
+          }
+          return prev;
+        });
+      }
+      setIsLoadingGroups(false);
+    }
+  }, [facultyGroupsCache, selectedFaculty, isLoadingGroups]);
+
   const handleSearch = () => {
     const results = teachers.filter((teacher) => {
       const nameMatch =
@@ -129,7 +253,12 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
 
       const facultyMatch =
         selectedFaculty === "همه" ||
-        teacher.faculty.toLowerCase().includes(selectedFaculty.toLowerCase());
+        (typeof teacher.faculty === "string" &&
+          teacher.faculty
+            .toLowerCase()
+            .includes(selectedFaculty.toLowerCase())) ||
+        (typeof teacher.faculty === "number" &&
+          teacher.faculty.toString().includes(selectedFaculty));
 
       const degreeMatch =
         selectedDegree === "همه" ||
@@ -169,11 +298,13 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
       setPoints("");
       setSelectedGroup("همه");
       setNationalCode("");
+      setGroupOptions(allGroupOptions); // Reset to all groups
       // Also reset the parent form fields
       if (onResetForm) {
         onResetForm();
       }
     }
+    // Note: We keep the cache even when closing, so it's ready for next time
     onClose();
   };
 
@@ -230,15 +361,34 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                       گروه
                     </div>
                     <div className="col-span-2 w-full content-center">
-                      <MyDropdown
-                        options={groupOptions}
-                        defaultOption={selectedGroup}
-                        onSelect={(selected) => {
-                          if (typeof selected === "string") {
-                            setSelectedGroup(selected);
+                      <div className="relative w-full">
+                        <MyDropdown
+                          options={groupOptions}
+                          defaultOption={selectedGroup}
+                          onSelect={(selected) => {
+                            if (
+                              typeof selected === "string" &&
+                              selected !== "در حال بارگذاری..." &&
+                              selected !== "گروهی پیدا نشد"
+                            ) {
+                              setSelectedGroup(selected);
+                            }
+                          }}
+                          disabledOptions={
+                            isLoadingGroups
+                              ? ["در حال بارگذاری..."]
+                              : groupOptions.includes("گروهی پیدا نشد")
+                                ? ["گروهی پیدا نشد"]
+                                : []
                           }
-                        }}
-                      />
+                          isLoading={isLoadingGroups}
+                        />
+                        {isLoadingGroups && (
+                          <div className="absolute top-1/2 left-3 -translate-y-1/2">
+                            <LoadingSpinner size="sm" showText={false} />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

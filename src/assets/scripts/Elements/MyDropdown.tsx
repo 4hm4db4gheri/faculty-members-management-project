@@ -10,6 +10,8 @@ interface DropdownProps {
   className?: string;
   value?: string | string[];
   multiSelect?: boolean;
+  disabledOptions?: readonly string[];
+  isLoading?: boolean;
 }
 
 export default function Dropdown({
@@ -20,6 +22,8 @@ export default function Dropdown({
   className = "",
   value,
   multiSelect = false,
+  disabledOptions = [],
+  isLoading = false,
 }: DropdownProps) {
   const [selectedOptions, setSelectedOptions] = useState<string[]>(
     multiSelect
@@ -40,6 +44,11 @@ export default function Dropdown({
   }, [value, multiSelect]);
 
   const handleSelect = (option: string) => {
+    // Don't allow selection of disabled options
+    if (disabledOptions.includes(option)) {
+      return;
+    }
+
     let newSelected: string[];
 
     if (multiSelect) {
@@ -107,21 +116,29 @@ export default function Dropdown({
           className="absolute right-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-hidden"
         >
           <div className="flex max-h-48 w-full flex-col overflow-y-auto">
-            {options.map((option) => (
-              <MenuItem key={option}>
-                {({ active }) => (
-                  <button
-                    className={`w-full px-4 py-2 text-right text-sm ${
-                      active ? "bg-gray-100 text-gray-900" : "text-gray-700"
-                    } ${selectedOptions.includes(option) ? "bg-blue-50" : ""}`}
-                    onClick={() => handleSelect(option)}
-                  >
-                    {selectedOptions.includes(option) && "✓ "}
-                    {option}
-                  </button>
-                )}
-              </MenuItem>
-            ))}
+            {options.map((option) => {
+              const isDisabled = disabledOptions.includes(option);
+              return (
+                <MenuItem key={option} disabled={isDisabled}>
+                  {({ active }) => (
+                    <button
+                      className={`w-full px-4 py-2 text-right text-sm ${
+                        isDisabled
+                          ? "cursor-not-allowed bg-gray-50 text-gray-400"
+                          : active
+                            ? "bg-gray-100 text-gray-900"
+                            : "text-gray-700"
+                      } ${selectedOptions.includes(option) ? "bg-blue-50" : ""}`}
+                      onClick={() => handleSelect(option)}
+                      disabled={isDisabled}
+                    >
+                      {selectedOptions.includes(option) && "✓ "}
+                      {option}
+                    </button>
+                  )}
+                </MenuItem>
+              );
+            })}
           </div>
         </MenuItems>
       </Menu>

@@ -22,6 +22,29 @@ export const uploadTeachersExcel = async (file: File) => {
     return response.json();
 };
 
+// Get all faculties
+interface FacultiesResponse {
+    data: string[];
+    error: boolean;
+    message: string[];
+}
+export const getFaculties = (): Promise<FacultiesResponse> =>
+    ApiService.get<FacultiesResponse>("/panel/v1/teacher/faculties");
+
+// Get groups for a specific faculty
+interface FacultyGroupsResponse {
+    data: string[];
+    error: boolean;
+    message: string[];
+}
+export const getFacultyGroups = async (facultyName: string): Promise<FacultyGroupsResponse> => {
+    // The API endpoint uses faculty ID 1, and the body contains the faculty name
+    return ApiService.post<FacultyGroupsResponse>(
+        "/panel/v1/teacher/faculties/1",
+        facultyName
+    );
+};
+
 // USERS
 interface CreateUserRequest {
     // Define the expected fields for creating a user
@@ -51,20 +74,20 @@ export const updateUserRole = (userId: string, role: string) =>
 // FORGOT PASSWORD FLOW
 export const requestPasswordReset = async (username: string) => {
     console.log(`🔍 Starting password reset for username: ${username}`);
-    
+
     // فقط با پارامتر userName درخواست ارسال شود
     const endpoints = [
         `/panel/v1/user/forget-password?userName=${encodeURIComponent(username)}`
     ];
 
     let lastError: any = null;
-    
+
     for (const endpoint of endpoints) {
         try {
             console.log(`🔄 Trying endpoint: ${endpoint}`);
             const response: any = await ApiService.get(endpoint);
             console.log(`✅ Response from ${endpoint}:`, response);
-            
+
             if (!response.error) {
                 console.log(`🎉 Success with endpoint: ${endpoint}`);
                 return response;
@@ -78,7 +101,7 @@ export const requestPasswordReset = async (username: string) => {
             continue;
         }
     }
-    
+
     console.error(`🚨 All endpoints failed. Last error:`, lastError);
     throw new Error(`همه endpoint های بازیابی رمز عبور ناموفق بودند. آخرین خطا: ${lastError?.message || 'نامشخص'}`);
 };
@@ -104,7 +127,7 @@ export const validateVerificationCode = async (username: string, code: string) =
             continue;
         }
     }
-    
+
     throw new Error("همه endpoint های تایید کد ناموفق بودند");
 };
 
@@ -129,7 +152,7 @@ export const changePasswordWithCode = async (username: string, code: string, new
             continue;
         }
     }
-    
+
     throw new Error("همه endpoint های تغییر رمز عبور ناموفق بودند");
 };
 
