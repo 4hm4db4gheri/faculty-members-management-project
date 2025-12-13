@@ -261,15 +261,15 @@ export default function HistoryPanel() {
     navigate(`/dashboard/records/${teacher.id}`);
   };
 
-  // Function to convert academicRank number to string
+  // Function to convert academicRank number to string (matching UserInfo.tsx)
   const getRankString = (rank: number): string => {
     switch (rank) {
       case 0:
-        return "استاد";
+        return "استادیار";
       case 1:
         return "دانشیار";
       case 2:
-        return "استادیار";
+        return "استاد تمام";
       default:
         return "نامشخص";
     }

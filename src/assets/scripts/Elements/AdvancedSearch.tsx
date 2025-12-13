@@ -104,7 +104,21 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   const [selectedGroup, setSelectedGroup] = React.useState("همه");
   const [nationalCode, setNationalCode] = React.useState("");
 
-  const statusOptions = ["همه", "استاد", "استادیار", "دانشیار"];
+  // Helper function to get academic rank text (matching UserInfo.tsx)
+  const getAcademicRankText = (rank?: number): string => {
+    switch (rank) {
+      case 0:
+        return "استادیار";
+      case 1:
+        return "دانشیار";
+      case 2:
+        return "استاد تمام";
+      default:
+        return "نامشخص";
+    }
+  };
+
+  const statusOptions = ["همه", "استادیار", "دانشیار", "استاد تمام"];
 
   const handleSearch = () => {
     const results = teachers.filter((teacher) => {
@@ -118,7 +132,10 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
         teacher.faculty.toLowerCase().includes(selectedFaculty.toLowerCase());
 
       const degreeMatch =
-        selectedDegree === "همه" || teacher.rank === selectedDegree;
+        selectedDegree === "همه" ||
+        teacher.rank === selectedDegree ||
+        (teacher.academicRank !== undefined &&
+          getAcademicRankText(teacher.academicRank) === selectedDegree);
 
       const groupMatch =
         selectedGroup === "همه" || teacher.group === selectedGroup;
