@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Timeline from "./../../components/TimeLineComponent";
 import type {
   Teacher,
@@ -42,6 +42,8 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
   const [detailedTeacher, setDetailedTeacher] = useState<Teacher | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const tabsScrollRef = useRef<HTMLDivElement | null>(null);
+  const [tabsOverflow, setTabsOverflow] = useState(false);
 
   // Fetch detailed teacher data
   useEffect(() => {
@@ -67,6 +69,28 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
 
     fetchDetailedTeacher();
   }, [teacher.id]);
+
+  // Detect when tabs overflow so we can show the horizontal scrollbar and reserve space for it
+  useEffect(() => {
+    const el = tabsScrollRef.current;
+    if (!el) return;
+
+    const update = () => {
+      // epsilon avoids flicker due to sub-pixel layout rounding
+      setTabsOverflow(el.scrollWidth > el.clientWidth + 1);
+    };
+
+    update();
+
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+
+    window.addEventListener("resize", update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", update);
+    };
+  }, [tabs.length]);
 
   // Helper function to get faculty name
   const getFacultyName = (
@@ -211,7 +235,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
               <span className="font-semibold">{record.organizationName}</span> -{" "}
               {formatDate(record.date)}
               {record.description && (
-                <p className="mr-4 mt-1 text-sm text-gray-500">
+                <p className="mt-1 mr-4 text-sm text-gray-500">
                   {record.description}
                 </p>
               )}
@@ -246,7 +270,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
                 {formatDate(record.startDate)} تا {formatDate(record.endDate)}
               </span>
               {record.description && (
-                <p className="mr-4 mt-1 text-sm text-gray-500">
+                <p className="mt-1 mr-4 text-sm text-gray-500">
                   {record.description}
                 </p>
               )}
@@ -282,8 +306,8 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
             return (
               <li
                 key={record.id || index}
-                className={`list-decimal list-inside px-3 py-2 rounded-lg transition-colors duration-200 ${
-                  record.url ? "hover:bg-blue-100 cursor-pointer" : ""
+                className={`list-inside list-decimal rounded-lg px-3 py-2 transition-colors duration-200 ${
+                  record.url ? "cursor-pointer hover:bg-blue-100" : ""
                 }`}
                 style={{ direction: textDirection, textAlign }}
                 onClick={() => {
@@ -424,7 +448,9 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
                   {course.activeDays && course.activeDays.length > 0 && (
                     <p>
                       <span className="font-medium">روزهای برگزاری:</span>{" "}
-                      {course.activeDays.map((day) => getDayName(day)).join("، ")}
+                      {course.activeDays
+                        .map((day) => getDayName(day))
+                        .join("، ")}
                     </p>
                   )}
                   {course.time && (
@@ -705,24 +731,74 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
       </div>
 
       {/* Content wrapper with tabs and white container */}
-      <div className="relative -mt-36 flex-1 flex flex-col overflow-hidden">
-        <div className="relative z-10 flex items-center gap-3 pr-46 pb-1.5">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              className={`rounded-2xl px-2 py-3 text-sm whitespace-nowrap transition-all outline-none ${
-                activeTab === tab
-                  ? "scale-110 bg-white px-4 font-bold text-black shadow-lg"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
-              onClick={() => setActiveTab(tab)}
+      <div className="relative -mt-36 flex flex-1 flex-col overflow-hidden">
+        <style>
+          {`
+            .tabs-horizontal-scroll {
+              scrollbar-width: thin;
+              scrollbar-color: #9CA3AF transparent;
+            }
+            .tabs-horizontal-scroll::-webkit-scrollbar {
+              height: 10px !important;
+              display: block !important;
+              -webkit-appearance: none !important;
+              appearance: none !important;
+            }
+            .tabs-horizontal-scroll::-webkit-scrollbar-track {
+              background: transparent !important;
+              border-radius: 5px;
+              margin: 0 4px;
+            }
+            .tabs-horizontal-scroll::-webkit-scrollbar-thumb {
+              background: #9CA3AF !important;
+              border-radius: 5px;
+              min-width: 20px;
+            }
+            .tabs-horizontal-scroll::-webkit-scrollbar-thumb:hover {
+              background: #6B7280 !important;
+            }
+            .tabs-horizontal-scroll::-webkit-scrollbar-thumb:active {
+              background: #4B5563 !important;
+            }
+          `}
+        </style>
+        <div className="relative z-10 w-full mb-2">
+          <div
+            ref={tabsScrollRef}
+            className={`tabs-horizontal-scroll -mt-2 overflow-x-auto overflow-y-hidden pt-2 ${
+              tabsOverflow ? "pb-2" : "pb-0"
+            }`}
+            style={{
+              scrollbarWidth: "thin",
+              scrollbarColor: "#9CA3AF transparent",
+            }}
+          >
+            <div
+              className="flex items-center gap-3 pr-46"
+              style={{ minWidth: "max-content" }}
             >
-              {tab}
-            </button>
-          ))}
+              {tabs.map((tab) => (
+                <button
+                  key={tab}
+                  className={`flex-shrink-0 origin-bottom rounded-2xl px-2 py-3 text-sm whitespace-nowrap transition-all outline-none ${
+                    activeTab === tab
+                      ? "scale-110 bg-white px-4 font-bold text-black shadow-lg"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <div className="relative z-20 -mt-4 w-full flex-1 rounded-2xl bg-white p-8 overflow-y-auto">
+        <div
+          className={`scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 relative z-20 w-full flex-1 overflow-y-auto rounded-2xl bg-white p-8 ${
+            tabsOverflow ? "mt-2" : "-mt-4"
+          }`}
+        >
           <div className="mr-36">
             <p className="pr-5 text-lg text-gray-600">
               {detailedTeacher?.academicRank !== undefined
