@@ -2,8 +2,10 @@ import { ApiService } from "./ApiService";
 import { AuthService } from "./AuthService";
 
 // TEACHERS
-export const getTeachers = () =>
-    ApiService.get("/panel/v1/teacher/read-teachers?PageNumber=1&PageSize=1000");
+export const getTeachers = (pageNumber: number = 1, pageSize: number = 50) =>
+    ApiService.get(
+        `/panel/v1/teacher/read-teachers?PageNumber=${pageNumber}&PageSize=${pageSize}`,
+    );
 
 export const uploadTeachersExcel = async (file: File) => {
     const formData = new FormData();
@@ -80,12 +82,16 @@ export const requestPasswordReset = async (username: string) => {
         `/panel/v1/user/forget-password?userName=${encodeURIComponent(username)}`
     ];
 
-    let lastError: any = null;
+    let lastError: unknown = null;
 
     for (const endpoint of endpoints) {
         try {
             console.log(`🔄 Trying endpoint: ${endpoint}`);
-            const response: any = await ApiService.get(endpoint);
+            const response = (await ApiService.get(endpoint)) as {
+                error?: boolean;
+                message?: string[];
+                [key: string]: unknown;
+            };
             console.log(`✅ Response from ${endpoint}:`, response);
 
             if (!response.error) {
@@ -103,7 +109,13 @@ export const requestPasswordReset = async (username: string) => {
     }
 
     console.error(`🚨 All endpoints failed. Last error:`, lastError);
-    throw new Error(`همه endpoint های بازیابی رمز عبور ناموفق بودند. آخرین خطا: ${lastError?.message || 'نامشخص'}`);
+    const lastErrorMessage =
+        lastError && typeof lastError === "object" && "message" in lastError
+            ? String((lastError as { message?: unknown }).message)
+            : "نامشخص";
+    throw new Error(
+        `همه endpoint های بازیابی رمز عبور ناموفق بودند. آخرین خطا: ${lastErrorMessage}`,
+    );
 };
 
 export const validateVerificationCode = async (username: string, code: string) => {
@@ -118,7 +130,11 @@ export const validateVerificationCode = async (username: string, code: string) =
     for (const endpoint of endpoints) {
         try {
             console.log(`Trying validation endpoint: ${endpoint}`);
-            const response: any = await ApiService.get(endpoint);
+            const response = (await ApiService.get(endpoint)) as {
+                error?: boolean;
+                message?: string[];
+                [key: string]: unknown;
+            };
             if (!response.error) {
                 return response;
             }
@@ -143,7 +159,11 @@ export const changePasswordWithCode = async (username: string, code: string, new
     for (const endpoint of endpoints) {
         try {
             console.log(`Trying change password endpoint: ${endpoint}`);
-            const response: any = await ApiService.get(endpoint);
+            const response = (await ApiService.get(endpoint)) as {
+                error?: boolean;
+                message?: string[];
+                [key: string]: unknown;
+            };
             if (!response.error) {
                 return response;
             }

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import MyPagination from "../Elements/MyPagination";
 import MyInput from "../Elements/MyInput";
 import MyPopup from "../Elements/MyPopup";
@@ -103,6 +103,8 @@ export default function HistoryPanel() {
   const [searchText, setSearchText] = useState("");
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [hasMoreTeachers, setHasMoreTeachers] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isTeachersUploadOpen, setIsTeachersUploadOpen] = useState(false);
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
@@ -114,6 +116,13 @@ export default function HistoryPanel() {
   const [searchName, setSearchName] = useState("");
   const [selectedFaculty, setSelectedFaculty] = useState("همه");
   const [selectedDegree, setSelectedDegree] = useState("همه");
+
+  const API_PAGE_SIZE = 50;
+  const ITEMS_PER_PAGE = 5;
+  const PAGES_PER_API_PAGE = API_PAGE_SIZE / ITEMS_PER_PAGE; // 10
+  const PREFETCH_THRESHOLD_PAGES = 2; // when user enters page 9/10, prefetch next 50
+
+  const loadedApiPagesRef = useRef<Set<number>>(new Set());
 
   const resetSearchFields = () => {
     setSearchName("");
@@ -158,46 +167,6 @@ export default function HistoryPanel() {
       console.error("Excel Export Error:", err);
     }
   };
-
-  const fetchTeachers = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const response = (await getTeachers()) as ApiResponse;
-      if (!response.error) {
-        const convertedTeachers: Teacher[] = response.data.map(
-          (apiTeacher: ApiTeacher) => ({
-            id: apiTeacher.id,
-            firstName: apiTeacher.firstName,
-            lastName: apiTeacher.lastName,
-            faculty: apiTeacher.facultyName,
-            rank: getRankString(apiTeacher.academicRank),
-            academicRank: apiTeacher.academicRank,
-            phoneNumber: apiTeacher.phoneNumber || "",
-            email: apiTeacher.emailAddress || "",
-            group: apiTeacher.group || "",
-            lastDegree: apiTeacher.lastDegree || "",
-            employmentStatus:
-              apiTeacher.employmentStatus === 1 ? "شاغل" : "بازنشسته",
-            isTeaching: apiTeacher.isTeaching ?? false,
-            nationalCode: apiTeacher.nationalCode || "",
-            points: 0,
-          }),
-        );
-        setTeachers(convertedTeachers);
-      } else {
-        throw new Error(response.message.join(", "));
-      }
-    } catch (err) {
-      setError("خطا در دریافت اطلاعات");
-      console.error("Failed to fetch teachers:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchTeachers();
-  }, [fetchTeachers]);
 
   const handleTeachersUpload = async (file: File) => {
     setIsLoading(true);
@@ -276,6 +245,79 @@ export default function HistoryPanel() {
     }
   };
 
+  const mapApiTeacherToTeacher = useCallback(
+    (apiTeacher: ApiTeacher): Teacher => ({
+      id: apiTeacher.id,
+      firstName: apiTeacher.firstName,
+      lastName: apiTeacher.lastName,
+      faculty: apiTeacher.facultyName,
+      rank: getRankString(apiTeacher.academicRank),
+      academicRank: apiTeacher.academicRank,
+      phoneNumber: apiTeacher.phoneNumber || "",
+      email: apiTeacher.emailAddress || "",
+      group: apiTeacher.group || "",
+      lastDegree: apiTeacher.lastDegree || "",
+      employmentStatus: apiTeacher.employmentStatus === 1 ? "شاغل" : "بازنشسته",
+      isTeaching: apiTeacher.isTeaching ?? false,
+      nationalCode: apiTeacher.nationalCode || "",
+      points: 0,
+    }),
+    [],
+  );
+
+  const fetchTeachersPage = useCallback(
+    async (pageNumber: number, mode: "replace" | "append") => {
+      const response = (await getTeachers(
+        pageNumber,
+        API_PAGE_SIZE,
+      )) as ApiResponse;
+      if (response.error) {
+        throw new Error(response.message.join(", "));
+      }
+
+      const convertedTeachers: Teacher[] = response.data.map(
+        mapApiTeacherToTeacher,
+      );
+      const reachedEnd = convertedTeachers.length < API_PAGE_SIZE;
+
+      setTeachers((prev) => {
+        if (mode === "replace") return convertedTeachers;
+        const existingIds = new Set(prev.map((t) => t.id));
+        const merged = [...prev];
+        for (const t of convertedTeachers) {
+          if (!existingIds.has(t.id)) merged.push(t);
+        }
+        return merged;
+      });
+
+      loadedApiPagesRef.current.add(pageNumber);
+      if (reachedEnd) setHasMoreTeachers(false);
+
+      return { reachedEnd, received: convertedTeachers.length };
+    },
+    [API_PAGE_SIZE, mapApiTeacherToTeacher],
+  );
+
+  const fetchTeachers = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    setHasMoreTeachers(true);
+    loadedApiPagesRef.current = new Set();
+
+    try {
+      await fetchTeachersPage(1, "replace");
+    } catch (err) {
+      setError("خطا در دریافت اطلاعات");
+      console.error("Failed to fetch teachers:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fetchTeachersPage]);
+
+  useEffect(() => {
+    fetchTeachers();
+  }, [fetchTeachers]);
+
   // Updated filtering logic
   const filteredTeachers = useMemo(() => {
     if (advancedSearchResults) {
@@ -305,8 +347,25 @@ export default function HistoryPanel() {
   }, [searchText, advancedSearchResults, teachers]);
 
   // Pagination logic
-  const ITEMS_PER_PAGE = 5;
-  const totalPages = Math.ceil(filteredTeachers.length / ITEMS_PER_PAGE);
+  const loadedTotalPages = Math.ceil(filteredTeachers.length / ITEMS_PER_PAGE);
+  const totalPages = useMemo(() => {
+    // During filtering/advanced search, only paginate what we currently have.
+    if (advancedSearchResults || searchText.trim()) {
+      return Math.max(1, loadedTotalPages);
+    }
+
+    // For the base list, we don't know the real total. If API might have more,
+    // show one extra API-chunk worth of pages so the user can navigate forward.
+    const extraPages = hasMoreTeachers ? PAGES_PER_API_PAGE : 0;
+    return Math.max(1, loadedTotalPages + extraPages);
+  }, [
+    advancedSearchResults,
+    searchText,
+    loadedTotalPages,
+    hasMoreTeachers,
+    PAGES_PER_API_PAGE,
+  ]);
+
   const currentTeachers = filteredTeachers.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE,
@@ -317,10 +376,80 @@ export default function HistoryPanel() {
     setCurrentPage(1); // Reset to first page whenever search text changes
   };
 
-  // Add useEffect to reset page when search results change
+  const ensureDataForPage = useCallback(
+    async (page: number) => {
+      // Don't auto-fetch when advanced search is controlling the list.
+      if (advancedSearchResults) return;
+
+      const requiredApiPage = Math.ceil(page / PAGES_PER_API_PAGE);
+      const positionInApiPage = ((page - 1) % PAGES_PER_API_PAGE) + 1; // 1..10
+      const shouldPrefetchNext =
+        positionInApiPage > PAGES_PER_API_PAGE - PREFETCH_THRESHOLD_PAGES; // 9 or 10
+
+      const pagesToFetch: number[] = [];
+
+      if (hasMoreTeachers && !loadedApiPagesRef.current.has(requiredApiPage)) {
+        pagesToFetch.push(requiredApiPage);
+      }
+
+      if (hasMoreTeachers && shouldPrefetchNext) {
+        const nextApiPage = requiredApiPage + 1;
+        if (!loadedApiPagesRef.current.has(nextApiPage)) {
+          pagesToFetch.push(nextApiPage);
+        }
+      }
+
+      if (pagesToFetch.length === 0 || isFetchingMore) return;
+
+      setIsFetchingMore(true);
+      try {
+        for (const p of pagesToFetch) {
+          const result = await fetchTeachersPage(p, "append");
+          if (result.reachedEnd) break;
+        }
+      } catch (err) {
+        console.error("Failed to fetch more teachers:", err);
+        toast.error("خطا در دریافت اطلاعات بیشتر");
+      } finally {
+        setIsFetchingMore(false);
+      }
+    },
+    [
+      advancedSearchResults,
+      PAGES_PER_API_PAGE,
+      PREFETCH_THRESHOLD_PAGES,
+      hasMoreTeachers,
+      isFetchingMore,
+      fetchTeachersPage,
+    ],
+  );
+
+  // Reset page only when advanced search results change
+  // (searchText already handled in handleSearch)
+  const prevAdvancedResultsRef = useRef(advancedSearchResults);
+
   useEffect(() => {
-    setCurrentPage(1);
-  }, [filteredTeachers.length]); // Reset page when number of results changes
+    if (prevAdvancedResultsRef.current !== advancedSearchResults) {
+      setCurrentPage(1);
+      prevAdvancedResultsRef.current = advancedSearchResults;
+    }
+  }, [advancedSearchResults]);
+
+  // Keep current page valid when pagination shrinks (e.g., API returns no more records)
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  // Fetch needed data when user navigates pages (and prefetch near the end of each 50-record chunk)
+  useEffect(() => {
+    void ensureDataForPage(currentPage);
+  }, [currentPage, ensureDataForPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   if (showUserInfo && selectedTeacher) {
     return (
@@ -442,7 +571,15 @@ export default function HistoryPanel() {
 
             {currentTeachers.length === 0 && (
               <div className="text-center text-gray-500">
-                هیچ نتیجه‌ای یافت نشد
+                {isFetchingMore &&
+                !searchText.trim() &&
+                !advancedSearchResults ? (
+                  <div className="flex items-center justify-center">
+                    <LoadingSpinner size="md" />
+                  </div>
+                ) : (
+                  "هیچ نتیجه‌ای یافت نشد"
+                )}
               </div>
             )}
           </div>
@@ -454,7 +591,7 @@ export default function HistoryPanel() {
             <MyPagination
               totalPages={totalPages}
               currentPage={currentPage}
-              onPageChange={setCurrentPage}
+              onPageChange={handlePageChange}
             />
           </div>
         )}

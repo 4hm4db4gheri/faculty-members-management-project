@@ -90,7 +90,7 @@ export default function MainDashboardPanel() {
     const fetchTeachers = async () => {
       setIsLoading(true);
       try {
-        const response = (await getTeachers()) as ApiResponse;
+        const response = (await getTeachers(1, 50)) as ApiResponse;
 
         if (response.error) {
           throw new Error(response.message[0] || "Failed to fetch teachers");
