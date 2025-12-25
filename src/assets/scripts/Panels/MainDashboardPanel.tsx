@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import ChartComponent1 from "../../components/ChartComponent1";
 import ChartComponent2 from "../../components/ChartComponent2";
 import MyInput from "../Elements/MyInput";
@@ -8,9 +8,10 @@ import { useNavigate } from "react-router-dom";
 import { useChartData } from "../hooks/useChartData";
 import LoadingSpinner from "../Elements/LoadingSpinner";
 import {
-  getTeachers,
+  searchTeachers,
   getSentTeacherNotificationsV2,
 } from "../Services/apiEndpoints";
+import { useDebounce } from "../hooks/useDebounce";
 
 interface ApiTeacher {
   id: number;
@@ -56,9 +57,7 @@ export default function MainDashboardPanel() {
   );
 
   const [selectedTeacher] = useState<Teacher | null>(null);
-  const [teachers, setTeachers] = useState<Teacher[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
 
   // Add state for latest notifications
   const [latestNotifications, setLatestNotifications] = useState<
@@ -69,6 +68,9 @@ export default function MainDashboardPanel() {
 
   // Add state for user name
   const [userName, setUserName] = useState<string>("اسم کاربر");
+
+  // Debounce search text (500ms delay)
+  const debouncedSearchText = useDebounce(searchText, 500);
 
   // Get user name from localStorage
   useEffect(() => {
@@ -85,23 +87,107 @@ export default function MainDashboardPanel() {
     }
   }, []);
 
-  // Fetch teachers from API
-  useEffect(() => {
-    const fetchTeachers = async () => {
-      setIsLoading(true);
-      try {
-        const response = (await getTeachers(1, 50)) as ApiResponse;
+  // Perform API search when debounced search text changes
+  const performSearch = useCallback(async (searchQuery: string) => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      setShowDropdown(false);
+      return;
+    }
 
-        if (response.error) {
-          throw new Error(response.message[0] || "Failed to fetch teachers");
+    setIsSearching(true);
+    console.log(`🔍 MainDashboard: Starting search for: "${searchQuery}"`);
+
+    try {
+      const terms = searchQuery.trim().split(/\s+/);
+      let response: ApiResponse | null = null;
+
+      if (terms.length === 1) {
+        // Single word: try as LastName first
+        console.log(`🔍 MainDashboard: Trying LastName="${terms[0]}"`);
+        try {
+          const lastNameResponse = (await searchTeachers({
+            lastName: terms[0],
+            pageSize: 10,
+          })) as ApiResponse;
+
+          console.log(`📥 MainDashboard: LastName response:`, lastNameResponse);
+
+          if (!lastNameResponse.error && lastNameResponse.data.length > 0) {
+            console.log(
+              `✅ MainDashboard: Found ${lastNameResponse.data.length} results with LastName`,
+            );
+            response = lastNameResponse;
+          }
+        } catch (lastNameError) {
+          // If LastName search fails (e.g., 400 with "ایتمی وجود ندارد"), continue to FirstName search
+          console.log(
+            `⚠️ MainDashboard: LastName search failed, will try FirstName:`,
+            lastNameError,
+          );
         }
 
+        // If no results with LastName, try FirstName
+        if (!response) {
+          console.log(
+            `🔍 MainDashboard: No LastName results, trying FirstName="${terms[0]}"`,
+          );
+          try {
+            const firstNameResponse = (await searchTeachers({
+              firstName: terms[0],
+              pageSize: 10,
+            })) as ApiResponse;
+
+            console.log(
+              `📥 MainDashboard: FirstName response:`,
+              firstNameResponse,
+            );
+
+            if (!firstNameResponse.error && firstNameResponse.data.length > 0) {
+              console.log(
+                `✅ MainDashboard: Found ${firstNameResponse.data.length} results with FirstName`,
+              );
+              response = firstNameResponse;
+            }
+          } catch (firstNameError) {
+            console.log(
+              `⚠️ MainDashboard: FirstName search also failed:`,
+              firstNameError,
+            );
+          }
+        }
+
+        if (!response) {
+          console.log(`❌ MainDashboard: No results found for "${terms[0]}"`);
+        }
+      } else if (terms.length >= 2) {
+        // Two or more words: first is FirstName, second is LastName
+        console.log(
+          `🔍 MainDashboard: Trying FirstName="${terms[0]}" + LastName="${terms[1]}"`,
+        );
+        try {
+          response = (await searchTeachers({
+            firstName: terms[0],
+            lastName: terms[1],
+            pageSize: 10,
+          })) as ApiResponse;
+
+          console.log(`📥 MainDashboard: Combined response:`, response);
+        } catch (combinedError) {
+          console.log(
+            `⚠️ MainDashboard: Combined search failed:`,
+            combinedError,
+          );
+        }
+      }
+
+      if (response && !response.error && response.data.length > 0) {
         const convertedTeachers: Teacher[] = response.data.map(
           (apiTeacher: ApiTeacher) => ({
             id: apiTeacher.id,
             firstName: apiTeacher.firstName,
             lastName: apiTeacher.lastName,
-            faculty: apiTeacher.facultyNameInPersian,
+            faculty: apiTeacher.facultyNameInPersian || "",
             rank: getRankString(apiTeacher.academicRank),
             academicRank: apiTeacher.academicRank,
             phoneNumber: "",
@@ -115,16 +201,29 @@ export default function MainDashboardPanel() {
           }),
         );
 
-        setTeachers(convertedTeachers);
-      } catch {
-        setError("خطا در دریافت اطلاعات");
-      } finally {
-        setIsLoading(false);
+        console.log(
+          `✅ MainDashboard: Displaying ${convertedTeachers.length} results`,
+        );
+        setSearchResults(convertedTeachers);
+        setShowDropdown(true);
+      } else {
+        console.log(`❌ MainDashboard: No valid results to display`);
+        setSearchResults([]);
+        setShowDropdown(false);
       }
-    };
-
-    fetchTeachers();
+    } catch (err) {
+      console.error("❌ MainDashboard: Search error:", err);
+      setSearchResults([]);
+      setShowDropdown(false);
+    } finally {
+      setIsSearching(false);
+    }
   }, []);
+
+  // Trigger search when debounced text changes
+  useEffect(() => {
+    void performSearch(debouncedSearchText);
+  }, [debouncedSearchText, performSearch]);
 
   // Add state for latest notifications
   useEffect(() => {
@@ -179,33 +278,7 @@ export default function MainDashboardPanel() {
 
   const handleSearch = (value: string) => {
     setSearchText(value);
-
-    if (value.trim() === "") {
-      setSearchResults([]);
-      setShowDropdown(false);
-      return;
-    }
-
-    const searchTerms = value.trim().toLowerCase().split(/\s+/);
-
-    const results = teachers.filter((teacher) => {
-      if (searchTerms.length === 1) {
-        const searchTerm = searchTerms[0];
-        return (
-          teacher.firstName.toLowerCase().includes(searchTerm) ||
-          teacher.lastName.toLowerCase().includes(searchTerm)
-        );
-      } else {
-        return searchTerms.every(
-          (term) =>
-            teacher.firstName.toLowerCase().includes(term) ||
-            teacher.lastName.toLowerCase().includes(term),
-        );
-      }
-    });
-
-    setSearchResults(results);
-    setShowDropdown(true);
+    // Actual search is triggered by debounced value in useEffect
   };
 
   const handleTeacherSelect = (teacher: Teacher) => {
@@ -216,22 +289,6 @@ export default function MainDashboardPanel() {
 
   if (selectedTeacher) {
     return <UserInfo teacher={selectedTeacher} />;
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex h-full items-center justify-center text-red-500">
-        خطا در دریافت اطلاعات: {error}
-      </div>
-    );
   }
 
   return (
@@ -245,6 +302,13 @@ export default function MainDashboardPanel() {
               onChange={handleSearch}
               className="bg-transparent"
             />
+
+            {/* Search Loading Indicator */}
+            {isSearching && searchText.trim() && (
+              <div className="pointer-events-none absolute inset-y-0 left-4 flex items-center">
+                <LoadingSpinner size="sm" showText={false} />
+              </div>
+            )}
 
             {/* Updated Search Results Dropdown */}
             {showDropdown && searchResults.length > 0 && (

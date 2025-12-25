@@ -7,6 +7,34 @@ export const getTeachers = (pageNumber: number = 1, pageSize: number = 50) =>
         `/panel/v1/teacher/read-teachers?PageNumber=${pageNumber}&PageSize=${pageSize}`,
     );
 
+interface SearchTeachersParams {
+    firstName?: string;
+    lastName?: string;
+    nationalCode?: string;
+    academicRank?: number;
+    employmentStatus?: number;
+    facultyName?: string;
+    group?: string;
+    pageNumber?: number;
+    pageSize?: number;
+}
+
+export const searchTeachers = (params: SearchTeachersParams) => {
+    const queryParams = new URLSearchParams();
+
+    if (params.firstName) queryParams.append('FirstName', params.firstName);
+    if (params.lastName) queryParams.append('LastName', params.lastName);
+    if (params.nationalCode) queryParams.append('NationalCode', params.nationalCode);
+    if (params.academicRank !== undefined) queryParams.append('AcademicRank', params.academicRank.toString());
+    if (params.employmentStatus !== undefined) queryParams.append('EmploymentStatus', params.employmentStatus.toString());
+    if (params.facultyName) queryParams.append('FacultyName', params.facultyName);
+    if (params.group) queryParams.append('Group', params.group);
+    if (params.pageNumber !== undefined) queryParams.append('PageNumber', params.pageNumber.toString());
+    if (params.pageSize !== undefined) queryParams.append('PageSize', params.pageSize.toString());
+
+    return ApiService.get(`/panel/v1/teacher/read-teachers?${queryParams.toString()}`);
+};
+
 export const uploadTeachersExcel = async (file: File) => {
     const formData = new FormData();
     formData.append("file", file);

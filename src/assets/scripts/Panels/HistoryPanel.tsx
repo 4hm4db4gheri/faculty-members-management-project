@@ -7,11 +7,16 @@ import AdvancedSearch from "../Elements/AdvancedSearch";
 import UserInfo from "../Panels/UserInfo";
 import type { Teacher } from "../types/Teacher";
 import LoadingSpinner from "../Elements/LoadingSpinner";
-import { getTeachers, uploadTeachersExcel } from "../Services/apiEndpoints";
+import {
+  getTeachers,
+  searchTeachers,
+  uploadTeachersExcel,
+} from "../Services/apiEndpoints";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import AdvancedSearchIcon from "../../images/AdvancedSearch.svg";
 import { useNavigate } from "react-router-dom";
+import { useDebounce } from "../hooks/useDebounce";
 
 interface Record {
   id: number;
@@ -102,6 +107,8 @@ export default function HistoryPanel() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchText, setSearchText] = useState("");
   const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [searchResults, setSearchResults] = useState<Teacher[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [hasMoreTeachers, setHasMoreTeachers] = useState(true);
@@ -123,6 +130,7 @@ export default function HistoryPanel() {
   const PREFETCH_THRESHOLD_PAGES = 2; // when user enters page 9/10, prefetch next 50
 
   const loadedApiPagesRef = useRef<Set<number>>(new Set());
+  const debouncedSearchText = useDebounce(searchText, 500);
 
   const resetSearchFields = () => {
     setSearchName("");
@@ -318,33 +326,149 @@ export default function HistoryPanel() {
     fetchTeachers();
   }, [fetchTeachers]);
 
-  // Updated filtering logic
+  // Perform API search when debounced search text changes
+  const performSearch = useCallback(
+    async (searchQuery: string) => {
+      if (!searchQuery.trim()) {
+        setSearchResults([]);
+        setIsSearching(false);
+        return;
+      }
+
+      setIsSearching(true);
+      console.log(`🔍 HistoryPanel: Starting search for: "${searchQuery}"`);
+
+      try {
+        const terms = searchQuery.trim().split(/\s+/);
+        let response: ApiResponse | null = null;
+
+        if (terms.length === 1) {
+          // Single word: try as LastName first
+          console.log(`🔍 HistoryPanel: Trying LastName="${terms[0]}"`);
+          try {
+            const lastNameResponse = (await searchTeachers({
+              lastName: terms[0],
+              pageSize: 1000,
+            })) as ApiResponse;
+
+            console.log(
+              `📥 HistoryPanel: LastName response:`,
+              lastNameResponse,
+            );
+
+            if (!lastNameResponse.error && lastNameResponse.data.length > 0) {
+              console.log(
+                `✅ HistoryPanel: Found ${lastNameResponse.data.length} results with LastName`,
+              );
+              response = lastNameResponse;
+            }
+          } catch (lastNameError) {
+            // If LastName search fails (e.g., 400 with "ایتمی وجود ندارد"), continue to FirstName search
+            console.log(
+              `⚠️ HistoryPanel: LastName search failed, will try FirstName:`,
+              lastNameError,
+            );
+          }
+
+          // If no results with LastName, try FirstName
+          if (!response) {
+            console.log(
+              `🔍 HistoryPanel: No LastName results, trying FirstName="${terms[0]}"`,
+            );
+            try {
+              const firstNameResponse = (await searchTeachers({
+                firstName: terms[0],
+                pageSize: 1000,
+              })) as ApiResponse;
+
+              console.log(
+                `📥 HistoryPanel: FirstName response:`,
+                firstNameResponse,
+              );
+
+              if (
+                !firstNameResponse.error &&
+                firstNameResponse.data.length > 0
+              ) {
+                console.log(
+                  `✅ HistoryPanel: Found ${firstNameResponse.data.length} results with FirstName`,
+                );
+                response = firstNameResponse;
+              }
+            } catch (firstNameError) {
+              console.log(
+                `⚠️ HistoryPanel: FirstName search also failed:`,
+                firstNameError,
+              );
+            }
+          }
+
+          if (!response) {
+            console.log(`❌ HistoryPanel: No results found for "${terms[0]}"`);
+          }
+        } else if (terms.length >= 2) {
+          // Two or more words: first is FirstName, second is LastName
+          console.log(
+            `🔍 HistoryPanel: Trying FirstName="${terms[0]}" + LastName="${terms[1]}"`,
+          );
+          try {
+            response = (await searchTeachers({
+              firstName: terms[0],
+              lastName: terms[1],
+              pageSize: 1000,
+            })) as ApiResponse;
+
+            console.log(`📥 HistoryPanel: Combined response:`, response);
+          } catch (combinedError) {
+            console.log(
+              `⚠️ HistoryPanel: Combined search failed:`,
+              combinedError,
+            );
+          }
+        }
+
+        if (response && !response.error && response.data.length > 0) {
+          const convertedTeachers: Teacher[] = response.data.map(
+            mapApiTeacherToTeacher,
+          );
+          console.log(
+            `✅ HistoryPanel: Displaying ${convertedTeachers.length} results`,
+          );
+          setSearchResults(convertedTeachers);
+        } else {
+          console.log(`❌ HistoryPanel: No valid results to display`);
+          setSearchResults([]);
+        }
+      } catch (err) {
+        console.error("❌ HistoryPanel: Search error:", err);
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    },
+    [mapApiTeacherToTeacher],
+  );
+
+  // Trigger search when debounced text changes
+  useEffect(() => {
+    if (debouncedSearchText.trim()) {
+      void performSearch(debouncedSearchText);
+    } else {
+      setSearchResults([]);
+      setIsSearching(false);
+    }
+  }, [debouncedSearchText, performSearch]);
+
+  // Updated filtering logic - prioritize advanced search, then API search, then base list
   const filteredTeachers = useMemo(() => {
     if (advancedSearchResults) {
       return advancedSearchResults;
     }
-    if (!searchText.trim()) return teachers;
-
-    const searchTerms = searchText.trim().toLowerCase().split(/\s+/);
-
-    return teachers.filter((teacher) => {
-      if (searchTerms.length === 1) {
-        const term = searchTerms[0];
-        return (
-          teacher.firstName.toLowerCase().includes(term) ||
-          teacher.lastName.toLowerCase().includes(term) ||
-          teacher.rank.toLowerCase().includes(term)
-        );
-      } else {
-        return searchTerms.every(
-          (term) =>
-            teacher.firstName.toLowerCase().includes(term) ||
-            teacher.lastName.toLowerCase().includes(term) ||
-            teacher.rank.toLowerCase().includes(term),
-        );
-      }
-    });
-  }, [searchText, advancedSearchResults, teachers]);
+    if (searchText.trim()) {
+      return searchResults;
+    }
+    return teachers;
+  }, [searchText, searchResults, advancedSearchResults, teachers]);
 
   // Pagination logic
   const loadedTotalPages = Math.ceil(filteredTeachers.length / ITEMS_PER_PAGE);
@@ -374,6 +498,9 @@ export default function HistoryPanel() {
   const handleSearch = (value: string) => {
     setSearchText(value);
     setCurrentPage(1); // Reset to first page whenever search text changes
+    if (value.trim()) {
+      setIsSearching(true); // Show loading immediately when user starts typing
+    }
   };
 
   const ensureDataForPage = useCallback(
@@ -488,11 +615,18 @@ export default function HistoryPanel() {
         <div className="grid h-full grid-cols-2 gap-2 rounded-[25px] px-2 pt-3 sm:grid-cols-4 sm:gap-3 md:grid-cols-10 md:gap-4 lg:gap-6 lg:pt-5">
           {/* Single Search Field */}
           <div className="col-span-2 sm:col-span-3 md:col-span-6">
-            <MyInput
-              placeholder="جستجو..."
-              value={searchText}
-              onChange={handleSearch}
-            />
+            <div className="relative w-full">
+              <MyInput
+                placeholder="جستجو..."
+                value={searchText}
+                onChange={handleSearch}
+              />
+              {isSearching && searchText.trim() && (
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-end pr-4">
+                  <LoadingSpinner size="sm" showText={false} />
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Update the advanced search button */}
