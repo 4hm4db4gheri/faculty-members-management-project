@@ -132,7 +132,7 @@ export const useChartData = (
     };
 
     fetchData();
-  }, [selectedFaculties1, selectedFaculties2, isInitialLoad, options.length]);
+  }, [selectedFaculties1, selectedFaculties2]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return { chartData1: data1, chartData2: data2, facultyOptions: options, isLoading, error };
 };

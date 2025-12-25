@@ -36,14 +36,14 @@ interface SentNotification {
   status: string;
 }
 
-export default function MainDashboardPanel() {
-  // Static faculties to show in charts
-  const staticFaculties = [
-    "هسته‌ای",
-    "علوم و فناوري زيستي",
-    "مدیریت و حسابداری",
-  ];
+// Static faculties to show in charts - moved outside component to prevent re-creation on every render
+const STATIC_FACULTIES = [
+  "هسته‌ای",
+  "علوم و فناوري زيستي",
+  "مدیریت و حسابداری",
+];
 
+export default function MainDashboardPanel() {
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState<Teacher[]>([]);
@@ -52,8 +52,8 @@ export default function MainDashboardPanel() {
 
   // Use static faculties for both charts
   const { chartData1, chartData2 } = useChartData(
-    staticFaculties,
-    staticFaculties,
+    STATIC_FACULTIES,
+    STATIC_FACULTIES,
   );
 
   const [selectedTeacher] = useState<Teacher | null>(null);
