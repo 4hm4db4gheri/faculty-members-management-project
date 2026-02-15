@@ -75,6 +75,19 @@ export const getFacultyGroups = async (facultyName: string): Promise<FacultyGrou
     );
 };
 
+// TEACHER TIMELINE
+export interface TimelineEventItem {
+    title: string;
+    eventDate: string;
+}
+export interface TimelineResponse {
+    data: TimelineEventItem[];
+    error: boolean;
+    message: string[];
+}
+export const getTeacherTimeline = (teacherId: string): Promise<TimelineResponse> =>
+    ApiService.get<TimelineResponse>(`/panel/v1/teacher/${teacherId}/events`);
+
 // USERS
 interface CreateUserRequest {
     // Define the expected fields for creating a user

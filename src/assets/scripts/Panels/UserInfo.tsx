@@ -681,7 +681,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
       case "تایم لاین":
         return (
           <div className="min-h-screen">
-            <Timeline />
+            <Timeline teacherId={teacher.id} />
           </div>
         );
 

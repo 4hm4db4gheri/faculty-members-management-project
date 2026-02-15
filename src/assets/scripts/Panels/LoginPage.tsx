@@ -66,8 +66,11 @@ const LoginPage: React.FC = () => {
     }
     setIsLoading("forgotPassword");
     try {
-      const response: { error: boolean; message?: string[] } =
-        await requestPasswordReset(userName.trim());
+      const rawResponse = await requestPasswordReset(userName.trim());
+      const response: { error: boolean; message?: string[] } = {
+        error: rawResponse.error ?? false,
+        message: rawResponse.message,
+      };
       if (response.error) {
         let errorMessage =
           response.message?.[0] || "خطا در ارسال پیام بازیابی رمز عبور.";
