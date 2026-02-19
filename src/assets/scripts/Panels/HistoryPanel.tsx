@@ -459,16 +459,41 @@ export default function HistoryPanel() {
     }
   }, [debouncedSearchText, performSearch]);
 
-  // Updated filtering logic - prioritize advanced search, then API search, then base list
+  // Helper: true if teacher's first or last name starts with or contains the query (prefix/partial match)
+  const teacherMatchesSearch = useCallback((teacher: Teacher, query: string) => {
+    const q = query.trim();
+    if (!q) return false;
+    const first = (teacher.firstName || "").trim();
+    const last = (teacher.lastName || "").trim();
+    return (
+      first.startsWith(q) ||
+      last.startsWith(q) ||
+      first.includes(q) ||
+      last.includes(q)
+    );
+  }, []);
+
+  // Updated filtering logic: advanced search > API search + client-side prefix match on loaded teachers > base list
   const filteredTeachers = useMemo(() => {
     if (advancedSearchResults) {
       return advancedSearchResults;
     }
     if (searchText.trim()) {
-      return searchResults;
+      const q = searchText.trim();
+      const fromApi = searchResults;
+      const fromClient = teachers.filter((t) => teacherMatchesSearch(t, q));
+      const seen = new Set(fromApi.map((t) => t.id));
+      const merged = [...fromApi];
+      for (const t of fromClient) {
+        if (!seen.has(t.id)) {
+          seen.add(t.id);
+          merged.push(t);
+        }
+      }
+      return merged;
     }
     return teachers;
-  }, [searchText, searchResults, advancedSearchResults, teachers]);
+  }, [searchText, searchResults, advancedSearchResults, teachers, teacherMatchesSearch]);
 
   // Pagination logic
   const loadedTotalPages = Math.ceil(filteredTeachers.length / ITEMS_PER_PAGE);

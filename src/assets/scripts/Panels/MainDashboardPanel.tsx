@@ -201,11 +201,20 @@ export default function MainDashboardPanel() {
           }),
         );
 
-        console.log(
-          `✅ MainDashboard: Displaying ${convertedTeachers.length} results`,
+        const q = searchQuery.trim();
+        const matching = convertedTeachers.filter(
+          (t) =>
+            (t.firstName || "").trim().startsWith(q) ||
+            (t.lastName || "").trim().startsWith(q) ||
+            (t.firstName || "").trim().includes(q) ||
+            (t.lastName || "").trim().includes(q),
         );
-        setSearchResults(convertedTeachers);
-        setShowDropdown(true);
+
+        console.log(
+          `✅ MainDashboard: Displaying ${matching.length} results`,
+        );
+        setSearchResults(matching);
+        setShowDropdown(matching.length > 0);
       } else {
         console.log(`❌ MainDashboard: No valid results to display`);
         setSearchResults([]);
