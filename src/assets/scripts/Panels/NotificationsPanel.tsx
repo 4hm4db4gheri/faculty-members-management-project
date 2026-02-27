@@ -111,22 +111,6 @@ export default function NotificationsPanel({ onNotificationSelect }: Notificatio
     fetchNotification();
   }, []);
 
-  const labelClasses = `
-    absolute
-    -top-3.5
-    right-4
-    px-1
-    text-sm
-    text-gray-500
-    transition-colors
-    group-hover:text-gray-700
-  `
-    .trim()
-    .replace(/\s+/g, " ");
-
-  const dropdownContainerClasses = "relative w-1/3";
-  const dropdownClasses = "w-full pt-2";
-
   if (isLoading) {
     return <LoadingSpinner size="lg" />;
   }
@@ -153,8 +137,8 @@ export default function NotificationsPanel({ onNotificationSelect }: Notificatio
   return (
     <div>
       {/* Filters */}
-      <div className="mt-4 mb-8 flex justify-start gap-6 px-6">
-        <div className={dropdownContainerClasses}>
+      <div className="mt-2 mb-4 flex justify-start gap-3 px-2 sm:mt-3 sm:mb-6 sm:gap-4 sm:px-4 md:mt-4 md:mb-8 md:gap-6 md:px-6">
+        <div className="relative w-full sm:w-1/2 md:w-1/3">
           <MyDropdown
             options={importanceOptions}
             defaultOption="همه"
@@ -164,13 +148,13 @@ export default function NotificationsPanel({ onNotificationSelect }: Notificatio
                 setImportance(value);
               }
             }}
-            className={dropdownClasses}
+            className="w-full pt-2 text-sm sm:text-base"
           />
-          <span className={labelClasses}>اهمیت</span>
+          <span className="absolute -top-2.5 right-3 px-1 text-xs text-gray-500 sm:-top-3.5 sm:right-4 sm:text-sm">اهمیت</span>
         </div>
       </div>
       {/* Notifications List */}
-      <div className="space-y-2.5 px-4">
+      <div className="space-y-2 px-2 sm:space-y-2.5 sm:px-4">
         {filteredNotifications.map((notif) => (
           <MyNotificationCard
             key={notif.id}

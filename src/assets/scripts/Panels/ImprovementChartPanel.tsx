@@ -25,12 +25,27 @@ export default function ImprovementChartPanel() {
     }
   };
 
+  // دانشکده‌های دیفالت برای نمایش
+  const DEFAULT_FACULTIES = [
+    "هسته‌ای",
+    "علوم و فناوري زيستي",
+    "مدیریت و حسابداری",
+  ];
+
   const [selectedChart1Faculties, setSelectedChart1Faculties] = useState<
     string[]
-  >(() => getStoredFaculties("improvementChart1Faculties"));
+  >(() => {
+    const stored = getStoredFaculties("improvementChart1Faculties");
+    // اگر هیچ دانشکده‌ای ذخیره نشده، از دیفالت استفاده کن
+    return stored.length > 0 ? stored : DEFAULT_FACULTIES;
+  });
   const [selectedChart2Faculties, setSelectedChart2Faculties] = useState<
     string[]
-  >(() => getStoredFaculties("improvementChart2Faculties"));
+  >(() => {
+    const stored = getStoredFaculties("improvementChart2Faculties");
+    // اگر هیچ دانشکده‌ای ذخیره نشده، از دیفالت استفاده کن
+    return stored.length > 0 ? stored : DEFAULT_FACULTIES;
+  });
 
   // دو لیست مجزا از دانشکده‌های انتخاب شده را به هوک ارسال می‌کنیم
   const { chartData1, chartData2, facultyOptions, isLoading, error } =
@@ -55,26 +70,27 @@ export default function ImprovementChartPanel() {
   }, [selectedChart2Faculties]);
 
   return (
-    <div className="flex h-full flex-col rounded-[25px] p-4">
-      <h1 className="mb-4 text-center text-xl font-bold text-black">
+    <div className="flex h-full flex-col rounded-[15px] p-2 sm:rounded-[20px] sm:p-3 md:rounded-[25px] md:p-4">
+      <h1 className="mb-2 text-center text-base font-bold text-black sm:mb-3 sm:text-lg md:mb-4 md:text-xl">
         نمودارهای آماری و پیشرفت
       </h1>
 
       {isLoading ? (
         <LoadingSpinner text="در حال بارگذاری نمودارها و فیلترها..." />
       ) : error ? (
-        <div className="py-8 text-center text-red-600">
+        <div className="py-4 text-center text-sm text-red-600 sm:py-6 sm:text-base md:py-8">
           خطا در بارگذاری نمودارها: {error}
         </div>
       ) : (
-        <div className="flex flex-1 flex-col gap-4 overflow-y-auto">
+        <div className="flex flex-1 flex-col gap-2 overflow-y-auto sm:gap-3 md:gap-4 lg:gap-4">
           {/* بخش نمودار ۱ */}
-          <div className="relative min-h-[350px] rounded-[25px] bg-white p-3 pb-8 shadow">
-            <h2 className="mb-3 text-center text-lg font-bold text-gray-800">
+          <div className="relative min-h-[280px] rounded-[15px] bg-white p-2 shadow sm:min-h-[320px] sm:rounded-[20px] sm:p-3 md:min-h-[350px] md:rounded-[25px] md:p-3 lg:min-h-[350px] lg:rounded-[25px] lg:p-3 lg:pb-8">
+            <h2 className="mb-2 text-center text-sm font-bold text-gray-800 sm:mb-3 sm:text-base md:text-lg lg:mb-3 lg:text-center lg:text-lg">
               مرتبۀ علمی
             </h2>
 
-            <div className="absolute top-4 left-4 z-10">
+            {/* دسکتاپ: فیلتر بالا سمت چپ (نسخه اول) */}
+            <div className="absolute top-4 left-4 z-10 hidden lg:block">
               <MultiSelectFilter
                 options={facultyOptions}
                 selectedOptions={selectedChart1Faculties}
@@ -83,25 +99,35 @@ export default function ImprovementChartPanel() {
               />
             </div>
 
-            {/* داده‌های نمودار ۱ که از هوک دریافت شده و فیلتر شده‌اند */}
-            <div className="flex h-[300px] items-center justify-center">
+            {/* داده‌های نمودار ۱ */}
+            <div className="flex h-[220px] items-center justify-center sm:h-[250px] md:h-[280px] lg:h-[300px]">
               {chartData1 && chartData1.length > 0 ? (
                 <ChartComponent1 data={chartData1} />
               ) : (
-                <p className="text-center text-lg text-gray-500">
+                <p className="text-center text-sm text-gray-500 sm:text-base md:text-lg">
                   هیچ دانشکده‌ای انتخاب نشده است
                 </p>
               )}
             </div>
+
+            {/* موبایل: فیلتر زیر نمودار */}
+            <div className="mt-2 flex justify-center sm:mt-3 md:mt-4 lg:hidden">
+              <MultiSelectFilter
+                options={facultyOptions}
+                selectedOptions={selectedChart1Faculties}
+                onSelectionChange={handleChart1FacultyChange}
+                label="فیلتر دانشکده"
+              />
+            </div>
           </div>
 
           {/* بخش نمودار ۲ */}
-          <div className="relative min-h-[350px] rounded-[25px] bg-white p-3 pb-8 shadow">
-            <h2 className="mb-3 text-center text-lg font-bold text-gray-800">
+          <div className="relative min-h-[280px] rounded-[15px] bg-white p-2 shadow sm:min-h-[320px] sm:rounded-[20px] sm:p-3 md:min-h-[350px] md:rounded-[25px] md:p-3 lg:min-h-[350px] lg:rounded-[25px] lg:p-3 lg:pb-8">
+            <h2 className="mb-2 text-center text-sm font-bold text-gray-800 sm:mb-3 sm:text-base md:text-lg lg:mb-3 lg:text-center lg:text-lg">
               آمار تفکیکی اعضای هیئت علمی
             </h2>
 
-            <div className="absolute top-4 left-4 z-10">
+            <div className="absolute top-4 left-4 z-10 hidden lg:block">
               <MultiSelectFilter
                 options={facultyOptions}
                 selectedOptions={selectedChart2Faculties}
@@ -110,15 +136,23 @@ export default function ImprovementChartPanel() {
               />
             </div>
 
-            {/* داده‌های نمودار ۲ که از هوک دریافت شده و فیلتر شده‌اند */}
-            <div className="flex h-[300px] items-center justify-center">
+            <div className="flex h-[220px] items-center justify-center sm:h-[250px] md:h-[280px] lg:h-[300px]">
               {chartData2 && chartData2.length > 0 ? (
                 <ChartComponent2 data={chartData2} />
               ) : (
-                <p className="text-center text-lg text-gray-500">
+                <p className="text-center text-sm text-gray-500 sm:text-base md:text-lg">
                   هیچ دانشکده‌ای انتخاب نشده است
                 </p>
               )}
+            </div>
+
+            <div className="mt-2 flex justify-center sm:mt-3 md:mt-4 lg:hidden">
+              <MultiSelectFilter
+                options={facultyOptions}
+                selectedOptions={selectedChart2Faculties}
+                onSelectionChange={handleChart2FacultyChange}
+                label="فیلتر دانشکده"
+              />
             </div>
           </div>
         </div>

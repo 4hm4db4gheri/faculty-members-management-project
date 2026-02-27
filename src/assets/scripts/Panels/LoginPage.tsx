@@ -196,17 +196,17 @@ const LoginPage: React.FC = () => {
   return (
     <div className="grid h-screen grid-cols-1 bg-cover bg-center md:grid-cols-2">
       {/* فرم ثبت‌نام سمت چپ */}
-      <div className="bg-opacity-60 flex items-center justify-center bg-white px-4 backdrop-blur-md">
-        <div className="w-full max-w-md rounded-2xl bg-[#EBF2FA] p-6 text-center shadow-2xl sm:p-8">
+      <div className="bg-opacity-60 flex items-center justify-center bg-white px-3 backdrop-blur-md sm:px-4">
+        <div className="w-full max-w-md rounded-xl bg-[#EBF2FA] p-4 text-center shadow-2xl sm:rounded-2xl sm:p-6 md:p-8">
           <img
             src={SbuLogo}
             alt="دانشگاه شهید بهشتی"
-            className="mx-auto mb-4 w-24 sm:mb-6 sm:w-32"
+            className="mx-auto mb-3 w-20 sm:mb-4 sm:w-24 md:mb-6 md:w-32"
           />
-          <p className="mb-6 text-lg text-gray-500 sm:mb-8 sm:text-xl">
+          <p className="mb-4 text-sm text-gray-500 sm:mb-6 sm:text-base md:mb-8 md:text-lg lg:text-xl">
             سامانه کنترل وضعیت هیات علمی
           </p>
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-5 md:space-y-6">
             {isLoading ? (
               <LoadingSpinner
                 size="md"
@@ -223,7 +223,7 @@ const LoginPage: React.FC = () => {
                   placeholder="نام کاربری"
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
-                  className="focus:ring-primary-400 w-full rounded-[15px] border border-gray-300 bg-white px-4 py-2 focus:outline-none"
+                  className="focus:ring-primary-400 w-full rounded-[12px] border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none sm:rounded-[15px] sm:px-4 sm:text-base"
                   disabled={isLoading}
                 />
                 <input
@@ -231,13 +231,13 @@ const LoginPage: React.FC = () => {
                   placeholder="رمز عبور"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="focus:ring-primary-400 w-full rounded-[15px] border border-gray-300 bg-white px-4 py-2 focus:outline-none"
+                  className="focus:ring-primary-400 w-full rounded-[12px] border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none sm:rounded-[15px] sm:px-4 sm:text-base"
                   disabled={isLoading}
                 />
-                <div className="mt-2 flex justify-between">
+                <div className="mt-1 flex justify-between sm:mt-2">
                   <button
                     type="button"
-                    className="text-right text-sm text-blue-600 hover:underline focus:outline-none"
+                    className="text-right text-xs text-blue-600 hover:underline focus:outline-none sm:text-sm"
                     onClick={handleForgotPassword}
                     disabled={isLoading}
                   >
@@ -247,7 +247,7 @@ const LoginPage: React.FC = () => {
                 <button
                   onClick={handleLogin}
                   disabled={isLoading}
-                  className="mt-6 w-full max-w-xs rounded-3xl bg-[#1B4965] py-2 font-bold text-white transition duration-300 hover:bg-[#358cc1] disabled:opacity-50 sm:mt-10"
+                  className="mt-4 w-full max-w-xs rounded-2xl bg-[#1B4965] py-2 text-sm font-bold text-white transition duration-300 hover:bg-[#358cc1] disabled:opacity-50 sm:mt-6 sm:rounded-3xl sm:text-base md:mt-10"
                 >
                   ورود
                 </button>

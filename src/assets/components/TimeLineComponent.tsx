@@ -148,19 +148,19 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({ teacherId }) => {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: Math.min(globalIndex * 0.05, 0.5) }}
-        whileHover={{ scale: 1.12, zIndex: 10 }}
-        className="flex max-w-[180px] min-w-[160px] flex-shrink-0 cursor-default flex-col items-center transition-shadow duration-200 hover:drop-shadow-lg"
+        whileHover={{ scale: 1.08, zIndex: 10 }}
+        className="flex max-w-[120px] min-w-[100px] flex-shrink-0 cursor-default flex-col items-center transition-shadow duration-200 hover:drop-shadow-lg sm:max-w-[150px] sm:min-w-[130px] md:max-w-[180px] md:min-w-[160px]"
         key={`${event.title}-${event.eventDate}-${globalIndex}`}
       >
         <motion.div
-          className={`relative h-11 w-11 rounded-full ${getStatusColor(event.status)} flex flex-shrink-0 items-center justify-center text-sm font-bold text-white shadow-md ring-2 ring-white`}
+          className={`relative h-8 w-8 rounded-full ${getStatusColor(event.status)} flex flex-shrink-0 items-center justify-center text-xs font-bold text-white shadow-md ring-1 ring-white sm:h-10 sm:w-10 sm:text-sm sm:ring-2 md:h-11 md:w-11`}
           animate={
             isCurrent
               ? {
                   scale: [1, 1.08, 1],
                   boxShadow: [
                     "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                    "0 0 0 6px rgba(234, 179, 8, 0.35)",
+                    "0 0 0 4px rgba(234, 179, 8, 0.35)",
                     "0 4px 6px -1px rgb(0 0 0 / 0.1)",
                   ],
                 }
@@ -174,9 +174,9 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({ teacherId }) => {
         >
           {globalIndex + 1}
         </motion.div>
-        <div className="mt-2 w-full text-center text-gray-800">
-          <h4 className="text-xs leading-tight font-semibold">{event.title}</h4>
-          <p className="mt-0.5 text-[10px] text-gray-500">
+        <div className="mt-1 w-full text-center text-gray-800 sm:mt-2">
+          <h4 className="text-[10px] leading-tight font-semibold sm:text-xs md:text-xs">{event.title}</h4>
+          <p className="mt-0.5 text-[9px] text-gray-500 sm:text-[10px]">
             {formatDisplayDate(event.eventDate)}
           </p>
         </div>
@@ -184,14 +184,24 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({ teacherId }) => {
     );
   };
 
-  const renderConnector = () => (
+  const renderConnector = (isRtl: boolean) => (
     <div
-      className="flex min-w-[40px] flex-shrink-0 items-center pt-5"
+      className={`flex min-w-[20px] flex-shrink-0 items-center pt-4 sm:min-w-[30px] sm:pt-4 md:min-w-[40px] md:pt-5 ${
+        isRtl ? "flex-row-reverse" : ""
+      }`}
       aria-hidden
     >
-      <div className="h-0.5 flex-1 bg-gradient-to-r from-gray-300 to-gray-400" />
+      <div
+        className={`h-0.5 flex-1 ${
+          isRtl
+            ? "bg-gradient-to-l from-gray-300 to-gray-400"
+            : "bg-gradient-to-r from-gray-300 to-gray-400"
+        }`}
+      />
       <svg
-        className="h-5 w-5 flex-shrink-0 text-gray-500"
+        className={`h-3 w-3 flex-shrink-0 text-gray-500 sm:h-4 sm:w-4 md:h-5 md:w-5 ${
+          isRtl ? "rotate-180" : ""
+        }`}
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
@@ -205,31 +215,31 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({ teacherId }) => {
   );
 
   return (
-    <div className="mx-auto w-full max-w-6xl rounded-xl bg-white p-6">
-      <h2 className="mt-6 mb-6 text-center text-3xl font-bold text-gray-800">
+    <div className="mx-auto w-full max-w-6xl rounded-lg bg-white p-3 sm:rounded-xl sm:p-4 md:p-6">
+      <h2 className="mt-3 mb-3 text-center text-lg font-bold text-gray-800 sm:mt-4 sm:mb-4 sm:text-xl md:mt-6 md:mb-6 md:text-2xl lg:text-3xl">
         تایم‌لاین رویدادها
       </h2>
 
-      <div className="mb-4 flex flex-wrap justify-center gap-2 text-xs text-gray-600">
-        <span className="flex items-center gap-1">
-          <span className="h-3 w-3 rounded-full bg-green-600" />
+      <div className="mb-3 flex flex-wrap justify-center gap-1.5 text-[10px] text-gray-600 sm:mb-4 sm:gap-2 sm:text-xs">
+        <span className="flex items-center gap-0.5 sm:gap-1">
+          <span className="h-2 w-2 rounded-full bg-green-600 sm:h-3 sm:w-3" />
           گذشته
         </span>
-        <span className="flex items-center gap-1">
-          <span className="h-3 w-3 rounded-full bg-yellow-500" />
+        <span className="flex items-center gap-0.5 sm:gap-1">
+          <span className="h-2 w-2 rounded-full bg-yellow-500 sm:h-3 sm:w-3" />
           پیش رو
         </span>
-        <span className="flex items-center gap-1">
-          <span className="h-3 w-3 rounded-full bg-gray-400" />
+        <span className="flex items-center gap-0.5 sm:gap-1">
+          <span className="h-2 w-2 rounded-full bg-gray-400 sm:h-3 sm:w-3" />
           آینده
         </span>
       </div>
 
       <div
-        className="max-h-[70vh] overflow-x-auto overflow-y-auto overscroll-contain"
+        className="max-h-[60vh] overflow-x-auto overflow-y-auto overscroll-contain sm:max-h-[65vh] md:max-h-[70vh]"
         dir="ltr"
       >
-        <div className="flex min-h-[200px] flex-col gap-0 px-4 pt-6 pb-6">
+        <div className="flex min-h-[150px] flex-col gap-0 px-2 pt-4 pb-4 sm:min-h-[180px] sm:px-3 sm:pt-5 sm:pb-5 md:min-h-[200px] md:px-4 md:pt-6 md:pb-6">
           {sortedEvents.length === 0 ? (
             <p className="w-full py-12 text-center text-gray-400">
               رویدادی برای نمایش وجود ندارد.
@@ -238,7 +248,6 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({ teacherId }) => {
             rows.map(({ events: rowEvents, rowIndex }, ri) => {
               const isRtl = rowIndex % 2 === 1;
               const globalStartIndex = rowIndex * EVENTS_PER_ROW;
-              // RTL: با flex-row-reverse اولین المان (رویداد اول ردیف) سمت راست قرار می‌گیرد؛ ترتیب را برعکس نکن
               const orderedEvents = rowEvents;
 
               const alignRow = isRtl ? "items-end" : "items-start";
@@ -246,7 +255,7 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({ teacherId }) => {
               return (
                 <div
                   key={rowIndex}
-                  className={`x-full inline-flex flex-col ${alignRow} ${selfAlign}`}
+                  className={`w-full inline-flex flex-col ${alignRow} ${selfAlign}`}
                 >
                   <div
                     className={`flex flex-nowrap items-start gap-0 ${isRtl ? "flex-row-reverse justify-end" : "justify-start"}`}
@@ -257,18 +266,18 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({ teacherId }) => {
                         <React.Fragment key={globalIdx}>
                           {renderEventNode(event, globalIdx)}
                           {localIdx < orderedEvents.length - 1 &&
-                            renderConnector()}
+                            renderConnector(isRtl)}
                         </React.Fragment>
                       );
                     })}
                   </div>
                   {ri < rows.length - 1 && (
                     <div
-                      className={`flex w-full py-1 ${isRtl ? "justify-start pl-[65px]" : "justify-end pr-[65px]"}`}
+                      className={`flex w-full justify-center py-0.5 sm:py-1`}
                       aria-hidden
                     >
                       <svg
-                        className="h-12 w-10 shrink-0 text-gray-400"
+                        className="h-8 w-6 shrink-0 text-gray-400 sm:h-10 sm:w-8 md:h-12 md:w-10"
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="2"
@@ -278,7 +287,7 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({ teacherId }) => {
                       >
                         <line
                           x1="20"
-                          y1="0"
+                          y1="5"
                           x2="20"
                           y2="38"
                           strokeOpacity="0.8"

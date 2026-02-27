@@ -147,32 +147,10 @@ export default function DashboardComponent() {
 
   return (
     <div className="fixed inset-0 flex flex-col overflow-hidden bg-[#1B4965] text-white lg:flex-row-reverse">
-      {/* Hamburger menu for small screens */}
-      <div className="absolute top-4 right-4 z-50 bg-[#1B4965] lg:hidden">
-        <button
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="rounded-md p-2 focus:ring-2 focus:ring-white focus:outline-none"
-        >
-          <svg
-            className="h-8 w-8 bg-[#1B4965] text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M4 6h16M4 12h16M4 18h16"
-            ></path>
-          </svg>
-        </button>
-      </div>
-
-      {/* Main Content Area */}
-      <div className="m-2 flex h-[calc(100%-40px)] w-[calc(100%-40px)] flex-1 flex-col overflow-auto rounded-[25px] bg-[#EBF2FA] p-4 text-base shadow-lg lg:m-5 lg:mr-0 lg:w-auto lg:p-5">
-        <Routes>
+      {/* Main Content Area - موبایل: فضا برای navbar پایین، دسکتاپ: عرض ثابت و اسکرول داخلی */}
+      <div className="m-1 flex h-[calc(100%-60px)] w-[calc(100%-8px)] flex-col overflow-auto rounded-[15px] bg-[#EBF2FA] p-2 text-sm shadow-lg sm:m-2 sm:h-[calc(100%-70px)] sm:w-[calc(100%-16px)] sm:rounded-[20px] sm:p-3 sm:text-base lg:m-5 lg:mr-0 lg:flex lg:h-full lg:min-h-0 lg:min-w-0 lg:flex-1 lg:flex-col lg:overflow-hidden lg:rounded-[25px] lg:p-5 lg:text-base">
+        <div className="min-h-0 flex-1 flex flex-col overflow-auto">
+          <Routes>
           <Route path="/" element={<MainDashboardPanel />} />
           <Route path="records" element={<HistoryPanel />} />
           <Route path="records/:teacherId" element={<TeacherDetailWrapper />} />
@@ -195,12 +173,13 @@ export default function DashboardComponent() {
           {/* Catch-all route for 404 errors within dashboard */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
+        </div>
       </div>
 
       {/* Sidebar / Navigation Panel */}
 
       <div
-        className={`fixed inset-y-0 right-0 z-40 flex w-64 flex-col items-stretch justify-between overflow-hidden bg-[#1B4965] transition-transform duration-300 ease-in-out lg:w-64 xl:w-72 ${
+        className={`fixed inset-y-0 right-0 z-40 flex w-[280px] flex-col items-stretch justify-between overflow-hidden bg-[#1B4965] transition-transform duration-300 ease-in-out sm:w-64 lg:w-64 xl:w-72 ${
           isSidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
         } lg:static lg:flex lg:translate-x-0 lg:p-4`}
       >
@@ -228,20 +207,20 @@ export default function DashboardComponent() {
               </svg>
             </button>
           </div>
-          <div className="mx-auto mt-3 mb-3 flex h-24 w-24 items-center justify-center bg-white sm:h-28 sm:w-28 lg:mt-5 lg:mb-4 lg:h-32 lg:w-32">
+          <div className="mx-auto mt-2 mb-2 flex h-20 w-20 items-center justify-center bg-white sm:mt-3 sm:mb-3 sm:h-24 sm:w-24 lg:mt-5 lg:mb-4 lg:h-32 lg:w-32">
             <img
               src={SbuLogo}
               alt="لوگو"
               className="h-full w-full bg-white object-contain"
             />
           </div>
-          <div className="mb-3 flex items-center justify-center px-2 text-2xl sm:text-3xl lg:mb-4 lg:text-4xl">
+          <div className="mb-2 flex items-center justify-center px-2 text-xl sm:mb-3 sm:text-2xl lg:mb-4 lg:text-4xl">
             سماه
           </div>
-          <div className="mx-auto my-2 h-[2px] w-[calc(100%-40px)] rounded bg-[#8D8D8D] lg:my-3"></div>
+          <div className="mx-auto my-2 h-[2px] w-[calc(100%-32px)] rounded bg-[#8D8D8D] sm:w-[calc(100%-40px)] lg:my-3"></div>
           {/* Navigation Buttons */}
           <button
-            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2 text-left text-sm text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-2.5 sm:text-base lg:text-lg xl:text-xl ${getActiveClass(
+            className={`m-0.5 inline-flex h-auto cursor-pointer items-center justify-start rounded-[15px] border-none p-1.5 text-left text-xs text-white transition-colors duration-300 ease-in-out outline-none sm:m-1 sm:p-2 sm:text-sm lg:m-1.5 lg:rounded-[20px] lg:p-2.5 lg:text-lg xl:text-xl ${getActiveClass(
               "/dashboard",
             )}`}
             onClick={() => handleNavigate("/dashboard")}
@@ -249,12 +228,12 @@ export default function DashboardComponent() {
             <img
               src={DashboardIcon}
               alt="Dashboard"
-              className="mr-2 h-6 w-6 pl-2 brightness-0 invert filter sm:h-7 sm:w-7 lg:h-8 lg:w-8"
+              className="mr-1.5 h-5 w-5 pl-1 brightness-0 invert filter sm:mr-2 sm:h-6 sm:w-6 sm:pl-2 lg:h-8 lg:w-8"
             />
             داشبورد
           </button>
           <button
-            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2 text-left text-sm text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-2.5 sm:text-base lg:text-lg xl:text-xl ${getActiveClass(
+            className={`m-0.5 inline-flex h-auto cursor-pointer items-center justify-start rounded-[15px] border-none p-1.5 text-left text-xs text-white transition-colors duration-300 ease-in-out outline-none sm:m-1 sm:p-2 sm:text-sm lg:m-1.5 lg:rounded-[20px] lg:p-2.5 lg:text-lg xl:text-xl ${getActiveClass(
               "/dashboard/records",
             )}`}
             onClick={() => handleNavigate("/dashboard/records")}
@@ -262,12 +241,12 @@ export default function DashboardComponent() {
             <img
               src={HistoryIcon}
               alt="History"
-              className="mr-2 h-6 w-6 pl-2 brightness-0 invert filter sm:h-7 sm:w-7 lg:h-8 lg:w-8"
+              className="mr-1.5 h-5 w-5 pl-1 brightness-0 invert filter sm:mr-2 sm:h-6 sm:w-6 sm:pl-2 lg:h-8 lg:w-8"
             />
             سوابق
           </button>
           <button
-            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2 text-left text-sm text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-2.5 sm:text-base lg:text-lg xl:text-xl ${getActiveClass(
+            className={`m-0.5 inline-flex h-auto cursor-pointer items-center justify-start rounded-[15px] border-none p-1.5 text-left text-xs text-white transition-colors duration-300 ease-in-out outline-none sm:m-1 sm:p-2 sm:text-sm lg:m-1.5 lg:rounded-[20px] lg:p-2.5 lg:text-lg xl:text-xl ${getActiveClass(
               "/dashboard/progress",
             )}`}
             onClick={() => handleNavigate("/dashboard/progress")}
@@ -275,13 +254,13 @@ export default function DashboardComponent() {
             <img
               src={ChartIcon}
               alt="Chart"
-              className="mr-2 h-6 w-6 pl-2 brightness-0 invert filter sm:h-7 sm:w-7 lg:h-8 lg:w-8"
+              className="mr-1.5 h-5 w-5 pl-1 brightness-0 invert filter sm:mr-2 sm:h-6 sm:w-6 sm:pl-2 lg:h-8 lg:w-8"
             />
             نمودار پیشرفت
           </button>
           {hasFullAccess && (
             <button
-              className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2 text-left text-sm text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-2.5 sm:text-base lg:text-lg xl:text-xl ${getActiveClass(
+              className={`m-0.5 inline-flex h-auto cursor-pointer items-center justify-start rounded-[15px] border-none p-1.5 text-left text-xs text-white transition-colors duration-300 ease-in-out outline-none sm:m-1 sm:p-2 sm:text-sm lg:m-1.5 lg:rounded-[20px] lg:p-2.5 lg:text-lg xl:text-xl ${getActiveClass(
                 "/dashboard/roles",
               )}`}
               onClick={() => handleNavigate("/dashboard/roles")}
@@ -289,13 +268,13 @@ export default function DashboardComponent() {
               <img
                 src={RoleIcon}
                 alt="Role"
-                className="mr-2 h-6 w-6 pl-2 brightness-0 invert filter sm:h-7 sm:w-7 lg:h-8 lg:w-8"
+                className="mr-1.5 h-5 w-5 pl-1 brightness-0 invert filter sm:mr-2 sm:h-6 sm:w-6 sm:pl-2 lg:h-8 lg:w-8"
               />
               مدیریت نقش ها
             </button>
           )}
           <button
-            className={`m-1 inline-flex h-auto cursor-pointer items-center justify-start rounded-[20px] border-none p-2 text-left text-sm text-white transition-colors duration-300 ease-in-out outline-none sm:m-1.5 sm:p-2.5 sm:text-base lg:text-lg xl:text-xl ${getActiveClass(
+            className={`m-0.5 inline-flex h-auto cursor-pointer items-center justify-start rounded-[15px] border-none p-1.5 text-left text-xs text-white transition-colors duration-300 ease-in-out outline-none sm:m-1 sm:p-2 sm:text-sm lg:m-1.5 lg:rounded-[20px] lg:p-2.5 lg:text-lg xl:text-xl ${getActiveClass(
               "/dashboard/notifications",
             )}`}
             onClick={() => handleNavigate("/dashboard/notifications")}
@@ -303,7 +282,7 @@ export default function DashboardComponent() {
             <img
               src={NotificationIcon}
               alt="Notifications"
-              className="mr-2 h-6 w-6 pl-2 brightness-0 invert filter sm:h-7 sm:w-7 lg:h-8 lg:w-8"
+              className="mr-1.5 h-5 w-5 pl-1 brightness-0 invert filter sm:mr-2 sm:h-6 sm:w-6 sm:pl-2 lg:h-8 lg:w-8"
             />
             اعلان ها
           </button>
@@ -311,7 +290,7 @@ export default function DashboardComponent() {
         {/* Bottom section: Exit button - Always visible */}
         <div className="flex-shrink-0 border-t border-[#3388BC33]">
           <button
-            className="m-1 inline-flex h-auto w-full cursor-pointer items-center justify-start rounded-[20px] border-none bg-transparent p-2 text-left text-sm text-white transition-colors duration-300 ease-in-out outline-none hover:bg-[#3388BC33] sm:m-1.5 sm:p-2.5 sm:text-base lg:text-lg xl:text-xl"
+            className="m-0.5 inline-flex h-auto w-full cursor-pointer items-center justify-start rounded-[15px] border-none bg-transparent p-1.5 text-left text-xs text-white transition-colors duration-300 ease-in-out outline-none hover:bg-[#3388BC33] sm:m-1 sm:p-2 sm:text-sm lg:m-1.5 lg:rounded-[20px] lg:p-2.5 lg:text-lg xl:text-xl"
             onClick={() => {
               // Clear all authentication data using AuthService
               AuthService.clearAuth();
@@ -322,11 +301,62 @@ export default function DashboardComponent() {
             <img
               src={ExitIcon}
               alt="Exit"
-              className="mr-2 h-6 w-6 pl-2 brightness-0 invert filter sm:h-7 sm:w-7 lg:h-8 lg:w-8"
+              className="mr-1.5 h-5 w-5 pl-1 brightness-0 invert filter sm:mr-2 sm:h-6 sm:w-6 sm:pl-2 lg:h-8 lg:w-8"
             />
             خروج
           </button>
         </div>
+      </div>
+
+      {/* Bottom Navigation Bar for Mobile */}
+      <div className="flex h-[60px] flex-shrink-0 items-center justify-around border-t border-[#3388BC33] bg-[#1B4965] lg:hidden sm:h-[70px]">
+        <button
+          onClick={() => handleNavigate("/dashboard")}
+          className={`flex flex-col items-center justify-center rounded-lg p-2 transition-colors ${getActiveClass("/dashboard") === "bg-[#3388BC]" ? "text-white" : "text-gray-400"}`}
+        >
+          <img src={DashboardIcon} alt="Dashboard" className="h-5 w-5 brightness-0 invert filter sm:h-6 sm:w-6" />
+          <span className="mt-1 text-[10px] sm:text-xs">داشبورد</span>
+        </button>
+        <button
+          onClick={() => handleNavigate("/dashboard/records")}
+          className={`flex flex-col items-center justify-center rounded-lg p-2 transition-colors ${getActiveClass("/dashboard/records") === "bg-[#3388BC]" ? "text-white" : "text-gray-400"}`}
+        >
+          <img src={HistoryIcon} alt="History" className="h-5 w-5 brightness-0 invert filter sm:h-6 sm:w-6" />
+          <span className="mt-1 text-[10px] sm:text-xs">سوابق</span>
+        </button>
+        <button
+          onClick={() => handleNavigate("/dashboard/progress")}
+          className={`flex flex-col items-center justify-center rounded-lg p-2 transition-colors ${getActiveClass("/dashboard/progress") === "bg-[#3388BC]" ? "text-white" : "text-gray-400"}`}
+        >
+          <img src={ChartIcon} alt="Chart" className="h-5 w-5 brightness-0 invert filter sm:h-6 sm:w-6" />
+          <span className="mt-1 text-[10px] sm:text-xs">نمودار</span>
+        </button>
+        {hasFullAccess && (
+          <button
+            onClick={() => handleNavigate("/dashboard/roles")}
+            className={`flex flex-col items-center justify-center rounded-lg p-2 transition-colors ${getActiveClass("/dashboard/roles") === "bg-[#3388BC]" ? "text-white" : "text-gray-400"}`}
+          >
+            <img src={RoleIcon} alt="Role" className="h-5 w-5 brightness-0 invert filter sm:h-6 sm:w-6" />
+            <span className="mt-1 text-[10px] sm:text-xs">نقش‌ها</span>
+          </button>
+        )}
+        <button
+          onClick={() => handleNavigate("/dashboard/notifications")}
+          className={`flex flex-col items-center justify-center rounded-lg p-2 transition-colors ${getActiveClass("/dashboard/notifications") === "bg-[#3388BC]" ? "text-white" : "text-gray-400"}`}
+        >
+          <img src={NotificationIcon} alt="Notifications" className="h-5 w-5 brightness-0 invert filter sm:h-6 sm:w-6" />
+          <span className="mt-1 text-[10px] sm:text-xs">اعلان‌ها</span>
+        </button>
+        <button
+          onClick={() => {
+            AuthService.clearAuth();
+            navigate("/", { replace: true });
+          }}
+          className="flex flex-col items-center justify-center rounded-lg p-2 text-gray-400 transition-colors hover:text-white"
+        >
+          <img src={ExitIcon} alt="Exit" className="h-5 w-5 brightness-0 invert filter sm:h-6 sm:w-6" />
+          <span className="mt-1 text-[10px] sm:text-xs">خروج</span>
+        </button>
       </div>
 
       {/* Overlay for mobile sidebar */}

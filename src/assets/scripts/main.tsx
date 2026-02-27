@@ -38,16 +38,18 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         </Routes>
       </BrowserRouter>
       <ToastContainer
-        position="bottom-left" // موقعیت نمایش اعلان‌ها
-        autoClose={5000} // زمان ماندگاری اعلان (میلی‌ثانیه)
+        position="bottom-left"
+        autoClose={3000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
-        rtl={true} // برای پشتیبانی از زبان فارسی (راست به چپ)
+        rtl={true}
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="light" // تم روشن یا تاریک
+        theme="light"
+        className="lg:!bottom-4 lg:!left-4"
+        toastClassName="!max-w-[250px] !p-2 !text-xs sm:!max-w-[280px] sm:!p-3 sm:!text-sm lg:!max-w-[400px] lg:!p-4 lg:!text-base"
       />
     </RTLProvider>
   </StrictMode>,

@@ -164,19 +164,6 @@ export default function RoleManagementPanel() {
     );
   }
 
-  const labelClasses = `
-    absolute
-    -top-5
-    right-4
-    px-21
-    text-sm
-    text-gray-500
-    transition-colors
-    group-hover:text-gray-700
-  `
-    .trim()
-    .replace(/\s+/g, " ");
-
   // Add this function to refresh users after creating a new one
   const handleUserCreated = () => {
     // Refetch users
@@ -184,14 +171,15 @@ export default function RoleManagementPanel() {
   };
 
   return (
-    <div className="grid h-full grid-rows-[auto_auto_1fr] gap-3 p-2 sm:gap-4 md:p-0">
+    <div className="grid h-full grid-rows-[auto_auto_1fr] gap-2 p-2 sm:gap-3 md:gap-4 md:p-0 lg:gap-4 lg:p-0">
       {/* Search Section */}
-      <div className="grid h-auto grid-cols-1 gap-3 rounded-[25px] bg-transparent px-2 py-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
+      <div className="grid h-auto grid-cols-1 gap-2 rounded-[15px] bg-transparent px-1 py-2 sm:grid-cols-2 sm:gap-3 sm:rounded-[20px] sm:px-2 sm:py-3 md:grid-cols-3 md:gap-4 md:rounded-[25px] lg:grid-cols-3 lg:gap-4 lg:rounded-[25px] lg:px-2 lg:py-3">
         <div className="content-center text-center sm:px-4 lg:px-10 xl:px-20">
           <MyInput
             placeholder="نام"
             value={searchText}
             onChange={(value) => setSearchText(value)}
+            className="text-sm sm:text-base"
           />
         </div>
         <div className="content-center text-center sm:px-4 lg:px-10 xl:px-20">
@@ -199,33 +187,35 @@ export default function RoleManagementPanel() {
             placeholder="نام خانوادگی"
             value={lastnameSearchText}
             onChange={(value) => setLastnameSearchText(value)}
+            className="text-sm sm:text-base"
           />
         </div>
         <div className="group relative sm:px-4 lg:px-10 xl:px-20">
           <MyDropdown
             options={roleOptions}
             defaultOption="همه"
+            value={selectedRole}
             onSelect={(selected) => {
               if (typeof selected === "string") setSelectedRole(selected);
             }}
-            className=""
+            className="text-sm sm:text-base"
           />
-          <span className={labelClasses}>نقش</span>
+          <span className="absolute -top-2.5 right-3 px-1 text-xs text-gray-500 sm:-top-3.5 sm:right-4 sm:text-sm">نقش</span>
         </div>
       </div>
 
       {/* Headers */}
       <div className="mb-2 grid h-auto grid-cols-3 gap-2 sm:grid-cols-4">
-        <div className="col-span-1 content-center px-2 text-start text-sm text-black sm:col-span-2 sm:px-4 sm:text-base lg:pr-20 lg:text-xl">
+        <div className="col-span-1 content-center px-2 text-start text-xs text-black sm:col-span-2 sm:px-4 sm:text-sm md:text-base lg:pr-20 lg:text-xl">
           نام
         </div>
-        <div className="textsize col-span-1 content-center text-center text-sm text-black sm:text-base lg:text-xl">
+        <div className="col-span-1 content-center text-center text-xs text-black sm:text-sm md:text-base lg:text-xl">
           نقش
         </div>
         <div className="col-span-1 flex items-center justify-center">
           <button
             onClick={() => setIsCreateUserOpen(true)}
-            className="rounded-lg bg-blue-500 px-2 py-1.5 text-xs text-white hover:bg-blue-600 sm:px-3 sm:py-2 sm:text-sm md:px-4 md:text-base"
+            className="rounded-lg bg-blue-500 px-2 py-1.5 text-[10px] text-white hover:bg-blue-600 sm:px-3 sm:py-2 sm:text-xs md:px-4 md:text-sm lg:px-4 lg:py-2 lg:text-base"
           >
             افزودن کاربر
           </button>
@@ -240,9 +230,9 @@ export default function RoleManagementPanel() {
       />
 
       {/* Content Area */}
-      <div className="flex flex-col gap-5 overflow-hidden">
+      <div className="flex flex-col gap-2 overflow-hidden sm:gap-3 md:gap-4 lg:gap-5">
         <div className="flex-1 overflow-y-auto">
-          <div className="grid gap-5 pb-4">
+          <div className="grid gap-2 pb-4 sm:gap-3 md:gap-4 lg:gap-5 lg:pb-4">
             {currentUsers.map((user) => (
               <MyRoleManagerContainer
                 key={user.id}

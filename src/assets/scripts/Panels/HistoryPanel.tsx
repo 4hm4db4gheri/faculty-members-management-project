@@ -125,7 +125,7 @@ export default function HistoryPanel() {
   const [selectedDegree, setSelectedDegree] = useState("همه");
 
   const API_PAGE_SIZE = 50;
-  const ITEMS_PER_PAGE = 5;
+  const ITEMS_PER_PAGE = 6;
   const PAGES_PER_API_PAGE = API_PAGE_SIZE / ITEMS_PER_PAGE; // 10
   const PREFETCH_THRESHOLD_PAGES = 2; // when user enters page 9/10, prefetch next 50
 
@@ -460,18 +460,21 @@ export default function HistoryPanel() {
   }, [debouncedSearchText, performSearch]);
 
   // Helper: true if teacher's first or last name starts with or contains the query (prefix/partial match)
-  const teacherMatchesSearch = useCallback((teacher: Teacher, query: string) => {
-    const q = query.trim();
-    if (!q) return false;
-    const first = (teacher.firstName || "").trim();
-    const last = (teacher.lastName || "").trim();
-    return (
-      first.startsWith(q) ||
-      last.startsWith(q) ||
-      first.includes(q) ||
-      last.includes(q)
-    );
-  }, []);
+  const teacherMatchesSearch = useCallback(
+    (teacher: Teacher, query: string) => {
+      const q = query.trim();
+      if (!q) return false;
+      const first = (teacher.firstName || "").trim();
+      const last = (teacher.lastName || "").trim();
+      return (
+        first.startsWith(q) ||
+        last.startsWith(q) ||
+        first.includes(q) ||
+        last.includes(q)
+      );
+    },
+    [],
+  );
 
   // Updated filtering logic: advanced search > API search + client-side prefix match on loaded teachers > base list
   const filteredTeachers = useMemo(() => {
@@ -493,7 +496,13 @@ export default function HistoryPanel() {
       return merged;
     }
     return teachers;
-  }, [searchText, searchResults, advancedSearchResults, teachers, teacherMatchesSearch]);
+  }, [
+    searchText,
+    searchResults,
+    advancedSearchResults,
+    teachers,
+    teacherMatchesSearch,
+  ]);
 
   // Pagination logic
   const loadedTotalPages = Math.ceil(filteredTeachers.length / ITEMS_PER_PAGE);
@@ -634,67 +643,54 @@ export default function HistoryPanel() {
   }
 
   return (
-    <div className="grid h-full grid-rows-[auto_auto_1fr] gap-3 p-2 sm:gap-4 md:p-0">
-      {/* Search Section */}
-      <div className="mb-2 sm:mb-4">
-        <div className="grid h-full grid-cols-2 gap-2 rounded-[25px] px-2 pt-3 sm:grid-cols-4 sm:gap-3 md:grid-cols-10 md:gap-4 lg:gap-6 lg:pt-5">
-          {/* Single Search Field */}
-          <div className="col-span-2 sm:col-span-3 md:col-span-6">
+    <div className="grid h-full grid-rows-[auto_auto_1fr_auto] gap-2 p-1 sm:gap-3 sm:p-2 md:gap-4 md:p-0 lg:grid-rows-[auto_auto_1fr_auto]">
+      {/* Search Section - موبایل: flex، دسکتاپ: گرید نسخه اول */}
+      <div className="mb-1 sm:mb-2 md:mb-4 lg:mb-4">
+        <div className="flex h-full gap-2 rounded-[15px] px-1 pt-2 sm:gap-2 sm:rounded-[20px] sm:px-2 sm:pt-3 md:gap-3 md:rounded-[25px] lg:grid lg:grid-cols-10 lg:gap-6 lg:rounded-[25px] lg:px-2 lg:pt-5">
+          <div className="flex-1 lg:col-span-6">
             <div className="relative w-full">
               <MyInput
                 placeholder="جستجو..."
                 value={searchText}
                 onChange={handleSearch}
+                className="text-sm sm:text-base"
               />
               {isSearching && searchText.trim() && (
-                <div className="pointer-events-none absolute inset-0 flex items-center justify-end pr-4">
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-end pr-2 sm:pr-4">
                   <LoadingSpinner size="sm" showText={false} />
                 </div>
               )}
             </div>
           </div>
 
-          {/* Update the advanced search button */}
-          <div className="col-span-1 content-center md:col-span-1">
+          <div className="flex items-center lg:col-span-1 lg:content-center">
             <button
               onClick={() => setIsAdvancedSearchOpen(true)}
-              className="flex h-10 w-full cursor-pointer items-center justify-center rounded-[15px] border-none bg-white px-2 py-2 text-xl text-black shadow-xs ring-1 ring-gray-300 transition-colors duration-300 ring-inset hover:bg-gray-50 md:rounded-[25px] md:px-4"
+              className="flex h-10 cursor-pointer items-center justify-center rounded-[10px] border-none bg-white px-3 py-2 text-lg text-black shadow-xs ring-1 ring-gray-300 transition-colors duration-300 ring-inset hover:bg-gray-50 sm:h-12 sm:rounded-[15px] sm:px-4 md:rounded-[25px] md:px-5 lg:h-10 lg:w-full lg:rounded-[25px] lg:px-4"
               title="جستجوی پیشرفته"
             >
-              <img
-                src={AdvancedSearchIcon}
-                alt="جستجوی پیشرفته"
-                className="h-5 w-5 sm:h-6 sm:w-6"
-              />
+              <img src={AdvancedSearchIcon} alt="جستجوی پیشرفته" className="h-5 w-5 sm:h-6 sm:w-6" />
             </button>
           </div>
 
-          <div className="col-span-2 flex items-center justify-center sm:col-span-2 md:col-span-2">
+          {/* دسکتاپ: دکمه آپلود و Excel در همان ردیف */}
+          <div className="hidden items-center justify-center lg:col-span-2 lg:flex">
             <button
               onClick={() => setIsTeachersUploadOpen(true)}
-              className="w-full rounded-lg bg-blue-500 px-2 py-1.5 text-xs text-white hover:bg-blue-600 sm:px-3 sm:py-2 sm:text-sm md:px-4 md:text-base"
+              className="w-full rounded-lg bg-blue-500 px-4 py-2 text-base text-white hover:bg-blue-600"
             >
               آپلود لیست اساتید
             </button>
           </div>
-          <div className="col-span-2 content-center sm:col-span-2 md:col-span-1">
+          <div className="hidden content-center lg:col-span-1 lg:block">
             <button
               onClick={handleExportExcel}
-              className="flex h-10 w-full cursor-pointer items-center justify-center rounded-[15px] border-none bg-white px-2 py-2 text-sm text-black shadow-xs ring-1 ring-gray-300 transition-colors duration-300 hover:bg-gray-50 sm:text-base md:rounded-[25px] md:px-4 md:text-lg lg:text-xl"
+              className="flex h-10 w-full cursor-pointer items-center justify-center rounded-[25px] border-none bg-white px-4 py-2 text-lg text-black shadow-xs ring-1 ring-gray-300 transition-colors duration-300 hover:bg-gray-50"
             >
               <span className="flex items-center">
-                <span className="mr-1 sm:mr-2">Excel</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 sm:h-5 sm:w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
+                <span className="mr-2">Excel</span>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </span>
             </button>
@@ -703,23 +699,23 @@ export default function HistoryPanel() {
       </div>
 
       {/* Table Headers */}
-      <div className="hidden grid-cols-4 sm:grid">
-        <div className="col-span-2 content-end px-2 pb-3 text-start text-sm text-black sm:px-4 md:text-base lg:pr-20 lg:text-lg">
+      <div className="hidden grid-cols-4 md:grid">
+        <div className="col-span-2 content-end px-2 pb-2 text-start text-xs text-black sm:px-4 sm:pb-3 sm:text-sm md:text-base lg:pr-20 lg:text-lg">
           نام استاد
         </div>
-        <div className="col-span-1 content-end pb-3 text-center text-sm text-black md:text-base lg:text-lg">
+        <div className="col-span-1 content-end pb-2 text-center text-xs text-black sm:pb-3 sm:text-sm md:text-base lg:text-lg">
           دانشکده
         </div>
-        <div className="col-span-1 content-end pb-3 text-center text-sm text-black md:text-base lg:text-lg">
+        <div className="col-span-1 content-end pb-2 text-center text-xs text-black sm:pb-3 sm:text-sm md:text-base lg:text-lg">
           رتبه علمی
         </div>
       </div>
 
       {/* Teachers List Container */}
-      <div className="flex flex-col gap-5 overflow-hidden">
+      <div className="flex flex-col gap-2 overflow-hidden sm:gap-3 md:gap-5">
         {/* Scrollable List */}
         <div className="flex-1 overflow-y-auto">
-          <div className="grid gap-5 pb-4">
+          <div className="grid gap-2 pb-2 sm:gap-3 sm:pb-3 md:gap-5 md:pb-4">
             {currentTeachers.map((teacher) => (
               <MyTeacherContainer
                 key={teacher.id}
@@ -746,7 +742,7 @@ export default function HistoryPanel() {
 
         {/* Fixed Pagination at Bottom */}
         {totalPages > 1 && (
-          <div className="flex-shrink-0 py-4">
+          <div className="flex-shrink-0 pt-4 pb-4">
             <MyPagination
               totalPages={totalPages}
               currentPage={currentPage}
@@ -754,6 +750,34 @@ export default function HistoryPanel() {
             />
           </div>
         )}
+      </div>
+
+      {/* Action Buttons at Bottom - فقط موبایل/تبلت؛ دسکتاپ (lg+) دکمه‌ها در بالا */}
+      <div className="flex gap-2 pb-2 sm:pb-3 lg:hidden">
+        <button
+          onClick={() => setIsTeachersUploadOpen(true)}
+          className="flex-1 rounded-lg bg-blue-500 px-2 py-1 text-[10px] text-white hover:bg-blue-600 sm:px-3 sm:py-1.5 sm:text-xs"
+        >
+          آپلود اساتید
+        </button>
+        <button
+          onClick={handleExportExcel}
+          className="flex items-center justify-center rounded-lg border border-gray-300 bg-white px-2 py-1 text-[10px] text-black shadow-sm transition-colors hover:bg-gray-50 sm:px-3 sm:py-1.5 sm:text-xs"
+        >
+          <span className="mr-1">Excel</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-3 w-3 sm:h-4 sm:w-4"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
       </div>
 
       {/* Upload Teachers Popup */}

@@ -219,17 +219,19 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
   ) => {
     if (!records || records.length === 0) {
       return (
-        <div className="space-y-4">
-          <h3 className="text-xl font-bold">{title}</h3>
-          <p className="text-gray-500">هیچ موردی یافت نشد.</p>
+        <div className="space-y-2 sm:space-y-4">
+          <h3 className="text-base font-bold sm:text-lg md:text-xl">{title}</h3>
+          <p className="text-sm text-gray-500 sm:text-base">
+            هیچ موردی یافت نشد.
+          </p>
         </div>
       );
     }
 
     return (
-      <div className="space-y-4">
-        <h3 className="text-xl font-bold">{title}</h3>
-        <ul className="list-inside list-disc space-y-3 text-gray-700">
+      <div className="space-y-2 sm:space-y-4">
+        <h3 className="text-base font-bold sm:text-lg md:text-xl">{title}</h3>
+        <ul className="list-inside list-disc space-y-2 text-xs text-gray-700 sm:space-y-3 sm:text-sm md:text-base">
           {records.map((record, index) => (
             <li key={record.id || index}>
               <span className="font-semibold">{record.organizationName}</span> -{" "}
@@ -253,24 +255,26 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
   ) => {
     if (!records || records.length === 0) {
       return (
-        <div className="space-y-4">
-          <h3 className="text-xl font-bold">{title}</h3>
-          <p className="text-gray-500">هیچ موردی یافت نشد.</p>
+        <div className="space-y-2 sm:space-y-4">
+          <h3 className="text-base font-bold sm:text-lg md:text-xl">{title}</h3>
+          <p className="text-sm text-gray-500 sm:text-base">
+            هیچ موردی یافت نشد.
+          </p>
         </div>
       );
     }
 
     return (
-      <div className="space-y-4">
-        <h3 className="text-xl font-bold">{title}</h3>
-        <ul className="list-inside list-disc space-y-3 text-gray-700">
+      <div className="space-y-2 sm:space-y-4">
+        <h3 className="text-base font-bold sm:text-lg md:text-xl">{title}</h3>
+        <ul className="list-inside list-disc space-y-2 text-xs text-gray-700 sm:space-y-3 sm:text-sm md:text-base">
           {records.map((record, index) => (
             <li key={record.id || index}>
               <span className="font-semibold">
                 {formatDate(record.startDate)} تا {formatDate(record.endDate)}
               </span>
               {record.description && (
-                <p className="mt-1 mr-4 text-sm text-gray-500">
+                <p className="mt-1 mr-2 text-xs text-gray-500 sm:mr-4 sm:text-sm">
                   {record.description}
                 </p>
               )}
@@ -288,17 +292,19 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
   ) => {
     if (!records || records.length === 0) {
       return (
-        <div className="space-y-4">
-          <h3 className="text-xl font-bold">{title}</h3>
-          <p className="text-gray-500">هیچ موردی یافت نشد.</p>
+        <div className="space-y-2 sm:space-y-4">
+          <h3 className="text-base font-bold sm:text-lg md:text-xl">{title}</h3>
+          <p className="text-sm text-gray-500 sm:text-base">
+            هیچ موردی یافت نشد.
+          </p>
         </div>
       );
     }
 
     return (
-      <div className="space-y-4">
-        <h3 className="text-xl font-bold">{title}</h3>
-        <ol className="space-y-2 text-gray-700">
+      <div className="space-y-2 sm:space-y-4">
+        <h3 className="text-base font-bold sm:text-lg md:text-xl">{title}</h3>
+        <ol className="space-y-1.5 text-xs text-gray-700 sm:space-y-2 sm:text-sm md:text-base">
           {records.map((record, index) => {
             const textDirection = isRTL(record.reference) ? "rtl" : "ltr";
             const textAlign = textDirection === "rtl" ? "right" : "left";
@@ -306,7 +312,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
             return (
               <li
                 key={record.id || index}
-                className={`list-inside list-decimal rounded-lg px-3 py-2 transition-colors duration-200 ${
+                className={`list-inside list-decimal rounded-lg px-2 py-1.5 transition-colors duration-200 sm:px-3 sm:py-2 ${
                   record.url ? "cursor-pointer hover:bg-blue-100" : ""
                 }`}
                 style={{ direction: textDirection, textAlign }}
@@ -316,7 +322,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
                   }
                 }}
               >
-                <span className="text-sm text-gray-700">
+                <span className="text-xs text-gray-700 sm:text-sm">
                   {record.reference}
                 </span>
               </li>
@@ -334,17 +340,19 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
   ) => {
     if (!records || records.length === 0) {
       return (
-        <div className="space-y-4">
-          <h3 className="text-xl font-bold">{title}</h3>
-          <p className="text-gray-500">هیچ موردی یافت نشد.</p>
+        <div className="space-y-2 sm:space-y-4">
+          <h3 className="text-base font-bold sm:text-lg md:text-xl">{title}</h3>
+          <p className="text-sm text-gray-500 sm:text-base">
+            هیچ موردی یافت نشد.
+          </p>
         </div>
       );
     }
 
     return (
-      <div className="space-y-4">
-        <h3 className="text-xl font-bold">{title}</h3>
-        <ul className="list-inside list-disc space-y-3 text-gray-700">
+      <div className="space-y-2 sm:space-y-4">
+        <h3 className="text-base font-bold sm:text-lg md:text-xl">{title}</h3>
+        <ul className="list-inside list-disc space-y-2 text-xs text-gray-700 sm:space-y-3 sm:text-sm md:text-base">
           {records.map((record, index) => (
             <li key={record.id || index}>
               ارتقا از{" "}
@@ -370,17 +378,19 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
   ) => {
     if (!records || records.length === 0) {
       return (
-        <div className="space-y-4">
-          <h3 className="text-xl font-bold">{title}</h3>
-          <p className="text-gray-500">هیچ موردی یافت نشد.</p>
+        <div className="space-y-2 sm:space-y-4">
+          <h3 className="text-base font-bold sm:text-lg md:text-xl">{title}</h3>
+          <p className="text-sm text-gray-500 sm:text-base">
+            هیچ موردی یافت نشد.
+          </p>
         </div>
       );
     }
 
     return (
-      <div className="space-y-4">
-        <h3 className="text-xl font-bold">{title}</h3>
-        <ul className="list-inside list-disc space-y-3 text-gray-700">
+      <div className="space-y-2 sm:space-y-4">
+        <h3 className="text-base font-bold sm:text-lg md:text-xl">{title}</h3>
+        <ul className="list-inside list-disc space-y-2 text-xs text-gray-700 sm:space-y-3 sm:text-sm md:text-base">
           {records.map((record, index) => (
             <li key={record.id || index}>
               تغییر از{" "}
@@ -420,27 +430,29 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
   ) => {
     if (!courses || courses.length === 0) {
       return (
-        <div className="space-y-4">
-          <h3 className="text-xl font-bold">{title}</h3>
-          <p className="text-gray-500">هیچ موردی یافت نشد.</p>
+        <div className="space-y-2 sm:space-y-4">
+          <h3 className="text-base font-bold sm:text-lg md:text-xl">{title}</h3>
+          <p className="text-sm text-gray-500 sm:text-base">
+            هیچ موردی یافت نشد.
+          </p>
         </div>
       );
     }
 
     return (
-      <div className="space-y-4">
-        <h3 className="text-xl font-bold">{title}</h3>
-        <div className="grid gap-4 sm:grid-cols-2">
+      <div className="space-y-2 sm:space-y-4">
+        <h3 className="text-base font-bold sm:text-lg md:text-xl">{title}</h3>
+        <div className="grid gap-2 sm:grid-cols-2 sm:gap-3 md:gap-4">
           {courses.map((course, index) => (
             <div
               key={course.id || index}
-              className="rounded-lg border border-gray-200 bg-gray-50 p-4"
+              className="rounded-lg border border-gray-200 bg-gray-50 p-2 sm:p-3 md:p-4"
             >
-              <div className="space-y-2">
-                <h4 className="text-lg font-semibold text-gray-800">
+              <div className="space-y-1.5 sm:space-y-2">
+                <h4 className="text-sm font-semibold text-gray-800 sm:text-base md:text-lg">
                   {course.title}
                 </h4>
-                <div className="space-y-1 text-sm text-gray-600">
+                <div className="space-y-1 text-xs text-gray-600 sm:text-sm">
                   <p>
                     <span className="font-medium">تعداد واحد:</span>{" "}
                     {course.creditHour} واحد
@@ -465,7 +477,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
                   <p>
                     <span className="font-medium">وضعیت:</span>{" "}
                     <span
-                      className={`rounded-full px-2 py-0.5 text-xs ${
+                      className={`rounded-full px-1.5 py-0.5 text-[10px] sm:px-2 sm:text-xs ${
                         course.isActive
                           ? "bg-green-100 text-green-800"
                           : "bg-red-100 text-red-800"
@@ -504,121 +516,127 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
     switch (activeTab) {
       case "اطلاعات کاربر":
         return (
-          <div className="mt-8 space-y-6">
-            <div className="grid grid-cols-2 gap-8">
-              <div className="space-y-4">
-                <h3 className="text-xl font-bold text-black">اطلاعات فردی</h3>
-                <div className="space-y-2">
-                  <p className="text-gray-700">
+          <div className="mt-4 space-y-4 sm:mt-6 sm:space-y-6 md:mt-8">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 md:gap-8">
+              <div className="space-y-3 sm:space-y-4">
+                <h3 className="text-base font-bold text-black sm:text-lg md:text-xl">
+                  اطلاعات فردی
+                </h3>
+                <div className="space-y-1.5 sm:space-y-2">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     کد پرسنلی: {detailedTeacher.personalNumber || "نامشخص"}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     کد ملی: {detailedTeacher.nationalCode || "نامشخص"}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     تاریخ تولد: {formatDate(detailedTeacher.birthDate)}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     محل تولد: {detailedTeacher.birthPlace || "نامشخص"}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     جنسیت: {getGenderText(detailedTeacher.gender)}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     وضعیت تاهل:{" "}
                     {getMaritalStatusText(detailedTeacher.maritalStatus)}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     نام پدر: {detailedTeacher.fatherName || "نامشخص"}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     ملیت: {detailedTeacher.nationality || "نامشخص"}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     مذهب: {detailedTeacher.religion || "نامشخص"}
                   </p>
                 </div>
               </div>
-              <div className="space-y-4">
-                <h3 className="text-xl font-bold text-black">اطلاعات تماس</h3>
-                <div className="space-y-2">
-                  <p className="text-gray-700">
+              <div className="space-y-3 sm:space-y-4">
+                <h3 className="text-base font-bold text-black sm:text-lg md:text-xl">
+                  اطلاعات تماس
+                </h3>
+                <div className="space-y-1.5 sm:space-y-2">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     تلفن: {detailedTeacher.phoneNumber || "نامشخص"}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     تلفن منزل: {detailedTeacher.homeTelephoneNumber || "نامشخص"}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs break-words text-gray-700 sm:text-sm md:text-base">
                     ایمیل:{" "}
                     {detailedTeacher.emailAddress ||
                       detailedTeacher.email ||
                       "نامشخص"}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs break-words text-gray-700 sm:text-sm md:text-base">
                     ایمیل دانشگاهی:{" "}
                     {detailedTeacher.universityEmail || "نامشخص"}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     دفتر: {detailedTeacher.officeNumber || "نامشخص"}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs break-words text-gray-700 sm:text-sm md:text-base">
                     آدرس: {detailedTeacher.address || "نامشخص"}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs break-words text-gray-700 sm:text-sm md:text-base">
                     وب‌سایت: {detailedTeacher.websiteAddress || "نامشخص"}
                   </p>
                 </div>
               </div>
             </div>
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold text-black">اطلاعات شغلی</h3>
-              <div className="grid grid-cols-2 gap-8">
-                <div className="space-y-2">
-                  <p className="text-gray-700">
+            <div className="space-y-3 sm:space-y-4">
+              <h3 className="text-base font-bold text-black sm:text-lg md:text-xl">
+                اطلاعات شغلی
+              </h3>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 md:gap-8">
+                <div className="space-y-1.5 sm:space-y-2">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     وضعیت اشتغال:{" "}
                     {getEmploymentStatusText(detailedTeacher.employmentStatus)}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     تاریخ استخدام: {formatDate(detailedTeacher.employmentDate)}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     تاریخ پایان خدمت:{" "}
                     {formatDate(detailedTeacher.employmentEndDate)}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     رتبه علمی:{" "}
                     {getAcademicRankText(detailedTeacher.academicRank)}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     آخرین مدرک: {detailedTeacher.lastDegree || "نامشخص"}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     رشته تحصیلی: {detailedTeacher.studyField || "نامشخص"}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     گرایش تحصیلی:{" "}
                     {detailedTeacher.educationalOrientation || "نامشخص"}
                   </p>
                 </div>
-                <div className="space-y-2">
-                  <p className="text-gray-700">
+                <div className="space-y-1.5 sm:space-y-2">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     دانشگاه محل تحصیل:{" "}
                     {detailedTeacher.universityOfStudy || "نامشخص"}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     تاریخ اخذ مدرک:{" "}
                     {formatDate(detailedTeacher.degreeObtainingDate)}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     پایه: {detailedTeacher.paye || "نامشخص"}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     نوع پایه: {detailedTeacher.payeType || "نامشخص"}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     حالت استاد: {detailedTeacher.halatOstad || "نامشخص"}
                   </p>
-                  <p className="text-gray-700">
+                  <p className="text-xs text-gray-700 sm:text-sm md:text-base">
                     آخرین وضعیت: {detailedTeacher.lastStatus || "نامشخص"}
                   </p>
                 </div>
@@ -629,7 +647,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
 
       case "سوابق علمی پژوهشی":
         return (
-          <div className="mt-8 space-y-6">
+          <div className="mt-4 space-y-4 sm:mt-6 sm:space-y-6 md:mt-8">
             {renderResearchRecords(
               detailedTeacher.researchRecords,
               "مقالات و پژوهش‌ها",
@@ -639,7 +657,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
 
       case "ارتباط با صنعت":
         return (
-          <div className="mt-8 space-y-6">
+          <div className="mt-4 space-y-4 sm:mt-6 sm:space-y-6 md:mt-8">
             {renderIndustrialRecords(
               detailedTeacher.industrialRecords,
               "پروژه های صنعتی",
@@ -649,14 +667,14 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
 
       case "سوابق آموزشی":
         return (
-          <div className="mt-8 space-y-6">
+          <div className="mt-4 space-y-4 sm:mt-6 sm:space-y-6 md:mt-8">
             {renderCourses(detailedTeacher.courses, "دروس تدریس شده")}
           </div>
         );
 
       case "سوابق اجرایی":
         return (
-          <div className="mt-8 space-y-6">
+          <div className="mt-4 space-y-4 sm:mt-6 sm:space-y-6 md:mt-8">
             {renderExecutiveRecords(
               detailedTeacher.executiveRecords,
               "سوابق اجرایی",
@@ -666,7 +684,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
 
       case "سوابق ارتقا و تبدیل وضعیت":
         return (
-          <div className="mt-8 space-y-6">
+          <div className="mt-4 space-y-4 sm:mt-6 sm:space-y-6 md:mt-8">
             {renderPromotionRecords(
               detailedTeacher.promotionRecords,
               "سوابق ارتقا",
@@ -697,20 +715,32 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      {/* Back button */}
+      {/* دسکتاپ: دکمه بازگشت مطلق */}
       {onBack && (
-        <div className="absolute top-4 left-4 z-50 m-10">
+        <div className="absolute top-2 left-2 z-50 m-2 hidden sm:top-4 sm:left-4 sm:m-4 lg:block lg:m-10">
           <button
             onClick={onBack}
-            className="rounded-2xl bg-white px-4 py-2 text-gray-700 shadow-lg hover:bg-gray-50"
+            className="rounded-xl bg-white px-2 py-1 text-xs text-gray-700 shadow-lg hover:bg-gray-50 sm:rounded-2xl sm:px-4 sm:py-2 sm:text-sm"
           >
             بازگشت
           </button>
         </div>
       )}
 
-      {/* Profile photo section */}
-      <div className="flex h-[220px] items-start px-4">
+      {/* موبایل: فقط دکمه بازگشت سمت چپ (تب‌ها زیر نام و عکس داخل باکس سفید) */}
+      {onBack && (
+        <div className="relative z-10 flex w-full justify-start pt-1 pr-2 sm:pt-2 sm:pr-3 lg:hidden">
+          <button
+            onClick={onBack}
+            className="rounded-xl bg-white px-2 py-1 text-xs text-gray-700 shadow-lg hover:bg-gray-50 sm:rounded-2xl sm:px-4 sm:py-2 sm:text-sm"
+          >
+            بازگشت
+          </button>
+        </div>
+      )}
+
+      {/* دسکتاپ: عکس پروفایل بالای صفحه (همان نسخه اول) */}
+      <div className="hidden h-[220px] items-start px-4 lg:flex">
         <div className="relative z-30 mt-6 h-[220px] w-[150px] overflow-hidden rounded-2xl shadow-lg">
           <img
             src={
@@ -722,7 +752,6 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
             className="h-full w-full scale-120 object-cover object-center"
             style={{ objectPosition: "top center" }}
             onError={(e) => {
-              // Fallback to default avatar if image fails to load
               e.currentTarget.src =
                 "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
             }}
@@ -730,59 +759,122 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
         </div>
       </div>
 
-      {/* Content wrapper with tabs and white container */}
-      <div className="relative -mt-36 flex flex-1 flex-col overflow-hidden">
-        <style>
-          {`
-            .tabs-horizontal-scroll {
-              scrollbar-width: thin;
-              scrollbar-color: #9CA3AF transparent;
-            }
-            .tabs-horizontal-scroll::-webkit-scrollbar {
-              height: 10px !important;
-              display: block !important;
-              -webkit-appearance: none !important;
-              appearance: none !important;
-            }
-            .tabs-horizontal-scroll::-webkit-scrollbar-track {
-              background: transparent !important;
-              border-radius: 5px;
-              margin: 0 4px;
-            }
-            .tabs-horizontal-scroll::-webkit-scrollbar-thumb {
-              background: #9CA3AF !important;
-              border-radius: 5px;
-              min-width: 20px;
-            }
-            .tabs-horizontal-scroll::-webkit-scrollbar-thumb:hover {
-              background: #6B7280 !important;
-            }
-            .tabs-horizontal-scroll::-webkit-scrollbar-thumb:active {
-              background: #4B5563 !important;
-            }
-          `}
-        </style>
-        <div className="relative z-10 w-full mb-2">
+      {/* استایل اسکرول تب‌ها */}
+      <style>
+        {`
+          .tabs-horizontal-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: #9CA3AF transparent;
+          }
+          .tabs-horizontal-scroll::-webkit-scrollbar {
+            height: 6px !important;
+            display: block !important;
+            -webkit-appearance: none !important;
+            appearance: none !important;
+          }
+          .tabs-horizontal-scroll::-webkit-scrollbar-track {
+            background: transparent !important;
+            border-radius: 3px;
+            margin: 0 2px;
+          }
+          .tabs-horizontal-scroll::-webkit-scrollbar-thumb {
+            background: #9CA3AF !important;
+            border-radius: 3px;
+            min-width: 20px;
+          }
+          .tabs-horizontal-scroll::-webkit-scrollbar-thumb:hover {
+            background: #6B7280 !important;
+          }
+          .tabs-horizontal-scroll::-webkit-scrollbar-thumb:active {
+            background: #4B5563 !important;
+          }
+        `}
+      </style>
+
+      {/* White container */}
+      <div className="relative z-20 flex flex-1 flex-col overflow-hidden rounded-t-2xl bg-white sm:rounded-t-3xl lg:-mt-36">
+        {/* دسکتاپ: نام و رتبه بالای تب‌ها */}
+        <div className="mr-36 hidden border-b border-gray-100 pt-2 lg:block lg:pr-5 lg:pb-2">
+          <p className="text-lg text-gray-600">
+            {detailedTeacher?.academicRank !== undefined
+              ? getAcademicRankText(detailedTeacher.academicRank)
+              : teacher.rank || "نامشخص"}
+          </p>
+          <h1 className="text-2xl font-bold text-black">{`${detailedTeacher?.firstName || teacher.firstName} ${detailedTeacher?.lastName || teacher.lastName}`}</h1>
+          <p className="pt-2 text-gray-600">
+            دانشکده{" "}
+            {getFacultyName(
+              detailedTeacher?.facultyName,
+              detailedTeacher?.facultyNameInPersian,
+              detailedTeacher?.facultyNameInEnglish,
+              detailedTeacher?.facultyOfMission,
+              teacher.faculty,
+            )}
+          </p>
+        </div>
+
+        {/* موبایل: عکس + نام در یک ردیف */}
+        <div className="flex items-start gap-4 border-b border-gray-200 p-4 sm:gap-6 sm:p-6 md:gap-8 md:p-8 lg:hidden">
+          <div className="flex-shrink-0">
+            <div className="relative h-[100px] w-[70px] overflow-hidden rounded-xl shadow-lg sm:h-[140px] sm:w-[100px] sm:rounded-2xl md:h-[180px] md:w-[130px]">
+              <img
+                src={
+                  detailedTeacher?.gender === 1
+                    ? FemaleProfessorAvatar
+                    : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                }
+                alt="تصویر استاد"
+                className="h-full w-full scale-120 object-cover object-center"
+                style={{ objectPosition: "top center" }}
+                onError={(e) => {
+                  e.currentTarget.src =
+                    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+                }}
+              />
+            </div>
+          </div>
+          <div className="flex flex-1 flex-col justify-center gap-1 text-right sm:gap-2">
+            <p className="text-xs text-gray-600 sm:text-sm md:text-base">
+              {detailedTeacher?.academicRank !== undefined
+                ? getAcademicRankText(detailedTeacher.academicRank)
+                : teacher.rank || "نامشخص"}
+            </p>
+            <h1 className="text-base font-bold text-black sm:text-lg md:text-xl">
+              {`${detailedTeacher?.firstName || teacher.firstName} ${detailedTeacher?.lastName || teacher.lastName}`}
+            </h1>
+            <p className="text-xs text-gray-600 sm:text-sm md:text-base">
+              دانشکده{" "}
+              {getFacultyName(
+                detailedTeacher?.facultyName,
+                detailedTeacher?.facultyNameInPersian,
+                detailedTeacher?.facultyNameInEnglish,
+                detailedTeacher?.facultyOfMission,
+                teacher.faculty,
+              )}
+            </p>
+          </div>
+        </div>
+
+        {/* تب‌ها — زیر نام و عکس، بالای محتوا (موبایل و دسکتاپ) */}
+        <div className="relative z-10 w-full border-b border-gray-100">
           <div
             ref={tabsScrollRef}
-            className={`tabs-horizontal-scroll -mt-2 overflow-x-auto overflow-y-hidden pt-2 ${
-              tabsOverflow ? "pb-2" : "pb-0"
-            }`}
+            className={`tabs-horizontal-scroll overflow-x-auto overflow-y-hidden px-2 pt-2 lg:px-0 lg:pt-2 ${tabsOverflow ? "pb-2" : "pb-2"}`}
             style={{
               scrollbarWidth: "thin",
               scrollbarColor: "#9CA3AF transparent",
             }}
           >
             <div
-              className="flex items-center gap-3 pr-46"
+              className="flex items-center gap-1 sm:gap-1.5 md:gap-2 lg:gap-3"
               style={{ minWidth: "max-content" }}
             >
               {tabs.map((tab) => (
                 <button
                   key={tab}
-                  className={`flex-shrink-0 origin-bottom rounded-2xl px-2 py-3 text-sm whitespace-nowrap transition-all outline-none ${
+                  className={`flex-shrink-0 whitespace-nowrap rounded-lg px-1.5 py-1 text-[9px] outline-none transition-all sm:rounded-xl sm:px-2 sm:py-1 sm:text-[10px] md:py-1.5 md:text-xs lg:origin-bottom lg:rounded-2xl lg:px-2 lg:py-3 lg:text-sm ${
                     activeTab === tab
-                      ? "scale-110 bg-white px-4 font-bold text-black shadow-lg"
+                      ? "bg-white font-semibold text-black shadow-md sm:px-2.5 lg:scale-110 lg:px-4 lg:font-bold lg:shadow-lg"
                       : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                   }`}
                   onClick={() => setActiveTab(tab)}
@@ -794,29 +886,8 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
           </div>
         </div>
 
-        <div
-          className={`scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 relative z-20 w-full flex-1 overflow-y-auto rounded-2xl bg-white p-8 ${
-            tabsOverflow ? "mt-2" : "-mt-4"
-          }`}
-        >
-          <div className="mr-36">
-            <p className="pr-5 text-lg text-gray-600">
-              {detailedTeacher?.academicRank !== undefined
-                ? getAcademicRankText(detailedTeacher.academicRank)
-                : teacher.rank || "نامشخص"}
-            </p>
-            <h1 className="pr-5 text-2xl font-bold text-black">{`${detailedTeacher?.firstName || teacher.firstName} ${detailedTeacher?.lastName || teacher.lastName}`}</h1>
-            <p className="pt-2 pr-5 text-gray-600">
-              دانشکده{" "}
-              {getFacultyName(
-                detailedTeacher?.facultyName,
-                detailedTeacher?.facultyNameInPersian,
-                detailedTeacher?.facultyNameInEnglish,
-                detailedTeacher?.facultyOfMission,
-                teacher.faculty,
-              )}
-            </p>
-          </div>
+        {/* بخش محتوا — فقط اطلاعات مربوط به هر تب */}
+        <div className="scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 relative z-20 w-full flex-1 overflow-y-auto rounded-2xl bg-white p-3 sm:p-4 md:p-6 lg:rounded-2xl lg:p-8">
           {renderTabContent()}
         </div>
       </div>

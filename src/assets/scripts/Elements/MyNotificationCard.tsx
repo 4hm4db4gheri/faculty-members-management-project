@@ -47,36 +47,34 @@ export default function MyNotificationCard({
   };
 
   return (
-    <div className="flex items-center gap-3 rounded-2xl bg-white px-4 py-2.5 transition-colors hover:bg-gray-50">
-      {/* Switch Toggle - iPhone Style */}
+    <div className="flex min-h-[auto] items-center gap-2 rounded-xl bg-white px-3 py-2 transition-colors hover:bg-gray-50 sm:gap-3 sm:rounded-2xl sm:px-4 sm:py-2.5 lg:gap-3 lg:rounded-2xl lg:px-4 lg:py-2.5">
+      {/* Switch Toggle */}
       <button
         type="button"
         onClick={(e) => {
           e.stopPropagation();
           onToggleEnabled(notification.id, !isEnabled);
         }}
-        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out focus:ring-2 focus:ring-offset-2 focus:outline-none ${
-          isEnabled
-            ? "bg-green-500 focus:ring-green-500"
-            : "bg-gray-300 focus:ring-gray-400"
+        className={`relative inline-flex h-5 w-9 flex-shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out focus:ring-2 focus:ring-offset-2 focus:outline-none sm:h-6 sm:w-11 lg:h-6 lg:w-11 ${
+          isEnabled ? "bg-green-500 focus:ring-green-500" : "bg-gray-300 focus:ring-gray-400"
         }`}
         role="switch"
         aria-checked={isEnabled}
         aria-label={`Toggle notification ${notification.title}`}
       >
         <span
-          className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-lg transition-transform duration-200 ease-in-out ${
-            isEnabled ? "-translate-x-5.5" : "-translate-x-0.5"
+          className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-lg transition-transform duration-200 ease-in-out sm:h-5 sm:w-5 ${
+            isEnabled ? "-translate-x-4.5 sm:-translate-x-5.5" : "-translate-x-0.5"
           }`}
         />
       </button>
       <div
-        className="flex flex-1 cursor-pointer items-center gap-3"
+        className="flex flex-1 cursor-pointer items-center gap-2 overflow-hidden sm:gap-3"
         onClick={() =>
           onClick({
             id: notification.id,
             title: notification.title,
-            priority: "", // Provide appropriate value if available
+            priority: "",
             tag: getTypeColor(notification.notificationType),
             subject: undefined,
             sendMethod: undefined,
@@ -85,16 +83,14 @@ export default function MyNotificationCard({
           })
         }
       >
-        <div className="flex items-center gap-3">
+        <div className="flex flex-shrink-0 items-center gap-2 sm:gap-3">
           <span
-            className={`rounded-full px-2 py-0.5 text-xs ${getTagStyles(
-              getTypeColor(notification.notificationType),
-            )}`}
+            className={`whitespace-nowrap rounded-full px-1.5 py-0.5 text-[10px] sm:px-2 sm:text-xs ${getTagStyles(getTypeColor(notification.notificationType))}`}
           >
             {getTypeName(notification.notificationType)}
           </span>
         </div>
-        <span className="text-sm text-gray-800">{notification.title}</span>
+        <span className="truncate text-xs text-gray-800 sm:text-sm lg:text-sm">{notification.title}</span>
       </div>
     </div>
   );

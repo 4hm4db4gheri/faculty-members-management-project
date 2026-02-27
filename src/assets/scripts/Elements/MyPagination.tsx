@@ -51,15 +51,15 @@ export default function Pagination({
 
   const visiblePages = calculateVisibleRange();
   const buttonBaseStyle =
-    "h-10 w-10 flex items-center justify-center rounded-[25px] text-sm font-semibold transition-colors duration-300";
+    "h-7 w-7 flex items-center justify-center rounded-lg text-xs font-semibold transition-colors duration-300 sm:h-8 sm:w-8 sm:text-sm lg:h-10 lg:w-10 lg:rounded-[25px] lg:text-sm";
   const activeStyle = "bg-[#3388BC] text-white";
   const inactiveStyle = "bg-white text-gray-900 hover:bg-gray-50";
   const navButtonStyle =
-    "px-4 py-2 rounded-[25px] bg-white text-gray-900 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity duration-300";
+    "px-2 py-1 rounded-lg bg-white text-xs text-gray-900 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity duration-300 sm:px-3 sm:py-1.5 sm:text-sm lg:px-4 lg:py-2 lg:rounded-[25px]";
 
   return (
-    <nav className="mt-4 flex justify-center" dir="rtl">
-      <ul className="inline-flex gap-2">
+    <nav className="mt-2 flex justify-center px-2 sm:mt-4 lg:mt-4 lg:px-0" dir="rtl">
+      <ul className="inline-flex gap-1 sm:gap-2 lg:gap-2">
         <li>
           <button
             onClick={handlePrevious}
