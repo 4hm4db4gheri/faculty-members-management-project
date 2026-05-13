@@ -79,6 +79,7 @@ export const getFacultyGroups = async (facultyName: string): Promise<FacultyGrou
 export interface TimelineEventItem {
     title: string;
     eventDate: string;
+    status: "Done" | "Failed" | "Pending" | "Future";
 }
 export interface TimelineResponse {
     data: TimelineEventItem[];
