@@ -752,7 +752,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
             style={{ objectPosition: "top center" }}
             onError={(e) => {
               e.currentTarget.src =
-                "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+                MalePeofessorAvatar;
             }}
           />
         </div>
@@ -820,14 +820,14 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
                 src={
                   detailedTeacher?.gender === 1
                     ? FemaleProfessorAvatar
-                    : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                    : MalePeofessorAvatar
                 }
                 alt="تصویر استاد"
                 className="h-full w-full scale-120 object-cover object-center"
                 style={{ objectPosition: "top center" }}
                 onError={(e) => {
                   e.currentTarget.src =
-                    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+                    MalePeofessorAvatar;
                 }}
               />
             </div>
