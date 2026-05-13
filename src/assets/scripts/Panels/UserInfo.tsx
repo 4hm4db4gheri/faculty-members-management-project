@@ -794,7 +794,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
       {/* White container */}
       <div className="relative z-20 flex flex-1 flex-col overflow-hidden rounded-t-2xl bg-white sm:rounded-t-3xl lg:-mt-36">
         {/* دسکتاپ: نام و رتبه بالای تب‌ها */}
-        <div className="mr-36 hidden border-b border-gray-100 pt-2 lg:block lg:pr-5 lg:pb-2">
+        <div className="mr-36 hidden border-b border-gray-100 pt-2 lg:block lg:pr-10 lg:pb-2">
           <p className="text-lg text-gray-600">
             {detailedTeacher?.academicRank !== undefined
               ? getAcademicRankText(detailedTeacher.academicRank)
@@ -856,7 +856,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
         </div>
 
         {/* تب‌ها — زیر نام و عکس، بالای محتوا (موبایل و دسکتاپ) */}
-        <div className="relative z-10 w-full border-b border-gray-100">
+        <div className="relative z-10 w-full border-b border-gray-100 lg:pr-[170px]">
           <div
             ref={tabsScrollRef}
             className={`tabs-horizontal-scroll overflow-x-auto overflow-y-hidden px-2 pt-2 lg:px-0 lg:pt-2 ${tabsOverflow ? "pb-2" : "pb-2"}`}

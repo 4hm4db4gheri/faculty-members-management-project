@@ -727,8 +727,8 @@ export default function HistoryPanel() {
             {currentTeachers.length === 0 && (
               <div className="text-center text-gray-500">
                 {isFetchingMore &&
-                !searchText.trim() &&
-                !advancedSearchResults ? (
+                  !searchText.trim() &&
+                  !advancedSearchResults ? (
                   <div className="flex items-center justify-center">
                     <LoadingSpinner size="md" />
                   </div>
@@ -753,21 +753,21 @@ export default function HistoryPanel() {
       </div>
 
       {/* Action Buttons at Bottom - فقط موبایل/تبلت؛ دسکتاپ (lg+) دکمه‌ها در بالا */}
-      <div className="flex gap-2 pb-2 sm:pb-3 lg:hidden">
+      <div className="mt-auto flex h-12 gap-2 pb-2 sm:h-14 sm:pb-3 lg:hidden">
         <button
           onClick={() => setIsTeachersUploadOpen(true)}
-          className="flex-1 rounded-lg bg-blue-500 px-2 py-1 text-[10px] text-white hover:bg-blue-600 sm:px-3 sm:py-1.5 sm:text-xs"
+          className="flex-1 rounded-lg bg-blue-500 px-2 py-1 text-sm font-medium text-white hover:bg-blue-600 sm:px-3 sm:py-1.5 sm:text-base"
         >
           آپلود اساتید
         </button>
         <button
           onClick={handleExportExcel}
-          className="flex items-center justify-center rounded-lg border border-gray-300 bg-white px-2 py-1 text-[10px] text-black shadow-sm transition-colors hover:bg-gray-50 sm:px-3 sm:py-1.5 sm:text-xs"
+          className="flex px-4 items-center justify-center rounded-lg border border-gray-300 bg-white py-1 text-sm font-medium text-black shadow-sm transition-colors hover:bg-gray-50 sm:px-5 sm:py-1.5 sm:text-base"
         >
           <span className="mr-1">Excel</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-3 w-3 sm:h-4 sm:w-4"
+            className="h-4 w-4 sm:h-5 sm:w-5"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
