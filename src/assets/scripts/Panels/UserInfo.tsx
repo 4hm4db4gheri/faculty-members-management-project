@@ -14,6 +14,7 @@ import LoadingSpinner from "../Elements/LoadingSpinner";
 import { toast } from "react-toastify";
 import NotFoundPage from "./NotFoundPage";
 import FemaleProfessorAvatar from "../../images/arab-woman-face-covered-with-hijab-muslim-woman-muslim-girl-avatar-avatar-icon-in-flat-style-smiling-girl-in-a-scarf-isolated-illustration-vector.jpg";
+import MalePeofessorAvatar from "../../images/male-avatar.png";
 import { gregorianToJalali } from "../utils/dateUtils";
 
 interface UserInfoProps {
@@ -312,9 +313,8 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
             return (
               <li
                 key={record.id || index}
-                className={`list-inside list-decimal rounded-lg px-2 py-1.5 transition-colors duration-200 sm:px-3 sm:py-2 ${
-                  record.url ? "cursor-pointer hover:bg-blue-100" : ""
-                }`}
+                className={`list-inside list-decimal rounded-lg px-2 py-1.5 transition-colors duration-200 sm:px-3 sm:py-2 ${record.url ? "cursor-pointer hover:bg-blue-100" : ""
+                  }`}
                 style={{ direction: textDirection, textAlign }}
                 onClick={() => {
                   if (record.url) {
@@ -477,11 +477,10 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
                   <p>
                     <span className="font-medium">وضعیت:</span>{" "}
                     <span
-                      className={`rounded-full px-1.5 py-0.5 text-[10px] sm:px-2 sm:text-xs ${
-                        course.isActive
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
+                      className={`rounded-full px-1.5 py-0.5 text-[10px] sm:px-2 sm:text-xs ${course.isActive
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                        }`}
                     >
                       {course.isActive ? "فعال" : "غیرفعال"}
                     </span>
@@ -746,7 +745,7 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
             src={
               detailedTeacher?.gender === 1
                 ? FemaleProfessorAvatar
-                : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                : MalePeofessorAvatar
             }
             alt="تصویر استاد"
             className="h-full w-full scale-120 object-cover object-center"
@@ -872,11 +871,10 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
               {tabs.map((tab) => (
                 <button
                   key={tab}
-                  className={`flex-shrink-0 whitespace-nowrap rounded-lg px-1.5 py-1 text-[9px] outline-none transition-all sm:rounded-xl sm:px-2 sm:py-1 sm:text-[10px] md:py-1.5 md:text-xs lg:origin-bottom lg:rounded-2xl lg:px-2 lg:py-3 lg:text-sm ${
-                    activeTab === tab
-                      ? "bg-white font-semibold text-black shadow-md sm:px-2.5 lg:scale-110 lg:px-4 lg:font-bold lg:shadow-lg"
-                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                  }`}
+                  className={`flex-shrink-0 whitespace-nowrap rounded-lg px-1.5 py-1 text-[9px] outline-none transition-all sm:rounded-xl sm:px-2 sm:py-1 sm:text-[10px] md:py-1.5 md:text-xs lg:origin-bottom lg:rounded-2xl lg:px-2 lg:py-3 lg:text-sm ${activeTab === tab
+                    ? "bg-white font-semibold text-black shadow-md sm:px-2.5 lg:scale-110 lg:px-4 lg:font-bold lg:shadow-lg"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
                   onClick={() => setActiveTab(tab)}
                 >
                   {tab}
