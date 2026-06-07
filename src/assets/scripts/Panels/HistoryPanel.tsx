@@ -130,6 +130,10 @@ export default function HistoryPanel() {
   const PREFETCH_THRESHOLD_PAGES = 2; // when user enters page 9/10, prefetch next 50
 
   const loadedApiPagesRef = useRef<Set<number>>(new Set());
+  // Guard against concurrent/looping fetches. Kept as a ref (not derived from
+  // the isFetchingMore state) so ensureDataForPage's identity stays stable and
+  // a failed fetch can't retrigger the effect that calls it.
+  const isFetchingMoreRef = useRef(false);
   const debouncedSearchText = useDebounce(searchText, 500);
 
   const resetSearchFields = () => {
@@ -560,8 +564,9 @@ export default function HistoryPanel() {
         }
       }
 
-      if (pagesToFetch.length === 0 || isFetchingMore) return;
+      if (pagesToFetch.length === 0 || isFetchingMoreRef.current) return;
 
+      isFetchingMoreRef.current = true;
       setIsFetchingMore(true);
       try {
         for (const p of pagesToFetch) {
@@ -572,6 +577,7 @@ export default function HistoryPanel() {
         console.error("Failed to fetch more teachers:", err);
         toast.error("خطا در دریافت اطلاعات بیشتر");
       } finally {
+        isFetchingMoreRef.current = false;
         setIsFetchingMore(false);
       }
     },
@@ -580,7 +586,6 @@ export default function HistoryPanel() {
       PAGES_PER_API_PAGE,
       PREFETCH_THRESHOLD_PAGES,
       hasMoreTeachers,
-      isFetchingMore,
       fetchTeachersPage,
     ],
   );
