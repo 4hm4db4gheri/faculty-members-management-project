@@ -203,11 +203,13 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
     if (typeof status === "string") return status;
     switch (status) {
       case 0:
-        return "رسمی";
-      case 1:
         return "پیمانی";
+      case 1:
+        return "رسمی آزمایشی";
       case 2:
-        return "قراردادی";
+        return "رسمی قطعی";
+      case 3:
+        return "بازنشسته";
       default:
         return "نامشخص";
     }
@@ -439,11 +441,16 @@ export default function UserInfo({ teacher, onBack }: UserInfoProps) {
       );
     }
 
+    // Show active courses first, then inactive ones
+    const sortedCourses = [...courses].sort(
+      (a, b) => Number(b.isActive) - Number(a.isActive),
+    );
+
     return (
       <div className="space-y-2 sm:space-y-4">
         <h3 className="text-base font-bold sm:text-lg md:text-xl">{title}</h3>
         <div className="grid gap-2 sm:grid-cols-2 sm:gap-3 md:gap-4">
-          {courses.map((course, index) => (
+          {sortedCourses.map((course, index) => (
             <div
               key={course.id || index}
               className="rounded-lg border border-gray-200 bg-gray-50 p-2 sm:p-3 md:p-4"
